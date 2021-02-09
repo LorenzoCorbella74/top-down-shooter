@@ -2,18 +2,19 @@ local Gamestate = require 'libs.gamestate'
 local gamescreen = require 'states.gamescreen'
 
 local state = {}
-local font = love.graphics.newFont('assets/fonts/shattered-v1.ttf', 24)
+
 local elapsed = 0
 local BLINK_INTERVAL = 25
 
-function state:enter() love.graphics.setFont(font) end
+function state:enter() end
 
 function state:draw()
-    love.graphics.print("Test 2D", love.graphics.getWidth() / 2 - 128,
-                        love.graphics.getHeight() / 2)
+    local W, H = love.graphics.getWidth(), love.graphics.getHeight()
+    love.graphics.setFont(font_lg) 
+    love.graphics.printf("Test 2D", 0, H / 3, W, 'center')
     if elapsed % 100 > BLINK_INTERVAL then
-        love.graphics.print("< Press SPACE to continue >", love.graphics.getWidth() / 2 -256,
-        love.graphics.getHeight() / 2 +160)
+        love.graphics.setFont(font_md) 
+        love.graphics.printf("< Press SPACE to play or ESC to exit>", 0,H / 2, W, 'center')
     end
 end
 

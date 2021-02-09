@@ -16,6 +16,8 @@ function state:init()
     --[[ camera:setFollowLerp(0.2)
     camera:setFollowLead(10) ]]
 
+    love.graphics.setFont(font_md)
+
     map = sti("maps/dm1.lua", {'bump'}) -- Load map file
     world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world) -- start the phisics engine in the map
