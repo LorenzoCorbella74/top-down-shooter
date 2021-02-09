@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="18">
+ <editorsettings>
+  <export target="dm1.lua" format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32" tilecount="171" columns="9">
+  <image source="../myTiles/tileset.png" width="288" height="608"/>
+  <tile id="0">
+   <properties>
+    <property name="damage" type="int" value="2"/>
+   </properties>
+   <animation>
+    <frame tileid="33" duration="100"/>
+    <frame tileid="34" duration="100"/>
+    <frame tileid="35" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <layer id="1" name="background" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztw8EJAAAMA6F7ZP+ZO0dBwVVTVVVVVVVVVVXV5w+SZScR
+  </data>
+ </layer>
+ <layer id="2" name="walls" width="50" height="50">
+  <properties>
+   <property name="collidable" type="bool" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztmcsOhCAQBBH//589bULMssxTm9muZI40UwYU9WytnUVqd+ghoydmj/zyiOjhaY9jUhE84VLNI3vubBd66LDmScfRQ48lkx72OVfQYw33uY63PCLpbX8Pj8NnvIQMj34rb5aEaI+I3u95EiI8oq79LFeCxyOr/zFbisUjs/8xX4PWI7N/T77GI3sNebK1Ht/GW4lcn294ZOwvhHUVAdo+t2J9fqD58Ds1FvTAoroH0r1Iwj947OSy+q+W/a5hYXbO056vEMrjgQw9sKAHFvTAoppHhboAAO4DYQ==
+  </data>
+ </layer>
+ <layer id="3" name="lava" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt1TEOABAQBEDC/9+sFSFKnJlkm6t2q0sJ+EFZ5DVRdgBwr3q6AABAIHnI7LbLDaLsAIBelF9lBwAAowY0KABV
+  </data>
+ </layer>
+ <objectgroup id="4" name="Spawn_points">
+  <object id="4" gid="54" x="423.012" y="127.749" width="32" height="32" visible="0"/>
+  <object id="5" gid="54" x="425.673" y="125.088" width="32" height="32" visible="0"/>
+  <object id="6" name="spawn" gid="54" x="383.459" y="320.906" width="32" height="32"/>
+  <object id="8" name="spawn" gid="54" x="1271.77" y="1492.61" width="32" height="32"/>
+  <object id="9" name="spawn" gid="54" x="750.276" y="1168" width="32" height="32"/>
+  <object id="11" name="spawn" gid="54" x="1428.75" y="242.086" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="5" name="powerups">
+  <object id="13" name="health" gid="16" x="96" y="96" width="32" height="32" visible="0">
+   <properties>
+    <property name="collidable" type="bool" value="false"/>
+    <property name="points" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="15" name="health" gid="16" x="64.6667" y="288" width="32" height="32">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+    <property name="points" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="16" name="health" gid="16" x="992.667" y="225.333" width="32" height="32">
+   <properties>
+    <property name="collidable" type="bool" value="false"/>
+    <property name="points" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="17" name="health" gid="16" x="96" y="128" width="32" height="32">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+    <property name="points" type="int" value="10"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
