@@ -1,8 +1,8 @@
 -- LIBRARIES
-local Gamestate = require 'libs.gamestate'  -- https://hump.readthedocs.io/en/latest/gamestate.html
-local sti = require "libs.sti"              -- https://github.com/karai17/Simple-Tiled-Implementation
-local bump = require 'libs.bump'            -- https://github.com/kikito/bump.lua
-local Camera = require 'libs.camera'        -- https://github.com/a327ex/STALKER-X
+local Gamestate = require 'libs.gamestate' -- https://hump.readthedocs.io/en/latest/gamestate.html
+local sti = require "libs.sti" -- https://github.com/karai17/Simple-Tiled-Implementation
+local bump = require 'libs.bump' -- https://github.com/kikito/bump.lua
+local Camera = require 'libs.camera' -- https://github.com/a327ex/STALKER-X
 
 local state = {}
 
@@ -12,7 +12,9 @@ local pausescreen = require 'states.pausescreen'
 function state:init()
 
     camera = Camera()
-    camera:setFollowStyle('NO_DEADZONE')
+    camera:setFollowStyle('TOPDOWN')
+    --[[ camera:setFollowLerp(0.2)
+    camera:setFollowLead(10) ]]
 
     map = sti("maps/dm1.lua", {'bump'}) -- Load map file
     world = bump.newWorld(32) -- defining the world for collisions
@@ -33,6 +35,7 @@ function state:update(dt)
 end
 
 function state:draw()
+    camera:attach()
 
     local scale = 1 -- Scale world
 
@@ -46,20 +49,25 @@ function state:draw()
                        mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
-
+    -- Draw your game here
+    camera:detach()
+    camera:draw()
     drawHUD()
 end
 
 function state:keyreleased(key, code)
     if key == 'p' then Gamestate.push(pausescreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
+    if key == 'e' then camera:shake(8, 1, 60) end               -- NOT working
+    if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end     -- working
 end
 
 function drawHUD()
     local hp = map.layers["Sprites"].player.hp
     local fps = love.timer.getFPS()
     love.graphics.print("HP: " .. tostring(hp), 32, 32)
-    love.graphics.print("FPS: " .. tostring(fps), love.graphics.getWidth() - 96,32)
+    love.graphics.print("FPS: " .. tostring(fps), love.graphics.getWidth() - 96,
+                        32)
 end
 
 return state

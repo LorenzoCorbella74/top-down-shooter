@@ -60,6 +60,7 @@ layer.update = function(self, dt)
         local col = cols[i]
         if (col.other.name == 'health' and col.other.visible) then
             self.player.hp = self.player.hp + col.other.properties.points
+            camera:shake(16, 1, 60)
             col.other.visible = false
             world:remove(col.other) -- powerup is no more in the phisycs world
         end
