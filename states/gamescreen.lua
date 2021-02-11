@@ -1,44 +1,45 @@
--- LIBRARIES
-local Gamestate = require 'libs.gamestate' -- https://hump.readthedocs.io/en/latest/gamestate.html
-local sti = require "libs.sti" -- https://github.com/karai17/Simple-Tiled-Implementation
-local bump = require 'libs.bump' -- https://github.com/kikito/bump.lua
-local Camera = require 'libs.camera' -- https://github.com/a327ex/STALKER-X
+require "entities.player" -- loading player
+require "entities.powerups" -- loading powerups
+
 
 local state = {}
 
-local pausescreen = require 'states.pausescreen'
-
--- called only once
-function state:init()
+-- init is called only once
+-- enter is called when push
+-- restore is called when pop
+function state:enter()
 
     camera = Camera()
     camera:setFollowStyle('TOPDOWN')
     --[[ camera:setFollowLerp(0.2)
     camera:setFollowLead(10) ]]
 
-    love.graphics.setFont(font_md)
-
     map = sti("maps/dm1.lua", {'bump'}) -- Load map file
     world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world) -- start the phisics engine in the map
 
-    require "entities.player" -- loading player
-    require "entities.powerups" -- loading powerups
+    createPlayer()
+    createPowerUps()
 
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
+
+    currentCameraTarget = map.layers["Sprites"].player
+
+    -- after the matchDuration go to game over screen 
+    Timer.after(10, function() Gamestate.push(gameover) end)
 end
 
 function state:update(dt)
-    local player = map.layers["Sprites"].player
-
-    map:update(dt) -- Update world
+    map:update(dt) -- Update all map layers
     camera:update(dt)
-    camera:follow(player.x, player.y)
+    camera:follow(currentCameraTarget.x, currentCameraTarget.y)
+    Timer.update(dt)
 end
 
 function state:draw()
     camera:attach()
 
+    -- Draw your game here
     local scale = 1 -- Scale world
 
     local windowWidth = love.graphics.getWidth()
@@ -51,7 +52,7 @@ function state:draw()
                        mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
-    -- Draw your game here
+    
     camera:detach()
     camera:draw()
     drawHUD()
@@ -60,15 +61,25 @@ end
 function state:keyreleased(key, code)
     if key == 'p' then Gamestate.push(pausescreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
-    if key == 'e' then camera:shake(8, 1, 60) end               -- NOT working
-    if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end     -- working
+    if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
+    if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end -- working
+end
+
+function state:leave()
+    map = nil
+    world = nil
+    camera = nil
+    currentCameraTarget = nil
 end
 
 function drawHUD()
-    local hp = map.layers["Sprites"].player.hp
+    love.graphics.setFont(font_md)
+    local p = map.layers["Sprites"].player
     local fps = love.timer.getFPS()
-    love.graphics.print("HP: " .. tostring(hp), 32, 32)
-    love.graphics.print("FPS: " .. tostring(fps), love.graphics.getWidth() - 96,
+    love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
+    love.graphics.print("AP:" .. tostring(p.ap), 110, 32)
+    love.graphics.print("Kills:" .. tostring(p.kills), 170, 32)
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
                         32)
 end
 
