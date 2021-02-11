@@ -11,6 +11,14 @@ function createPlayer()
         end
     end
 
+    local playerFilter = function(item, other)
+        if other.name == 'health' and other.visible then
+            return 'cross'
+        else
+            return 'slide'
+        end
+    end
+
     -- Create player object
     local sprite = love.graphics.newImage("myTiles/tiles/21.png")
 
@@ -20,7 +28,7 @@ function createPlayer()
         y = player.y,
         w = sprite:getWidth(),
         h = sprite:getHeight(),
-        
+
         speed = 256, -- pixels per second
 
         hp = 100,
@@ -60,7 +68,7 @@ function createPlayer()
 
         -- update the player associated bounding box in the world
         self.player.x, self.player.y, cols, cols_len =
-            world:move(self.player, futurex, futurey)
+            world:move(self.player, futurex, futurey, playerFilter)
         for i = 1, cols_len do
             local item = cols[i].other
             local col = cols[i]
@@ -72,7 +80,8 @@ function createPlayer()
             end
 
             print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
-                      col.other, col.type, col.normal.x, col.normal.y))        end
+                      col.other, col.type, col.normal.x, col.normal.y))
+        end
     end
 
     -- Draw player

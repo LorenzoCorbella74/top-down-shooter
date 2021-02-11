@@ -31,7 +31,7 @@ function state:enter()
 end
 
 function state:update(dt)
-    map:update(dt) -- Update all map layers
+    map:update(dt) -- Update all map layers internally
     camera:update(dt)
     camera:follow(currentCameraTarget.x, currentCameraTarget.y)
     Timer.update(dt)
@@ -72,15 +72,23 @@ end
     camera = nil
     currentCameraTarget = nil
 end ]]
-
+-- TODO 
 function state:mousepressed(x, y, button, istouch, presses)
+    print(x, y, camera.mx, camera.my)
+
     if button == 1 then
         local p = map.layers["Sprites"].player
         local sx = (p.x + p.w / 2)
         local sy = (p.y + p.h / 2)
-        local angle = math.atan2(y - sy, x - sx)
+        --[[ player_x, player_y = camera:toCameraCoords(sx, sy) ]]
+
+        local angle = math.atan2(y - (sy - (camera.y - camera.h / 2)),
+                                 x - (sx - (camera.x - camera.w / 2)))
         BH.create({x = lerp(p.x, x, .15), y = lerp(p.y, y, .15)}, angle,
                   'machinegun')
+        --[[ local angle = math.atan2(y - sy, x - sx)
+        BH.create({x = lerp(p.x, x, .15), y = lerp(p.y, y, .15)}, angle,
+                  'machinegun') ]]
     end
 end
 

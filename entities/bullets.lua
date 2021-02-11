@@ -22,33 +22,40 @@ function createBulletHandler()
         bullet.damage = 50 -- how much damange it deals
         bullet.timeout = 2 -- how many seconds before despawning
 
-        world:add(bullet, bullet.x, bullet.y, bullet.w, bullet.h, layer.filter) -- bullets is in the phisycs world
+        world:add(bullet, bullet.x, bullet.y, bullet.w, bullet.h) -- bullets is in the phisycs world
         table.insert(layer.bullets, bullet)
     end
 
-    layer.filter = function(other)
-        local kind = other.class.name
-        if kind == 'walls' then return "bounce" end
+    layer.filter = function(item, other)
+        local kind = other.layer and other.layer.name or other
+        print(('Kind:%s'):format(kind))
+        if kind == 'walls' then
+            return "bounce"
+        else
+            return 'slide'
+        end
     end
 
     -- Update bullets
     layer.update = function(self, dt)
-        for _i, bullet in ipairs(self.bullets) do
+        for _i = #self.bullets, 1, -1 do
+            local bullet = self.bullets[_i]
 
             -- update bullet positions
             local futurex = bullet.x + bullet.dx * dt
             local futurey = bullet.y + bullet.dy * dt
 
             bullet.x, bullet.y, cols, cols_len =
-                world:move(bullet, futurex, futurey)
+                world:move(bullet, futurex, futurey, layer.filter)
 
             -- collision with walls
             for i = 1, cols_len do
                 local col = cols[i]
                 local item = cols[i].other
                 if (item.layer and item.layer.name == 'walls') then
-                    table.remove(self.bullets, _i)
                     world:remove(bullet) -- powerup is no more in the phisycs world
+                    table.remove(self.bullets, _i)
+                    break -- break after the first wall
                 end
                 print(("item = %s, type = %s, x,y = %d,%d"):format(
                           tostring(col), col.type, col.normal.x, col.normal.y))
@@ -59,8 +66,8 @@ function createBulletHandler()
                 bullet.timeout = bullet.timeout - 1 * dt
             else
                 if world:hasItem(bullet) then
-                    table.remove(self.bullets, _i)
                     world:remove(bullet)
+                    table.remove(self.bullets, _i)
                 else
                     print("Tried to remove already removed object: ")
                 end
@@ -71,11 +78,12 @@ function createBulletHandler()
 
     -- Draw bullets
     layer.draw = function(self)
-        for k, object in pairs(self.bullets) do
-            love.graphics.draw(object.sprite, math.floor(object.x),
-                               math.floor(object.y), 0, 1, 1)
-            --[[ love.graphics.rectangle("line", math.floor(object.x),
-                               math.floor(object.y), object.w, object.h) ]]
+        for _i = #self.bullets, 1, -1 do
+            local bullet = self.bullets[_i]
+            love.graphics.draw(bullet.sprite, math.floor(bullet.x),
+                               math.floor(bullet.y), 0, 1, 1)
+            --[[ love.graphics.rectangle("line", math.floor(bullet.x),
+                               math.floor(bullet.y), bullet.w, bullet.h) ]]
         end
     end
 
