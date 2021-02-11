@@ -1,6 +1,6 @@
 require "entities.player" -- loading player
 require "entities.powerups" -- loading powerups
-
+require "entities.bullets" -- Loading bullets
 
 local state = {}
 
@@ -20,13 +20,14 @@ function state:enter()
 
     createPlayer()
     createPowerUps()
+    BH = createBulletHandler()
 
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
 
     currentCameraTarget = map.layers["Sprites"].player
 
     -- after the matchDuration go to game over screen 
-    Timer.after(10, function() Gamestate.push(gameover) end)
+    Timer.after(60, function() Gamestate.push(gameover) end)
 end
 
 function state:update(dt)
@@ -52,7 +53,7 @@ function state:draw()
                        mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
-    
+
     camera:detach()
     camera:draw()
     drawHUD()
@@ -65,11 +66,22 @@ function state:keyreleased(key, code)
     if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end -- working
 end
 
-function state:leave()
+--[[ function state:leave()
     map = nil
     world = nil
     camera = nil
     currentCameraTarget = nil
+end ]]
+
+function state:mousepressed(x, y, button, istouch, presses)
+    if button == 1 then
+        local p = map.layers["Sprites"].player
+        local sx = (p.x + p.w / 2)
+        local sy = (p.y + p.h / 2)
+        local angle = math.atan2(y - sy, x - sx)
+        BH.create({x = lerp(p.x, x, .15), y = lerp(p.y, y, .15)}, angle,
+                  'machinegun')
+    end
 end
 
 function drawHUD()
@@ -82,6 +94,9 @@ function drawHUD()
     love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
                         32)
 end
+
+-- todo
+function lerp(a, b, t) return a * (1 - t) + b * t end
 
 return state
 

@@ -9,21 +9,23 @@ function createPowerUps()
             object.sprite = love.graphics.newImage("myTiles/tiles/24.png")
             object.inCheck = false
             object.visible = true
-            table.insert(layer.powerups, object)
             world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
+            table.insert(layer.powerups, object)
         end
     end
 
     -- Update powerups
     layer.update = function(self, dt)
-        for k, object in pairs(self.powerups) do
+        for i = #self.powerups, 1, -1 do
+            --[[ for k, object in pairs() do ]]
+            local object = self.powerups[i]
             if not object.visible and not object.inCheck then
                 object.inCheck = true
                 Timer.after(10, function() -- after 10 
-                    object.inCheck = false
-                    object.visible = true
                     world:add(object, object.x, object.y, object.width,
                               object.height) -- powerups is in the phisycs world again
+                    object.inCheck = false
+                    object.visible = true
                 end)
             end
         end

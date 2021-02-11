@@ -134,7 +134,7 @@ return {
       parallaxy = 1,
       properties = {},
       objects = {
-        {
+--[[         {
           id = 4,
           name = "",
           type = "",
@@ -161,7 +161,7 @@ return {
           gid = 54,
           visible = false,
           properties = {}
-        },
+        }, ]]
         {
           id = 6,
           name = "spawn",

@@ -18,9 +18,10 @@ function createPlayer()
         sprite = sprite,
         x = player.x,
         y = player.y,
+        w = sprite:getWidth(),
+        h = sprite:getHeight(),
+        
         speed = 256, -- pixels per second
-        width = sprite:getWidth(),
-        height = sprite:getHeight(),
 
         hp = 100,
         ap = 0,
@@ -28,8 +29,8 @@ function createPlayer()
         kills = 0
     }
 
-    world:add(layer.player, layer.player.x, layer.player.y, layer.player.width,
-              layer.player.height) -- player is in the phisycs world
+    world:add(layer.player, layer.player.x, layer.player.y, layer.player.w,
+              layer.player.h) -- player is in the phisycs world
 
     -- Add controls to player
     layer.update = function(self, dt)
@@ -61,17 +62,17 @@ function createPlayer()
         self.player.x, self.player.y, cols, cols_len =
             world:move(self.player, futurex, futurey)
         for i = 1, cols_len do
+            local item = cols[i].other
             local col = cols[i]
-            if (col.other.name == 'health' and col.other.visible) then
-                self.player.hp = self.player.hp + col.other.properties.points
+            if (item.name == 'health' and item.visible) then
+                self.player.hp = self.player.hp + item.properties.points
                 camera:shake(16, 1, 60)
-                world:remove(col.other) -- powerup is no more in the phisycs world
-                col.other.visible = false
+                world:remove(item) -- powerup is no more in the phisycs world
+                item.visible = false
             end
 
             print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
-                      col.other, col.type, col.normal.x, col.normal.y))
-        end
+                      col.other, col.type, col.normal.x, col.normal.y))        end
     end
 
     -- Draw player
