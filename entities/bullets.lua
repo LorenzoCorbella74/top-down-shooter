@@ -80,8 +80,9 @@ function createBulletHandler()
     layer.draw = function(self)
         for _i = #self.bullets, 1, -1 do
             local bullet = self.bullets[_i]
-            love.graphics.draw(bullet.sprite, math.floor(bullet.x),
-                               math.floor(bullet.y), 0, 1, 1)
+            love.graphics.draw(bullet.sprite,
+                               math.floor(bullet.x + bullet.w / 2),
+                               math.floor(bullet.y + bullet.h / 2), 0, 1, 1)
             --[[ love.graphics.rectangle("line", math.floor(bullet.x),
                                math.floor(bullet.y), bullet.w, bullet.h) ]]
         end

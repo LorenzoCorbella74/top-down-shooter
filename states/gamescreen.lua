@@ -57,6 +57,7 @@ function state:draw()
     camera:detach()
     camera:draw()
     drawHUD()
+    drawCursor()
 end
 
 function state:keyreleased(key, code)
@@ -72,23 +73,25 @@ end
     camera = nil
     currentCameraTarget = nil
 end ]]
+
 -- TODO 
 function state:mousepressed(x, y, button, istouch, presses)
-    print(x, y, camera.mx, camera.my)
 
     if button == 1 then
         local p = map.layers["Sprites"].player
         local sx = (p.x + p.w / 2)
         local sy = (p.y + p.h / 2)
-        --[[ player_x, player_y = camera:toCameraCoords(sx, sy) ]]
 
-        local angle = math.atan2(y - (sy - (camera.y - camera.h / 2)),
-                                 x - (sx - (camera.x - camera.w / 2)))
-        BH.create({x = lerp(p.x, x, .15), y = lerp(p.y, y, .15)}, angle,
-                  'machinegun')
-        --[[ local angle = math.atan2(y - sy, x - sx)
-        BH.create({x = lerp(p.x, x, .15), y = lerp(p.y, y, .15)}, angle,
-                  'machinegun') ]]
+        -- Gets the position of the mouse in world coordinates 
+        -- equivals to camera:toWorldCoords(love.mouse.getPosition())
+        local mx, my = camera:getMousePosition() 
+        
+        local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
+
+        BH.create({
+            x = p.x + 64*math.cos(angle) --[[ lerp((p.x + p.w / 2), mx, .15) ]],
+            y = p.y + 64*math.sin(angle) --[[ lerp((p.y + p.h / 2), my, .15) ]]
+        }, angle, 'machinegun')
     end
 end
 
@@ -101,6 +104,14 @@ function drawHUD()
     love.graphics.print("Kills:" .. tostring(p.kills), 170, 32)
     love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
                         32)
+end
+
+--  cursor
+function drawCursor()
+    love.graphics.line(love.mouse.getX(), love.mouse.getY() - 16,
+                       love.mouse.getX(), love.mouse.getY() + 16)
+    love.graphics.line(love.mouse.getX() - 16, love.mouse.getY(),
+                       love.mouse.getX() + 16, love.mouse.getY())
 end
 
 -- todo

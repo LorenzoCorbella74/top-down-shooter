@@ -29,7 +29,13 @@ function createPlayer()
         w = sprite:getWidth(),
         h = sprite:getHeight(),
 
+        cx = player.x + sprite:getWidth() / 2,
+        cx = player.y + sprite:getHeight() / 2,
+
+        r = 0,
         speed = 256, -- pixels per second
+
+        -- bounding box
 
         hp = 100,
         ap = 0,
@@ -66,6 +72,13 @@ function createPlayer()
 
         local cols
 
+        -- player rotation
+        local mx, my = camera:getMousePosition()
+        self.player.r = math.atan2(my - (self.player.y + self.player.h / 2),
+                                   mx - (self.player.x + self.player.w / 2))
+
+        -- trasformazione del bounding box in base alla rotazione
+
         -- update the player associated bounding box in the world
         self.player.x, self.player.y, cols, cols_len =
             world:move(self.player, futurex, futurey, playerFilter)
@@ -86,8 +99,12 @@ function createPlayer()
 
     -- Draw player
     layer.draw = function(self)
-        love.graphics.draw(self.player.sprite, math.floor(self.player.x),
-                           math.floor(self.player.y), 0, 1, 1)
+        -- love.graphics.draw(self.player.sprite, math.floor(self.player.x),math.floor(self.player.y), 0, 1, 1)
+        love.graphics.draw(self.player.sprite,
+                           math.floor(self.player.x + self.player.w / 2),
+                           math.floor(self.player.y + self.player.h / 2),
+                           self.player.r, 1, 1, self.player.w / 2,
+                           self.player.h / 2)
     end
 
     return layer
