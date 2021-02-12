@@ -2,6 +2,8 @@ require "entities.player" -- loading player
 require "entities.powerups" -- loading powerups
 require "entities.bullets" -- Loading bullets
 
+local countdown = require "..helpers.countdown"
+
 local state = {}
 
 -- init is called only once
@@ -27,7 +29,9 @@ function state:enter()
     currentCameraTarget = map.layers["Sprites"].player
 
     -- after the matchDuration go to game over screen 
-    Timer.after(60, function() Gamestate.push(gameover) end)
+    -- Timer.after(60, function() Gamestate.push(gameover) end)
+
+    GameCountdown = countdown.new(120)
 end
 
 function state:update(dt)
@@ -35,6 +39,7 @@ function state:update(dt)
     camera:update(dt)
     camera:follow(currentCameraTarget.x, currentCameraTarget.y)
     Timer.update(dt)
+    GameCountdown.update(dt)
 end
 
 function state:draw()
@@ -89,8 +94,8 @@ function state:mousepressed(x, y, button, istouch, presses)
         local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
         BH.create({
-            x = p.x + 64*math.cos(angle) --[[ lerp((p.x + p.w / 2), mx, .15) ]],
-            y = p.y + 64*math.sin(angle) --[[ lerp((p.y + p.h / 2), my, .15) ]]
+            x = p.x + 64*math.cos(angle),
+            y = p.y + 64*math.sin(angle)
         }, angle, 'machinegun')
     end
 end
@@ -102,8 +107,9 @@ function drawHUD()
     love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
     love.graphics.print("AP:" .. tostring(p.ap), 110, 32)
     love.graphics.print("Kills:" .. tostring(p.kills), 170, 32)
-    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
-                        32)
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,32)
+    love.graphics.printf("Time: " .. tostring(GameCountdown.show()), love.graphics.getWidth()/2, 32, 200, "center")
+
 end
 
 --  cursor
@@ -113,9 +119,6 @@ function drawCursor()
     love.graphics.line(love.mouse.getX() - 16, love.mouse.getY(),
                        love.mouse.getX() + 16, love.mouse.getY())
 end
-
--- todo
-function lerp(a, b, t) return a * (1 - t) + b * t end
 
 return state
 
