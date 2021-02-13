@@ -30,7 +30,6 @@ function state:enter()
 
     -- after the matchDuration go to game over screen 
     -- Timer.after(60, function() Gamestate.push(gameover) end)
-
     GameCountdown = countdown.new(120)
 end
 
@@ -91,8 +90,9 @@ function state:mousepressed(x, y, button, istouch, presses)
         -- equivals to camera:toWorldCoords(love.mouse.getPosition())
         local mx, my = camera:getMousePosition() 
         
-        local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
+        local angle = math.atan2(my - p.y, mx - p.x)
 
+        -- todo guardare segni del cos/sen
         BH.create({
             x = p.x + 64*math.cos(angle),
             y = p.y + 64*math.sin(angle)
@@ -109,6 +109,7 @@ function drawHUD()
     love.graphics.print("Kills:" .. tostring(p.kills), 170, 32)
     love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,32)
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()), love.graphics.getWidth()/2, 32, 200, "center")
+    love.graphics.printf("Angle: " .. tostring(p.r), love.graphics.getWidth()/2, 64, 250, "center")
 
 end
 
