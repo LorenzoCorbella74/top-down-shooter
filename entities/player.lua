@@ -43,62 +43,61 @@ function createPlayer()
 
     -- world:add(layer.player, layer.player.x, layer.player.y, layer.player.w, layer.player.h) -- player is in the phisycs world
 
-    -- world:add(layer.player, layer.player.x, layer.player.y, layer.player.w,layer.player.h) -- player is in the phisycs world
-    local bx, by, bw, bh = transformBoudingBox(layer.player.r, layer.player.x,
-                                               layer.player.y, layer.player.w,
+    local bx, by, bw, bh = transformBoudingBox(layer.player.r, layer.player.x +
+                                                   layer.player.w / 2,
+                                               layer.player.y + layer.player.h /
+                                                   2, layer.player.w,
                                                layer.player.h)
-    local p = layer.player.bb
-    p.x = bx
-    p.y = by
-    p.w = bw
-    p.h = bh
-    world:add(p, p.x, p.y, p.w, p.h) -- player is in the phisycs world
+
+    layer.player.bb.x = bx
+    layer.player.bb.y = by
+    layer.player.bb.w = bw
+    layer.player.bb.h = bh
+    world:add(layer.player.bb, layer.player.bb.x, layer.player.bb.y,
+              layer.player.bb.w, layer.player.bb.h) -- player is in the phisycs world
 
     -- Add controls to player
     layer.update = function(self, dt)
 
-        local p = self.player.bb
+        local p = self.player
         local futurex = p.x
         local futurey = p.y
         -- Move player up
         if love.keyboard.isDown("w", "up") then
-            futurey = p.y - self.player.speed * dt
+            futurey = p.y - p.speed * dt
         end
 
         -- Move player down
         if love.keyboard.isDown("s", "down") then
-            futurey = p.y + self.player.speed * dt
+            futurey = p.y + p.speed * dt
         end
 
         -- Move player left
         if love.keyboard.isDown("a", "left") then
-            futurex = p.x - self.player.speed * dt
+            futurex = p.x - p.speed * dt
         end
 
         -- Move player right
         if love.keyboard.isDown("d", "right") then
-            futurex = p.x + self.player.speed * dt
+            futurex = p.x + p.speed * dt
         end
 
         -- player rotation
         local mx, my = camera:getMousePosition()
-        self.player.r = math.atan2(my - self.player.y, mx - self.player.x)
-
-        print(self.player.r)
+        p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x - p.w / 2))
 
         -- trasformazione del bounding box in base alla rotazione
-        local bx, by, bw, bh = transformBoudingBox(self.player.r, self.player.x,
-                                                   self.player.y, self.player.w,
-                                                   self.player.h)
-        p.x = bx
-        p.y = by
-        p.w = bw
-        p.h = bh
-        world:update(p, p.x, p.y, p.w, p.h) -- player is in the phisycs world
+        local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2,
+                                                   p.y + p.h / 2, p.w, p.h)
+        p.bb.x = bx
+        p.bb.y = by
+        p.bb.w = bw
+        p.bb.h = bh
+        world:update(p.bb, p.bb.x, p.bb.y, p.bb.w, p.bb.h) -- player is in the phisycs world
 
         local cols, cols_len
         -- update the player associated bounding box in the world
-        p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, playerFilter)
+        p.x, p.y, cols, cols_len = world:move(p.bb, futurex, futurey, playerFilter)
 
         for i = 1, cols_len do
             local item = cols[i].other
@@ -118,7 +117,7 @@ function createPlayer()
     layer.draw = function(self)
         -- Draw player
         local p = self.player
-        love.graphics.draw(p.sprite, p.x, p.y, p.r, 1, 1, p.w / 2, p.h / 2)
+        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
         -- Bounding box
         love.graphics.setColor(1, 1, 0, 1)
         love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h)
