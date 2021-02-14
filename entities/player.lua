@@ -32,7 +32,7 @@ function createPlayer()
         h = sprite:getHeight(),
 
         r = 0, -- rotation angle (radians)
-        bb = {}, -- bounding box
+        -- bb = {}, -- bounding box
         speed = 256, -- pixels per second
 
         hp = 100,
@@ -41,7 +41,7 @@ function createPlayer()
         kills = 0
     }
 
-    local bx, by, bw, bh = transformBoudingBox(layer.player.r,
+    --[[ local bx, by, bw, bh = transformBoudingBox(layer.player.r,
                                                (layer.player.x + layer.player.w /
                                                    2), (layer.player.y +
                                                    layer.player.h / 2),
@@ -50,9 +50,11 @@ function createPlayer()
     layer.player.bb.x = bx
     layer.player.bb.y = by
     layer.player.bb.w = bw
-    layer.player.bb.h = bh
+    layer.player.bb.h = bh ]]
 
-    world:add(layer.player, bx, by, bw, bh) -- player bb is in the phisycs world
+    local p = layer.player
+
+    world:add(layer.player, p.x, p.y, p.w, p.h) -- player bb is in the phisycs world
 
     -- Add controls to player
     layer.update = function(self, dt)
@@ -99,22 +101,22 @@ function createPlayer()
         end
 
         -- apply first update to BB
-        local ix, iy, iw, ih = world:getRect(p)
-        world:update(p, ix, iy, iw, ih)
+        --[[ local ix, iy, iw, ih = world:getRect(p)
+        world:update(p, ix, iy, iw, ih) ]]
 
         -- player rotation
         local mx, my = camera:getMousePosition()
         p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
         -- trasformazione del bounding box in base alla rotazione
-        local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2, p.y + p.h / 2, p.w, p.h)
+      --[[   local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2, p.y + p.h / 2, p.w, p.h)
 
         p.bb.x = bx
         p.bb.y = by
         p.bb.w = bw
         p.bb.h = bh
 
-        world:update(p, bx, by, bw, bh) -- player is in the phisycs world
+        world:update(p, bx, by, bw, bh)  ]]-- player is in the phisycs world
 --[[ 
         local cols, cols_len
         -- update the player associated bounding box in the world
@@ -136,8 +138,8 @@ function createPlayer()
             love.graphics.setColor(0, 1, 1, 1)
             love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
             -- Bounding box
-            love.graphics.setColor(1, 1, 0, 1)
-            love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h)
+            --[[ love.graphics.setColor(1, 1, 0, 1)
+            love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h) ]]
 
             -- line to cursor
             love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
