@@ -31,17 +31,15 @@ function createPlayer()
         w = sprite:getWidth(),
         h = sprite:getHeight(),
 
-        r = 0, -- rotation angle (radians)
-        bb = {},
-        speed = 256, -- pixels per second
+        r = 0,          -- rotation angle (radians)
+        bb = {},        -- bounding box
+        speed = 256,    -- pixels per second
 
         hp = 100,
         ap = 0,
 
         kills = 0
     }
-
-    -- world:add(layer.player, layer.player.x, layer.player.y, layer.player.w, layer.player.h) -- player is in the phisycs world
 
     local bx, by, bw, bh = transformBoudingBox(layer.player.r, layer.player.x +
                                                    layer.player.w / 2,
@@ -54,7 +52,7 @@ function createPlayer()
     layer.player.bb.w = bw
     layer.player.bb.h = bh
     world:add(layer.player.bb, layer.player.bb.x, layer.player.bb.y,
-              layer.player.bb.w, layer.player.bb.h) -- player is in the phisycs world
+              layer.player.bb.w, layer.player.bb.h) -- player bb is in the phisycs world
 
     -- Add controls to player
     layer.update = function(self, dt)
@@ -118,6 +116,7 @@ function createPlayer()
         -- Draw player
         local p = self.player
         love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
+        love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
         -- Bounding box
         love.graphics.setColor(1, 1, 0, 1)
         love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h)
