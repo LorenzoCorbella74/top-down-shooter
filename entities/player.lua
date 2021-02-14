@@ -51,8 +51,8 @@ function createPlayer()
     layer.player.bb.y = by
     layer.player.bb.w = bw
     layer.player.bb.h = bh
-    world:add(layer.player, layer.player.bb.x, layer.player.bb.y,
-              layer.player.bb.w, layer.player.bb.h) -- player bb is in the phisycs world
+
+    world:add(layer.player, bx, by, bw, bh) -- player bb is in the phisycs world
 
     -- Add controls to player
     layer.update = function(self, dt)
@@ -80,19 +80,6 @@ function createPlayer()
             futurex = p.x + p.speed * dt
         end
 
-        -- player rotation
-        local mx, my = camera:getMousePosition()
-        p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x - p.w / 2))
-
-        -- trasformazione del bounding box in base alla rotazione
-        local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2,
-                                                   p.y + p.h / 2, p.w, p.h)
-        p.bb.x = bx
-        p.bb.y = by
-        p.bb.w = bw
-        p.bb.h = bh
-        world:update(p, p.bb.x, p.bb.y, p.bb.w, p.bb.h) -- player is in the phisycs world
-
         local cols, cols_len
         -- update the player associated bounding box in the world
         p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, playerFilter)
@@ -110,6 +97,28 @@ function createPlayer()
             print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
                       col.other, col.type, col.normal.x, col.normal.y))
         end
+
+        -- apply first update to BB
+        local ix, iy, iw, ih = world:getRect(p)
+        world:update(p, ix, iy, iw, ih)
+
+        -- player rotation
+        local mx, my = camera:getMousePosition()
+        p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
+
+        -- trasformazione del bounding box in base alla rotazione
+        local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2, p.y + p.h / 2, p.w, p.h)
+
+        p.bb.x = bx
+        p.bb.y = by
+        p.bb.w = bw
+        p.bb.h = bh
+
+        world:update(p, bx, by, bw, bh) -- player is in the phisycs world
+--[[ 
+        local cols, cols_len
+        -- update the player associated bounding box in the world
+        p.x, p.y, cols, cols_len = world:move(p, p.x, p.y, playerFilter) ]]
     end
 
     layer.draw = function(self)

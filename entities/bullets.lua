@@ -16,8 +16,10 @@ function createBulletHandler()
         bullet.w = 16
         bullet.h = 16
         bullet.speed = 500
+        bullet.r = angle
         bullet.dx = bullet.speed * math.cos(angle)
         bullet.dy = bullet.speed * math.sin(angle)
+
         -- state
         bullet.damage = 50 -- how much damange it deals
         bullet.timeout = 2 -- how many seconds before despawning
@@ -82,7 +84,7 @@ function createBulletHandler()
             local bullet = self.bullets[_i]
             love.graphics.draw(bullet.sprite,
                                math.floor(bullet.x + bullet.w / 2),
-                               math.floor(bullet.y + bullet.h / 2), 0, 1, 1)
+                               math.floor(bullet.y + bullet.h / 2), bullet.r, 1, 1, bullet.w / 2, bullet.h / 2)
             --[[ love.graphics.rectangle("line", math.floor(bullet.x),
                                math.floor(bullet.y), bullet.w, bullet.h) ]]
         end
