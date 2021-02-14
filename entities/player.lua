@@ -31,9 +31,9 @@ function createPlayer()
         w = sprite:getWidth(),
         h = sprite:getHeight(),
 
-        r = 0,          -- rotation angle (radians)
-        bb = {},        -- bounding box
-        speed = 256,    -- pixels per second
+        r = 0, -- rotation angle (radians)
+        bb = {}, -- bounding box
+        speed = 256, -- pixels per second
 
         hp = 100,
         ap = 0,
@@ -41,17 +41,17 @@ function createPlayer()
         kills = 0
     }
 
-    local bx, by, bw, bh = transformBoudingBox(layer.player.r, layer.player.x +
-                                                   layer.player.w / 2,
-                                               layer.player.y + layer.player.h /
-                                                   2, layer.player.w,
-                                               layer.player.h)
+    local bx, by, bw, bh = transformBoudingBox(layer.player.r,
+                                               (layer.player.x + layer.player.w /
+                                                   2), (layer.player.y +
+                                                   layer.player.h / 2),
+                                               layer.player.w, layer.player.h)
 
     layer.player.bb.x = bx
     layer.player.bb.y = by
     layer.player.bb.w = bw
     layer.player.bb.h = bh
-    world:add(layer.player.bb, layer.player.bb.x, layer.player.bb.y,
+    world:add(layer.player, layer.player.bb.x, layer.player.bb.y,
               layer.player.bb.w, layer.player.bb.h) -- player bb is in the phisycs world
 
     -- Add controls to player
@@ -91,11 +91,11 @@ function createPlayer()
         p.bb.y = by
         p.bb.w = bw
         p.bb.h = bh
-        world:update(p.bb, p.bb.x, p.bb.y, p.bb.w, p.bb.h) -- player is in the phisycs world
+        world:update(p, p.bb.x, p.bb.y, p.bb.w, p.bb.h) -- player is in the phisycs world
 
         local cols, cols_len
         -- update the player associated bounding box in the world
-        p.x, p.y, cols, cols_len = world:move(p.bb, futurex, futurey, playerFilter)
+        p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, playerFilter)
 
         for i = 1, cols_len do
             local item = cols[i].other
@@ -115,11 +115,35 @@ function createPlayer()
     layer.draw = function(self)
         -- Draw player
         local p = self.player
-        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
-        love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
-        -- Bounding box
-        love.graphics.setColor(1, 1, 0, 1)
-        love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h)
+        local mx, my = camera:getMousePosition()
+        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,
+                           p.w / 2, p.h / 2)
+
+        -- cursor
+        love.graphics.line(mx, my - 16, mx, my + 16)
+        love.graphics.line(mx - 16, my, mx + 16, my)
+
+        if debug then
+            love.graphics.setColor(0, 1, 1, 1)
+            love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
+            -- Bounding box
+            love.graphics.setColor(1, 1, 0, 1)
+            love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h)
+
+            -- line to cursor
+            love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
+        end
+
+        if debug then
+            love.graphics.setColor(1, 1, 1, 1)
+            local items, len = world:getItems()
+            for i = 1, len do
+                local x, y, w, h = world:getRect(items[i])
+                -- local cx, cy = camera:toWorldCoords(x, y)
+                love.graphics.rectangle("line", x, y, w, h)
+            end
+        end
+
     end
 
     return layer

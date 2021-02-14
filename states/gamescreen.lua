@@ -13,6 +13,8 @@ function state:enter()
 
     camera = Camera()
     camera:setFollowStyle('TOPDOWN')
+
+    love.mouse.setVisible(false)
     --[[ camera:setFollowLerp(0.2)
     camera:setFollowLead(10) ]]
 
@@ -51,17 +53,14 @@ function state:draw()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
     local mapMaxHeight = map.height * map.tileheight
-    local x = math.min(math.max(0, camera.x - windowWidth / 2),
-                       mapMaxWidth - windowWidth)
-    local y = math.min(math.max(0, camera.y - windowHeight / 2),
-                       mapMaxHeight - windowHeight)
+    local x = math.min(math.max(0, camera.x - windowWidth / 2), mapMaxWidth - windowWidth)
+    local y = math.min(math.max(0, camera.y - windowHeight / 2), mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
-
+    
     camera:detach()
     camera:draw()
     drawHUD()
-    drawCursor()
 end
 
 function state:keyreleased(key, code)
@@ -69,6 +68,7 @@ function state:keyreleased(key, code)
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
     if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end -- working
+    if key == 'i' then debug = not debug end -- working
 end
 
 --[[ function state:leave()
@@ -89,13 +89,12 @@ function state:mousepressed(x, y, button, istouch, presses)
         -- Gets the position of the mouse in world coordinates 
         -- equivals to camera:toWorldCoords(love.mouse.getPosition())
         local mx, my = camera:getMousePosition()
-
         local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
         -- todo guardare segni del cos/sen
         BH.create({
-            x = p.x + 64 * math.cos(angle),
-            y = p.y + 64 * math.sin(angle)
+            x = p.x + 32 * math.cos(angle),
+            y = p.y + 32 * math.sin(angle)
         }, angle, 'machinegun')
     end
 end
@@ -107,21 +106,9 @@ function drawHUD()
     love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
     love.graphics.print("AP:" .. tostring(p.ap), 110, 32)
     love.graphics.print("Kills:" .. tostring(p.kills), 170, 32)
-    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
-                        32)
-    love.graphics.printf("Time: " .. tostring(GameCountdown.show()),
-                         love.graphics.getWidth() / 2, 32, 200, "center")
-    love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
-                         love.graphics.getWidth() / 2, 64, 250, "center")
-
-end
-
---  cursor
-function drawCursor()
-    love.graphics.line(love.mouse.getX(), love.mouse.getY() - 16,
-                       love.mouse.getX(), love.mouse.getY() + 16)
-    love.graphics.line(love.mouse.getX() - 16, love.mouse.getY(),
-                       love.mouse.getX() + 16, love.mouse.getY())
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,32)
+    love.graphics.printf("Time: " .. tostring(GameCountdown.show()),love.graphics.getWidth() / 2, 32, 200, "center")
+    love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),love.graphics.getWidth() / 2, 64, 250, "center")
 end
 
 return state
