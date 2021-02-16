@@ -15,7 +15,7 @@ function createBulletHandler()
         bullet.y = origin.y
         bullet.w = 16
         bullet.h = 16
-        bullet.speed = 500
+        bullet.speed = 1000
         bullet.r = angle
         bullet.dx = bullet.speed * math.cos(angle)
         bullet.dy = bullet.speed * math.sin(angle)

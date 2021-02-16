@@ -19,7 +19,7 @@ function love.conf(t)
     t.modules.physics = false
 	t.modules.joystick = false
 
-    t.console = true		-- comment this if VSC extention Local Lua Debugger is enabled 
+    t.console = false		-- comment this if VSC extention Local Lua Debugger is enabled 
     -- https://marketplace.visualstudio.com/items?itemName=tomblind.local-lua-debugger-vscode
     -- https://stackoverflow.com/a/65066145
 end

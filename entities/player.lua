@@ -91,6 +91,7 @@ function createPlayer()
             local col = cols[i]
             if (item.name == 'health' and item.visible) then
                 self.player.hp = self.player.hp + item.properties.points
+                -- MessageQueue.addMsg(MessageQueue.createMsg('powerups', item, self.player, "contact", ''))
                 camera:shake(16, 1, 60)
                 world:remove(item) -- powerup is no more in the phisycs world
                 item.visible = false
@@ -109,15 +110,15 @@ function createPlayer()
         p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
         -- trasformazione del bounding box in base alla rotazione
-      --[[   local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2, p.y + p.h / 2, p.w, p.h)
+        --[[   local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2, p.y + p.h / 2, p.w, p.h)
 
         p.bb.x = bx
         p.bb.y = by
         p.bb.w = bw
         p.bb.h = bh
 
-        world:update(p, bx, by, bw, bh)  ]]-- player is in the phisycs world
---[[ 
+        world:update(p, bx, by, bw, bh)  ]] -- player is in the phisycs world
+        --[[ 
         local cols, cols_len
         -- update the player associated bounding box in the world
         p.x, p.y, cols, cols_len = world:move(p, p.x, p.y, playerFilter) ]]
@@ -127,8 +128,7 @@ function createPlayer()
         -- Draw player
         local p = self.player
         local mx, my = camera:getMousePosition()
-        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,
-                           p.w / 2, p.h / 2)
+        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
 
         -- cursor
         love.graphics.line(mx, my - 16, mx, my + 16)

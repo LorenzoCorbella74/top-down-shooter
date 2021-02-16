@@ -2,6 +2,8 @@
 if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
 end
+--[[ if pcall(require, "lldebugger") then require("lldebugger").start() end
+if pcall(require, "mobdebug") then require("mobdebug").start() end ]]
 
 -- LIBRARIES
 Gamestate = require 'libs.gamestate' -- https://hump.readthedocs.io/en/latest/gamestate.html
@@ -16,9 +18,14 @@ gamescreen = require 'states.gamescreen'
 pausescreen = require 'states.pausescreen'
 gameover = require 'states.gameover'
 
+require 'helpers.printTable'
+
 debug = false
 
 function love.load()
+  
+    if arg[#arg] == "-debug" then require("mobdebug").start() end
+  
     love.graphics.setDefaultFilter("nearest", "nearest")
 
     font_md = love.graphics.newFont('assets/fonts/shattered-v1.ttf', 24)

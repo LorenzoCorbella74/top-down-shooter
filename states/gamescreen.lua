@@ -3,6 +3,7 @@ require "entities.powerups" -- loading powerups
 require "entities.bullets" -- Loading bullets
 
 local countdown = require "..helpers.countdown"
+-- local messageQueue = require "..helpers.messageQueue"
 
 local state = {}
 
@@ -24,9 +25,11 @@ function state:enter()
     world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world) -- start the phisics engine in the map
 
-    createPlayer()
-    createPowerUps()
-    BH = createBulletHandler()
+    handlers = {
+        player = createPlayer(), -- by calling the map layers are created ...
+        powerups = createPowerUps(),
+        bullets = createBulletHandler()
+    }
 
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
 
@@ -35,10 +38,12 @@ function state:enter()
     -- after the matchDuration go to game over screen 
     -- Timer.after(60, function() Gamestate.push(gameover) end)
     GameCountdown = countdown.new(120)
+    -- MessageQueue = messageQueue.new(handlers)
 end
 
 function state:update(dt)
     -- if love.mouse.isDown(1) then fire() end TODO
+    -- MessageQueue.dispatch()
     map:update(dt) -- Update all map layers internally
     camera:update(dt)
     camera:follow(currentCameraTarget.x, currentCameraTarget.y)
@@ -56,10 +61,8 @@ function state:draw()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
     local mapMaxHeight = map.height * map.tileheight
-    local x = math.min(math.max(0, camera.x - windowWidth / 2),
-                       mapMaxWidth - windowWidth)
-    local y = math.min(math.max(0, camera.y - windowHeight / 2),
-                       mapMaxHeight - windowHeight)
+    local x = math.min(math.max(0, camera.x - windowWidth / 2),mapMaxWidth - windowWidth)
+    local y = math.min(math.max(0, camera.y - windowHeight / 2),mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
 
@@ -90,7 +93,7 @@ function state:mousepressed(x, y, button, istouch, presses)
     end
 end
 
-function state:mousereleaased(x, y, button, istouch, presses)
+function state:mousereleased(x, y, button, istouch, presses)
     if button == 1 then mousepressed = true end
 end
 
@@ -104,8 +107,10 @@ function fire()
     local mx, my = camera:getMousePosition()
     local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
-    BH.create({x = p.x + 32 * math.cos(angle), y = p.y + 32 * math.sin(angle)},
-              angle, 'machinegun')
+    handlers.bullets.create({
+        x = p.x + 32 * math.cos(angle),
+        y = p.y + 32 * math.sin(angle)
+    }, angle, 'machinegun')
 end
 
 function drawHUD()
