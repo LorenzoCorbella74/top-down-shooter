@@ -70,17 +70,14 @@ function createPlayer()
         if love.keyboard.isDown("w", "up") then
             futurey = p.y - p.speed * dt
         end
-
         -- Move player down
         if love.keyboard.isDown("s", "down") then
             futurey = p.y + p.speed * dt
         end
-
         -- Move player left
         if love.keyboard.isDown("a", "left") then
             futurex = p.x - p.speed * dt
         end
-
         -- Move player right
         if love.keyboard.isDown("d", "right") then
             futurex = p.x + p.speed * dt
@@ -122,7 +119,7 @@ function createPlayer()
             love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
             -- line to cursor
             love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
-            love.graphics.setFont(font_sm)
+            love.graphics.setFont(Fonts.sm)
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
         end
 

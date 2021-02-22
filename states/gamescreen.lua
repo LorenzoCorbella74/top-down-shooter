@@ -73,7 +73,7 @@ function state:draw()
 end
 
 function state:keyreleased(key, code)
-    if key == 'p' then Gamestate.push(pausescreen, 1) end
+    if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
     if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end -- working
@@ -113,7 +113,7 @@ function fire()
 end
 
 function drawHUD()
-    love.graphics.setFont(font_md)
+    love.graphics.setFont(Fonts.md)
     local p = map.layers["Sprites"].player
     local fps = love.timer.getFPS()
     love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
@@ -124,7 +124,7 @@ function drawHUD()
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()),
                          love.graphics.getWidth() / 2, 32, 200, "center")
     if debug then
-        love.graphics.setFont(font_sm)
+        love.graphics.setFont(Fonts.sm)
         love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
                              love.graphics.getWidth() / 2, 64, 250, "center")
     end

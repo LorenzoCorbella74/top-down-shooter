@@ -29,7 +29,7 @@ countdown.new = function(time)
 
         self.timeTillStop = stopTime - counter -- for display of time till stop
         if stop == true then
-            Gamestate.push(gameover) -- go to gameover state
+            Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
         end
     end
 

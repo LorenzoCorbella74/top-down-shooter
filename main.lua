@@ -13,10 +13,10 @@ Camera = require 'libs.camera' -- https://github.com/a327ex/STALKER-X
 Timer = require "libs.timer" -- https://hump.readthedocs.io/en/latest/timer.html
 
 -- GAME STATES / SCREENS
-title = require 'states.title'
-gamescreen = require 'states.gamescreen'
-pausescreen = require 'states.pausescreen'
-gameover = require 'states.gameover'
+TitleScreen = require 'states.titlescreen'
+GameScreen = require 'states.gamescreen'
+PauseScreen = require 'states.pausescreen'
+GameoverScreen = require 'states.gameoverscreen'
 
 require 'helpers.printTable'
 
@@ -49,15 +49,13 @@ function love.load()
     }
      Fonts = {
         sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),
-        md = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),
-        lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12)
+        md = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 24),
+        lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 72)
     }
-    font_sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12)
-    font_md = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 24)
-    font_lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 72)
 
+    -- set first state
     Gamestate.registerEvents()
-    Gamestate.switch(title)
+    Gamestate.switch(TitleScreen)
 end
 
 function love.draw() end

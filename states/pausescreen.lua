@@ -1,5 +1,3 @@
---[[ local Gamestate = require 'libs.gamestate' ]]
-
 local state = {}
 
 function state:enter(from)

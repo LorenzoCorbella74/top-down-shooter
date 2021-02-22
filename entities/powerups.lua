@@ -97,7 +97,7 @@ function createPowerUps()
                 love.graphics.draw(object.info.sprite, math.floor(object.x),
                                    math.floor(object.y), 0, 1, 1)
                 if debug then
-                    love.graphics.setFont(font_sm)
+                    love.graphics.setFont(Fonts.sm)
                     love.graphics.print(math.floor(object.x) .. ' ' ..
                                             math.floor(object.y), object.x - 16,
                                         object.y + 16)
