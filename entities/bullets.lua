@@ -47,8 +47,9 @@ function createBulletHandler()
             local futurex = bullet.x + bullet.dx * dt
             local futurey = bullet.y + bullet.dy * dt
 
-            bullet.x, bullet.y, cols, cols_len =
-                world:move(bullet, futurex, futurey, layer.filter)
+            local cols, cols_len
+
+            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, layer.filter)
 
             -- collision with walls
             for i = 1, cols_len do
@@ -59,8 +60,7 @@ function createBulletHandler()
                     table.remove(self.bullets, _i)
                     break -- break after the first wall
                 end
-                print(("item = %s, type = %s, x,y = %d,%d"):format(
-                          tostring(col), col.type, col.normal.x, col.normal.y))
+                print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out

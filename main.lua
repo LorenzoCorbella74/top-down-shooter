@@ -23,19 +23,42 @@ require 'helpers.printTable'
 debug = false
 
 function love.load()
-  
+    -- debug
     if arg[#arg] == "-debug" then require("mobdebug").start() end
-  
+    
     love.graphics.setDefaultFilter("nearest", "nearest")
-
-    font_md = love.graphics.newFont('assets/fonts/shattered-v1.ttf', 24)
-    font_lg = love.graphics.newFont('assets/fonts/shattered-v1.ttf', 72)
+    Sprites = {
+        player = love.graphics.newImage("myTiles/player.png"),
+        powerup_health = love.graphics.newImage("myTiles/powerup_health.png"),
+        powerup_megaHealth = love.graphics.newImage("myTiles/powerup_megaHealth.png"),
+        powerup_armour = love.graphics.newImage("myTiles/powerup_armour.png"),
+        powerup_megaArmour = love.graphics.newImage("myTiles/powerup_megaArmour.png"),
+        powerup_quad = love.graphics.newImage("myTiles/powerup_quad.png"),
+        powerup_speed = love.graphics.newImage("myTiles/powerup_speed.png"),
+        -- ammo packs
+        -- ammoRifle = love.graphics.newImage("myTiles/powerup_health2.png"),
+        -- ammoShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
+        -- ammoPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
+        -- ammoRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
+        -- ammoRailgun = {of = 'Railgun', spawnTime = 30, amount = 5},
+        -- -- weapons
+        -- weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
+        -- weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
+        -- weaponRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
+        -- weaponRailgun = {of = 'Railgun', spawnTime = 30, amount = 5}
+    }
+     Fonts = {
+        sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),
+        md = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),
+        lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12)
+    }
+    font_sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12)
+    font_md = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 24)
+    font_lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 72)
 
     Gamestate.registerEvents()
     Gamestate.switch(title)
 end
 
-function love.draw()
-   
-end
+function love.draw() end
 

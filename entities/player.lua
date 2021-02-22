@@ -22,35 +22,39 @@ function createPlayer()
     end
 
     -- Create player object
-    local sprite = love.graphics.newImage("myTiles/player.png")
-
+    local sprite = Sprites.player
     layer.player = {
+        index = math.random(1000000),  -- id
+        name = 'player',
         sprite = sprite,
         x = player.x,
         y = player.y,
         w = sprite:getWidth(),
         h = sprite:getHeight(),
 
-        r = 0, -- rotation angle (radians)
-        -- bb = {}, -- bounding box
-        speed = 256, -- pixels per second
+        r = 0,              -- rotation angle (radians)
+        speed = 256,        -- pixels per second
 
         hp = 100,
         ap = 0,
+        alive = true,
+        damage = 1,                 -- capacity to make damage (1 normal 4 for quad)
 
-        kills = 0
+        kills = 0,                   -- enemy killed
+        score = 0,			        -- numero di uccisioni
+        numberOfDeaths = 0,	        -- numero di volte in vui è stato ucciso
+
+        respawnTime = 0,
+        
+        godMode = false,
+    
+        team = 'player',
+        
+        --[[ weaponsInventory: WeaponsInventory;
+        currentWeapon: any;			// arma corrente
+        attackCounter: number = 0;		// frequenza di sparo
+        // shootRate:     number = 200;	// frequenza di sparo ]]
     }
-
-    --[[ local bx, by, bw, bh = transformBoudingBox(layer.player.r,
-                                               (layer.player.x + layer.player.w /
-                                                   2), (layer.player.y +
-                                                   layer.player.h / 2),
-                                               layer.player.w, layer.player.h)
-
-    layer.player.bb.x = bx
-    layer.player.bb.y = by
-    layer.player.bb.w = bw
-    layer.player.bb.h = bh ]]
 
     local p = layer.player
 
@@ -82,6 +86,9 @@ function createPlayer()
             futurex = p.x + p.speed * dt
         end
 
+        p.old_x = p.x
+        p.old_y = p.y
+
         local cols, cols_len
         -- update the player associated bounding box in the world
         p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, playerFilter)
@@ -89,46 +96,22 @@ function createPlayer()
         for i = 1, cols_len do
             local item = cols[i].other
             local col = cols[i]
-            if (item.name == 'health' and item.visible) then
-                self.player.hp = self.player.hp + item.properties.points
-                -- MessageQueue.addMsg(MessageQueue.createMsg('powerups', item, self.player, "contact", ''))
-                camera:shake(16, 1, 60)
-                world:remove(item) -- powerup is no more in the phisycs world
-                item.visible = false
+            if (item.type == 'powerups' and item.visible) then
+                handlers.powerups.apply(item, self.player)
             end
-
-            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
-                      col.other, col.type, col.normal.x, col.normal.y))
+            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
         end
-
-        -- apply first update to BB
-        --[[ local ix, iy, iw, ih = world:getRect(p)
-        world:update(p, ix, iy, iw, ih) ]]
 
         -- player rotation
         local mx, my = camera:getMousePosition()
         p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
-
-        -- trasformazione del bounding box in base alla rotazione
-        --[[   local bx, by, bw, bh = transformBoudingBox(p.r, p.x + p.w / 2, p.y + p.h / 2, p.w, p.h)
-
-        p.bb.x = bx
-        p.bb.y = by
-        p.bb.w = bw
-        p.bb.h = bh
-
-        world:update(p, bx, by, bw, bh)  ]] -- player is in the phisycs world
-        --[[ 
-        local cols, cols_len
-        -- update the player associated bounding box in the world
-        p.x, p.y, cols, cols_len = world:move(p, p.x, p.y, playerFilter) ]]
     end
 
     layer.draw = function(self)
         -- Draw player
         local p = self.player
         local mx, my = camera:getMousePosition()
-        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
+        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,p.w / 2, p.h / 2)
 
         -- cursor
         love.graphics.line(mx, my - 16, mx, my + 16)
@@ -137,12 +120,10 @@ function createPlayer()
         if debug then
             love.graphics.setColor(0, 1, 1, 1)
             love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
-            -- Bounding box
-            --[[ love.graphics.setColor(1, 1, 0, 1)
-            love.graphics.rectangle('line', p.bb.x, p.bb.y, p.bb.w, p.bb.h) ]]
-
             -- line to cursor
             love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
+            love.graphics.setFont(font_sm)
+            love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
         end
 
         if debug then
@@ -150,7 +131,6 @@ function createPlayer()
             local items, len = world:getItems()
             for i = 1, len do
                 local x, y, w, h = world:getRect(items[i])
-                -- local cx, cy = camera:toWorldCoords(x, y)
                 love.graphics.rectangle("line", x, y, w, h)
             end
         end

@@ -3,7 +3,6 @@ require "entities.powerups" -- loading powerups
 require "entities.bullets" -- Loading bullets
 
 local countdown = require "..helpers.countdown"
--- local messageQueue = require "..helpers.messageQueue"
 
 local state = {}
 
@@ -32,19 +31,19 @@ function state:enter()
     }
 
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
+    map:removeLayer("powerups") -- Remove unneeded object layer from map
 
     currentCameraTarget = map.layers["Sprites"].player
 
     -- after the matchDuration go to game over screen 
-    -- Timer.after(60, function() Gamestate.push(gameover) end)
     GameCountdown = countdown.new(120)
-    -- MessageQueue = messageQueue.new(handlers)
+
 end
 
 function state:update(dt)
     -- if love.mouse.isDown(1) then fire() end TODO
-    -- MessageQueue.dispatch()
-    map:update(dt) -- Update all map layers internally
+
+    map:update(dt) -- Update internally all map layers
     camera:update(dt)
     camera:follow(currentCameraTarget.x, currentCameraTarget.y)
     Timer.update(dt)
@@ -61,8 +60,10 @@ function state:draw()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
     local mapMaxHeight = map.height * map.tileheight
-    local x = math.min(math.max(0, camera.x - windowWidth / 2),mapMaxWidth - windowWidth)
-    local y = math.min(math.max(0, camera.y - windowHeight / 2),mapMaxHeight - windowHeight)
+    local x = math.min(math.max(0, camera.x - windowWidth / 2),
+                       mapMaxWidth - windowWidth)
+    local y = math.min(math.max(0, camera.y - windowHeight / 2),
+                       mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
 
@@ -76,7 +77,7 @@ function state:keyreleased(key, code)
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
     if key == 'f' then camera:flash(0.05, {0, 0, 0, 1}) end -- working
-    if key == 'i' then debug = not debug end -- working
+    if key == 'i' then debug = not debug end
 end
 
 --[[ function state:leave()
@@ -99,8 +100,6 @@ end
 
 function fire()
     local p = map.layers["Sprites"].player
-    local sx = (p.x + p.w / 2)
-    local sy = (p.y + p.h / 2)
 
     -- Gets the position of the mouse in world coordinates 
     -- equivals to camera:toWorldCoords(love.mouse.getPosition())
@@ -108,8 +107,8 @@ function fire()
     local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
     handlers.bullets.create({
-        x = p.x + 32 * math.cos(angle),
-        y = p.y + 32 * math.sin(angle)
+        x = p.x + p.w / 2 + 32 * math.cos(angle),
+        y = p.y + p.h / 2 + 32 * math.sin(angle)
     }, angle, 'machinegun')
 end
 
@@ -118,14 +117,17 @@ function drawHUD()
     local p = map.layers["Sprites"].player
     local fps = love.timer.getFPS()
     love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
-    love.graphics.print("AP:" .. tostring(p.ap), 110, 32)
-    love.graphics.print("Kills:" .. tostring(p.kills), 170, 32)
+    love.graphics.print("AP:" .. tostring(p.ap), 128, 32)
+    love.graphics.print("Kills:" .. tostring(p.kills), 192, 32)
     love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
                         32)
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()),
                          love.graphics.getWidth() / 2, 32, 200, "center")
-    love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
-                         love.graphics.getWidth() / 2, 64, 250, "center")
+    if debug then
+        love.graphics.setFont(font_sm)
+        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
+                             love.graphics.getWidth() / 2, 64, 250, "center")
+    end
 end
 
 return state

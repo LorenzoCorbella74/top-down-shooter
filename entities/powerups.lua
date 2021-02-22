@@ -1,14 +1,74 @@
 function createPowerUps()
 
-    local layer = map:addCustomLayer("powerups", 5)
+    local layer = map:addCustomLayer("Powerups", 5)
+
+    local tipiPowerUp = {
+        -- powerups
+        health = {
+            name = 'health',
+            hp = 5,
+            spawnTime = 30,
+            sprite = Sprites.powerup_health
+        },
+        megaHealth = {
+            name = 'megaHealth',
+            hp = 50,
+            spawnTime = 30,
+            sprite = Sprites.powerup_megaHealth
+        },
+        armour = {
+            name = 'armour',
+            ap = 5,
+            spawnTime = 30,
+            sprite = Sprites.powerup_armour
+        },
+        megaArmour = {
+            name = 'megaArmour',
+            ap = 50,
+            spawnTime = 30,
+            sprite = Sprites.powerup_megaArmour
+        },
+        quad = {
+            name = 'quad',
+            multiplier = 4,
+            spawnTime = 150,
+            enterAfter = 60,
+            duration = 10,
+            sprite = Sprites.powerup_quad
+        },
+        speed = {
+            name = 'speed',
+            multiplier = 1.5,
+            spawnTime = 150,
+            enterAfter = 30,
+            duration = 10,
+            sprite = Sprites.powerup_speed
+        },
+        -- ammo packs
+        ammoRifle = {of = 'Rifle', spawnTime = 30, amount = 30},
+        ammoShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
+        ammoPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
+        ammoRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
+        ammoRailgun = {of = 'Railgun', spawnTime = 30, amount = 5},
+        -- weapons
+        weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
+        weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
+        weaponRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
+        weaponRailgun = {of = 'Railgun', spawnTime = 30, amount = 5}
+    }
 
     layer.powerups = {}
 
     for k, object in pairs(map.objects) do
-        if object.name == "health" then
-            object.sprite = love.graphics.newImage("myTiles/tiles/24.png")
+        if tipiPowerUp[object.name] ~= nil then
+            object.info = tipiPowerUp[object.name]
             object.inCheck = false
-            object.visible = true
+            if object.info.enterAfter ~= nil then
+                Timer.after(object.info.enterAfter,
+                            function() object.visible = true end)
+            else
+                object.visible = true
+            end
             world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
             table.insert(layer.powerups, object)
         end
@@ -20,8 +80,9 @@ function createPowerUps()
             local object = self.powerups[i]
             if not object.visible and not object.inCheck then
                 object.inCheck = true
-                Timer.after(10, function() -- after 10 respawn
-                    world:add(object, object.x, object.y, object.width,  object.height) -- powerups is in the phisycs world again
+                Timer.after(object.info.spawnTime, function()
+                    world:add(object, object.x, object.y, object.width,
+                              object.height) -- powerups is in the phisycs world again
                     object.inCheck = false
                     object.visible = true
                 end)
@@ -31,22 +92,45 @@ function createPowerUps()
 
     -- Draw powerups
     layer.draw = function(self)
-        for k, object in pairs(layer.powerups) do
+        for k, object in pairs(self.powerups) do
             if (object.visible) then
-                love.graphics.draw(object.sprite, math.floor(object.x),  math.floor(object.y), 0, 1, 1)
+                love.graphics.draw(object.info.sprite, math.floor(object.x),
+                                   math.floor(object.y), 0, 1, 1)
+                if debug then
+                    love.graphics.setFont(font_sm)
+                    love.graphics.print(math.floor(object.x) .. ' ' ..
+                                            math.floor(object.y), object.x - 16,
+                                        object.y + 16)
+                end
             end
         end
     end
 
---[[     layer.onMessage = function(msg)
-        for k, powerup in pairs(layer.powerups) do
-            if (powerup == msg.to and msg.type == 'contact') then
-                camera:shake(16, 1, 60)
-                world:remove(msg.to) -- powerup is no more in the phisycs world
-                powerup.visible = false
-            end
+    layer.apply = function(powerup, who)
+        -- camera:shake(12, 1, 60) only if player
+        world:remove(powerup) -- powerup is no more in the phisycs world
+        powerup.takenBy = who
+        if powerup.info.name == 'health' then
+            who.hp = who.hp + powerup.info.hp;
+        elseif powerup.info.name == 'armour' then
+            who.ap = who.ap + powerup.info.ap;
+        elseif powerup.info.name == 'megaHealth' then
+            who.hp = who.hp + powerup.info.hp;
+        elseif powerup.info.name == 'megaArmour' then
+            who.ap = who.ap + powerup.info.ap;
+        elseif powerup.info.name == 'quad' then
+            who.damage = who.damage * powerup.info.multiplier;
+            Timer.after(powerup.info.duration, function()
+                who.damage = who.damage / powerup.info.multiplier;
+            end)
+        elseif powerup.info.name == 'speed' then
+            who.speed = who.speed * powerup.info.multiplier;
+            Timer.after(powerup.info.duration, function()
+                who.speed = who.speed / powerup.info.multiplier;
+            end)
         end
-    end ]]
+        powerup.visible = false
+    end
 
     return layer
 end
