@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 7,
-  nextobjectid = 32,
+  nextobjectid = 34,
   properties = {},
   tilesets = {
     {
@@ -495,6 +495,36 @@ return {
           shape = "rectangle",
           x = 391.333,
           y = 808.667,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["points"] = 10
+          }
+        },
+        {
+          id = 32,
+          name = "ammoRifle",
+          type = "ammos",
+          shape = "rectangle",
+          x = 168,
+          y = 1416,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["points"] = 10
+          }
+        },
+        {
+          id = 33,
+          name = "ammoRifle",
+          type = "ammos",
+          shape = "rectangle",
+          x = 102,
+          y = 1416,
           width = 16,
           height = 16,
           rotation = 0,

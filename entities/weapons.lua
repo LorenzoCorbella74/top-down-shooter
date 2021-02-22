@@ -3,15 +3,16 @@ local WeaponsInventory = {}
 WeaponsInventory.new = function()
     local self = {}
 
-    -- private
+    -- private weapon DB
     local weapons = {
         Rifle = {
-            sprite = 'TBD', -- image
+            name='Rifle',
+            sprite = Sprites.bullet_Rifle, -- image for bullet
             frequency = 200, --  è la frequenza di sparo = colpi al sec
             count = 1, --  NUMERO DI PARTICELLE PER OGNI COLPO
-            speed = 9, --  VELOCITA'
+            speed = 900, --  VELOCITA'
 
-            ttl = 1000, --  VITA (DURATA DEL COLPO)
+            ttl = 1, --  VITA (DURATA DEL COLPO)
             explode = 0, --  SE CREA UNA ESPLOSIONE
             spread = 0.1, --  QUANTO SI ALLARGA
             damage = 5, --  DANNO INFLITTO
@@ -20,13 +21,14 @@ WeaponsInventory.new = function()
             shotNumber = 100 --  numero di colpi iniziale
         },
         Shotgun = {
+            name='Shotgun',
             sprite = 'TBD', -- image
             frequency = 800,
             count = 6,
-            speed = 9,
+            speed = 900,
             r = 2,
             color = '#800000',
-            ttl = 1000,
+            ttl = 1,
             explode = 0,
             spread = 0.5,
             damage = 10,
@@ -35,13 +37,14 @@ WeaponsInventory.new = function()
             shotNumber = 0 --  60
         },
         Plasma = {
+            name='Plasma',
             sprite = 'TBD', -- image
             frequency = 150,
             count = 1,
-            speed = 10,
+            speed = 1200,
             r = 3,
             color = 'blue',
-            ttl = 1400,
+            ttl = 1,
             explode = 0,
             spread = 0.01,
             damage = 3,
@@ -50,13 +53,14 @@ WeaponsInventory.new = function()
             shotNumber = 0 --  80
         },
         Rocket = {
+            name='Rocket',
             sprite = 'TBD', -- image
             frequency = 1000,
             count = 1,
-            speed = 8,
+            speed = 800,
             r = 4,
             color = 'red',
-            ttl = 1500,
+            ttl = 1.5,
             explode = 1,
             spread = 0.01,
             damage = 65,
@@ -65,13 +69,14 @@ WeaponsInventory.new = function()
             shotNumber = 10
         },
         Railgun = {
+            name='Railgun',
             sprite = 'TBD', -- image
             frequency = 2000,
             count = 1,
-            speed = 16,
+            speed = 1600,
             r = 3,
             color = 'green',
-            ttl = 1500,
+            ttl = 1.5,
             explode = 0,
             spread = 0.01,
             damage = 110,

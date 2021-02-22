@@ -1,31 +1,29 @@
-function createBulletHandler()
+function CreateBulletHandler()
 
     local layer = map:addCustomLayer("bullets", 6)
 
     layer.bullets = {}
 
-    layer.create = function(origin, angle, type)
+    layer.create = function(origin, angle, currentWeapon)
         local bullet = {}
-        if type == "machinegun" then
-            bullet.sprite = love.graphics.newImage("myTiles/bullet1.png")
-        end
-
+        local sprite = currentWeapon.sprite
+        bullet.sprite = sprite
+        bullet.w = sprite:getWidth()
+        bullet.h = sprite:getHeight()
         -- motion
         bullet.x = origin.x
         bullet.y = origin.y
-        bullet.w = 16
-        bullet.h = 16
-        bullet.speed = 1000
         bullet.r = angle
+        bullet.speed = currentWeapon.speed
         bullet.dx = bullet.speed * math.cos(angle)
         bullet.dy = bullet.speed * math.sin(angle)
-
         -- state
-        bullet.damage = 50 -- how much damange it deals
-        bullet.timeout = 2 -- how many seconds before despawning
+        bullet.ttl = currentWeapon.ttl          -- how many seconds before despawning
+        bullet.damage = currentWeapon.damage -- how much damange it deals
 
         world:add(bullet, bullet.x, bullet.y, bullet.w, bullet.h) -- bullets is in the phisycs world
         table.insert(layer.bullets, bullet)
+        currentWeapon.shotNumber = currentWeapon.shotNumber -1
     end
 
     layer.filter = function(item, other)
@@ -51,21 +49,28 @@ function createBulletHandler()
 
             bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, layer.filter)
 
-            -- collision with walls
+            -- collisions
             for i = 1, cols_len do
                 local col = cols[i]
                 local item = cols[i].other
+                -- with walls
                 if (item.layer and item.layer.name == 'walls') then
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
                     break -- break after the first wall
                 end
+                -- impact on bot or player
+                --[[ if (item.layer and item.layer.name == 'walls') then
+                    world:remove(bullet) -- powerup is no more in the phisycs world
+                    table.remove(self.bullets, _i)
+                    break -- break after the first wall
+                end ]]
                 print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out
-            if bullet.timeout > 0 then
-                bullet.timeout = bullet.timeout - 1 * dt
+            if bullet.ttl > 0 then
+                bullet.ttl = bullet.ttl - 1 * dt
             else
                 if world:hasItem(bullet) then
                     world:remove(bullet)

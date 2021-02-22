@@ -1,4 +1,4 @@
-function createPowerUps()
+function CreatePowerUps()
 
     local layer = map:addCustomLayer("Powerups", 5)
 
@@ -45,16 +45,52 @@ function createPowerUps()
             sprite = Sprites.powerup_speed
         },
         -- ammo packs
-        ammoRifle = {of = 'Rifle', spawnTime = 30, amount = 30},
-        ammoShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
-        ammoPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
-        ammoRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
-        ammoRailgun = {of = 'Railgun', spawnTime = 30, amount = 5},
+        ammoRifle = {
+            of = 'Rifle',
+            spawnTime = 30,
+            amount = 30,
+            sprite = Sprites.ammo_Rifle,
+            type = 'ammo'
+        },
+        ammoShotgun = {
+            of = 'Shotgun',
+            spawnTime = 30,
+            amount = 24,
+            type = 'ammo'
+        },
+        ammoPlasma = {of = 'Plasma', spawnTime = 30, amount = 25, type = 'ammo'},
+        ammoRocket = {of = 'Rocket', spawnTime = 30, amount = 5, type = 'ammo'},
+        ammoRailgun = {
+            of = 'Railgun',
+            spawnTime = 30,
+            amount = 5,
+            type = 'ammo'
+        },
         -- weapons
-        weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
-        weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
-        weaponRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
-        weaponRailgun = {of = 'Railgun', spawnTime = 30, amount = 5}
+        weaponShotgun = {
+            of = 'Shotgun',
+            spawnTime = 30,
+            amount = 24,
+            type = 'weapon'
+        },
+        weaponPlasma = {
+            of = 'Plasma',
+            spawnTime = 30,
+            amount = 25,
+            type = 'weapon'
+        },
+        weaponRocket = {
+            of = 'Rocket',
+            spawnTime = 30,
+            amount = 5,
+            type = 'weapon'
+        },
+        weaponRailgun = {
+            of = 'Railgun',
+            spawnTime = 30,
+            amount = 5,
+            type = 'weapon'
+        }
     }
 
     layer.powerups = {}
@@ -63,11 +99,17 @@ function createPowerUps()
         if tipiPowerUp[object.name] ~= nil then
             object.info = tipiPowerUp[object.name]
             object.inCheck = false
+            -- if special collectable
             if object.info.enterAfter ~= nil then
-                Timer.after(object.info.enterAfter,
-                            function() object.visible = true end)
+                Timer.after(object.info.enterAfter, function() object.visible = true end)
             else
                 object.visible = true
+            end
+            -- if ammo or weapon
+            if object.info.of ~= nil and (object.info.type == 'ammo' or object.info.type == 'weapon' )then
+                object.amount = object.info.amount
+                object.of = object.info.of
+                object.type = object.info.type
             end
             world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
             table.insert(layer.powerups, object)
@@ -106,7 +148,7 @@ function createPowerUps()
         end
     end
 
-    layer.apply = function(powerup, who)
+    layer.applyPowerup = function(powerup, who)
         -- camera:shake(12, 1, 60) only if player
         world:remove(powerup) -- powerup is no more in the phisycs world
         powerup.takenBy = who
@@ -129,6 +171,18 @@ function createPowerUps()
                 who.speed = who.speed / powerup.info.multiplier;
             end)
         end
+        powerup.visible = false
+    end
+
+    layer.applyAmmo = function(powerup, who)
+        world:remove(powerup) -- powerup is no more in the phisycs world
+        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of, powerup.amount);
+        powerup.visible = false
+    end
+
+    layer.applyWeapon = function(powerup, who)
+        world:remove(powerup) -- powerup is no more in the phisycs world
+        who.weaponsInventory.setNumOfBullets(powerup.of, powerup.amount);
         powerup.visible = false
     end
 

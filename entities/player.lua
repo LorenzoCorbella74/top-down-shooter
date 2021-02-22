@@ -1,6 +1,8 @@
-require "..helpers.boundingbox"
+-- require "..helpers.boundingbox"
 
-function createPlayer()
+local WeaponsInventory = require "entities.weapons"  -- loading  weaponsInventory
+
+function CreatePlayer()
     local layer = map:addCustomLayer("Sprites", 4)
 
     -- Get player spawn object
@@ -26,6 +28,7 @@ function createPlayer()
     layer.player = {
         index = math.random(1000000),  -- id
         name = 'player',
+        team = 'player',
         sprite = sprite,
         x = player.x,
         y = player.y,
@@ -38,21 +41,17 @@ function createPlayer()
         hp = 100,
         ap = 0,
         alive = true,
+        respawnTime = 0,
         damage = 1,                 -- capacity to make damage (1 normal 4 for quad)
 
-        kills = 0,                   -- enemy killed
+        kills = 0,                  -- enemy killed
         score = 0,			        -- numero di uccisioni
         numberOfDeaths = 0,	        -- numero di volte in vui è stato ucciso
-
-        respawnTime = 0,
         
         godMode = false,
     
-        team = 'player',
-        
-        --[[ weaponsInventory: WeaponsInventory;
-        currentWeapon: any;			// arma corrente
-        attackCounter: number = 0;		// frequenza di sparo
+        weaponsInventory = WeaponsInventory.new(),
+        --[[ attackCounter: number = 0;		// frequenza di sparo
         // shootRate:     number = 200;	// frequenza di sparo ]]
     }
 
@@ -94,7 +93,13 @@ function createPlayer()
             local item = cols[i].other
             local col = cols[i]
             if (item.type == 'powerups' and item.visible) then
-                handlers.powerups.apply(item, self.player)
+                handlers.powerups.applyPowerup(item, self.player)
+            end
+            if (item.type == 'ammos' and item.visible) then
+                handlers.powerups.applyAmmo(item, self.player)
+            end
+            if (item.type == 'weapons' and item.visible) then
+                handlers.powerups.applyWeapon(item, self.player)
             end
             print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
         end
@@ -109,11 +114,10 @@ function createPlayer()
         local p = self.player
         local mx, my = camera:getMousePosition()
         love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,p.w / 2, p.h / 2)
-
         -- cursor
         love.graphics.line(mx, my - 16, mx, my + 16)
         love.graphics.line(mx - 16, my, mx + 16, my)
-
+        -- debug
         if debug then
             love.graphics.setColor(0, 1, 1, 1)
             love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
@@ -122,7 +126,7 @@ function createPlayer()
             love.graphics.setFont(Fonts.sm)
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
         end
-
+        -- debug for all collidable rectangles
         if debug then
             love.graphics.setColor(1, 1, 1, 1)
             local items, len = world:getItems()

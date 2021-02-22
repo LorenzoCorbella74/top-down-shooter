@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="32">
+<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="34">
  <editorsettings>
   <export target="dm1.lua" format="lua"/>
  </editorsettings>
@@ -226,6 +226,16 @@
    </properties>
   </object>
   <object id="31" name="speed" type="powerups" x="391.333" y="808.667" width="16" height="16">
+   <properties>
+    <property name="points" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="32" name="ammoRifle" type="ammos" x="168" y="1416" width="16" height="16">
+   <properties>
+    <property name="points" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="33" name="ammoRifle" type="ammos" x="102" y="1416" width="16" height="16">
    <properties>
     <property name="points" type="int" value="10"/>
    </properties>
