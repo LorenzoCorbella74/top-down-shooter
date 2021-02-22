@@ -4,26 +4,27 @@ function CreateBulletHandler()
 
     layer.bullets = {}
 
-    layer.create = function(origin, angle, currentWeapon)
-        local bullet = {}
-        local sprite = currentWeapon.sprite
-        bullet.sprite = sprite
-        bullet.w = sprite:getWidth()
-        bullet.h = sprite:getHeight()
+    layer.create = function(origin, angle, who)
+        local b = {}
+        local w = who.weaponsInventory.selectedWeapon
+        local sprite = w.sprite
+        b.sprite = sprite
+        b.w = sprite:getWidth()
+        b.h = sprite:getHeight()
         -- motion
-        bullet.x = origin.x
-        bullet.y = origin.y
-        bullet.r = angle
-        bullet.speed = currentWeapon.speed
-        bullet.dx = bullet.speed * math.cos(angle)
-        bullet.dy = bullet.speed * math.sin(angle)
+        b.x = origin.x
+        b.y = origin.y
+        b.r = angle
+        b.speed = w.speed
+        b.dx = b.speed * math.cos(angle)
+        b.dy = b.speed * math.sin(angle)
         -- state
-        bullet.ttl = currentWeapon.ttl          -- how many seconds before despawning
-        bullet.damage = currentWeapon.damage -- how much damange it deals
+        b.ttl = w.ttl           -- how many seconds before despawning
+        b.damage = w.damage     -- how much damange it deals
 
-        world:add(bullet, bullet.x, bullet.y, bullet.w, bullet.h) -- bullets is in the phisycs world
-        table.insert(layer.bullets, bullet)
-        currentWeapon.shotNumber = currentWeapon.shotNumber -1
+        world:add(b, b.x, b.y, b.w, b.h) -- bullet is in the phisycs world
+        table.insert(layer.bullets, b)
+        w.shotNumber = w.shotNumber - 1
     end
 
     layer.filter = function(item, other)
@@ -47,7 +48,8 @@ function CreateBulletHandler()
 
             local cols, cols_len
 
-            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, layer.filter)
+            bullet.x, bullet.y, cols, cols_len =
+                world:move(bullet, futurex, futurey, layer.filter)
 
             -- collisions
             for i = 1, cols_len do
@@ -65,7 +67,8 @@ function CreateBulletHandler()
                     table.remove(self.bullets, _i)
                     break -- break after the first wall
                 end ]]
-                print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
+                print(("item = %s, type = %s, x,y = %d,%d"):format(
+                          tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out
@@ -89,7 +92,8 @@ function CreateBulletHandler()
             local bullet = self.bullets[_i]
             love.graphics.draw(bullet.sprite,
                                math.floor(bullet.x + bullet.w / 2),
-                               math.floor(bullet.y + bullet.h / 2), bullet.r, 1, 1, bullet.w / 2, bullet.h / 2)
+                               math.floor(bullet.y + bullet.h / 2), bullet.r, 1,
+                               1, bullet.w / 2, bullet.h / 2)
             --[[ love.graphics.rectangle("line", math.floor(bullet.x),
                                math.floor(bullet.y), bullet.w, bullet.h) ]]
         end

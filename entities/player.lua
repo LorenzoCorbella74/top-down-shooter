@@ -1,6 +1,6 @@
 -- require "..helpers.boundingbox"
 
-local WeaponsInventory = require "entities.weapons"  -- loading  weaponsInventory
+local WeaponsInventory = require "entities.weapons"  -- loading weaponsInventory
 
 function CreatePlayer()
     local layer = map:addCustomLayer("Sprites", 4)
@@ -95,7 +95,7 @@ function CreatePlayer()
             if (item.type == 'powerups' and item.visible) then
                 handlers.powerups.applyPowerup(item, self.player)
             end
-            if (item.type == 'ammos' and item.visible) then
+            if (item.type == 'ammo' and item.visible) then
                 handlers.powerups.applyAmmo(item, self.player)
             end
             if (item.type == 'weapons' and item.visible) then
@@ -127,6 +127,7 @@ function CreatePlayer()
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
         end
         -- debug for all collidable rectangles
+        -- must be placed in the last layer of the map!!!
         if debug then
             love.graphics.setColor(1, 1, 1, 1)
             local items, len = world:getItems()

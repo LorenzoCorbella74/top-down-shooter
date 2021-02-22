@@ -230,15 +230,7 @@
     <property name="points" type="int" value="10"/>
    </properties>
   </object>
-  <object id="32" name="ammoRifle" type="ammos" x="168" y="1416" width="16" height="16">
-   <properties>
-    <property name="points" type="int" value="10"/>
-   </properties>
-  </object>
-  <object id="33" name="ammoRifle" type="ammos" x="102" y="1416" width="16" height="16">
-   <properties>
-    <property name="points" type="int" value="10"/>
-   </properties>
-  </object>
+  <object id="32" name="ammoRifle" type="ammo" x="168" y="1416" width="16" height="16"/>
+  <object id="33" name="ammoRifle" type="ammo" x="102" y="1416" width="16" height="16"/>
  </objectgroup>
 </map>

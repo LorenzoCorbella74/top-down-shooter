@@ -60,8 +60,10 @@ function state:draw()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
     local mapMaxHeight = map.height * map.tileheight
-    local x = math.min(math.max(0, camera.x - windowWidth / 2), mapMaxWidth - windowWidth)
-    local y = math.min(math.max(0, camera.y - windowHeight / 2), mapMaxHeight - windowHeight)
+    local x = math.min(math.max(0, camera.x - windowWidth / 2),
+                       mapMaxWidth - windowWidth)
+    local y = math.min(math.max(0, camera.y - windowHeight / 2),
+                       mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
 
@@ -98,18 +100,20 @@ end
 
 function fire()
     local p = map.layers["Sprites"].player
-
-    if p.alive and p.weaponsInventory.selectedWeapon.shotNumber > 0 then
+    local w = p.weaponsInventory.selectedWeapon
+    if p.alive and w.shotNumber > 0 then
         -- Gets the position of the mouse in world coordinates 
         -- equivals to camera:toWorldCoords(love.mouse.getPosition())
         local mx, my = camera:getMousePosition()
         local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
         local sign = angle < 0 and -1 or 1
-        handlers.bullets.create({
-            x = p.x + p.w / 2 + 32 * sign * math.cos(angle),
-            y = p.y + p.h / 2 + 32 * sign * math.sin(angle)
-        }, angle, p.weaponsInventory.selectedWeapon)
+        for _i = w.count, 1, -1 do
+            handlers.bullets.create({
+                x = p.x + p.w / 2 + 32 * math.cos(angle),
+                y = p.y + p.h / 2 + 32 * sign * math.sin(angle)
+            }, angle, p)
+        end
     else
         p.weaponsInventory.getBest()
     end
