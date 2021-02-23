@@ -33,7 +33,7 @@ function CreateBulletHandler()
         if kind == 'walls' then
             return "bounce"
         else
-            return 'slide'
+            return nil
         end
     end
 
@@ -94,8 +94,6 @@ function CreateBulletHandler()
                                math.floor(bullet.x + bullet.w / 2),
                                math.floor(bullet.y + bullet.h / 2), bullet.r, 1,
                                1, bullet.w / 2, bullet.h / 2)
-            --[[ love.graphics.rectangle("line", math.floor(bullet.x),
-                               math.floor(bullet.y), bullet.w, bullet.h) ]]
         end
     end
 

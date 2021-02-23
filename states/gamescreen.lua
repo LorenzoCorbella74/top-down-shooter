@@ -4,7 +4,7 @@ require "entities.bullets" -- Loading bullets
 
 local countdown = require "..helpers.countdown"
 
-local state = {}
+local state = {lastChangeWeaponTime = 0}
 
 -- init is called only once
 -- enter is called when push
@@ -33,12 +33,14 @@ function state:enter()
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
     map:removeLayer("powerups") -- Remove unneeded object layer from map
 
-    currentCameraTarget = map.layers["Sprites"].player
+    setCameraOnActor(map.layers["Sprites"].player) -- default camera is following the player
 
     -- after the matchDuration go to game over screen 
     GameCountdown = countdown.new(120)
 
 end
+
+function setCameraOnActor(actor) currentCameraTarget = actor end
 
 function state:update(dt)
     -- if love.mouse.isDown(1) then fire() end TODO
@@ -60,10 +62,8 @@ function state:draw()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
     local mapMaxHeight = map.height * map.tileheight
-    local x = math.min(math.max(0, camera.x - windowWidth / 2),
-                       mapMaxWidth - windowWidth)
-    local y = math.min(math.max(0, camera.y - windowHeight / 2),
-                       mapMaxHeight - windowHeight)
+    local x = math.min(math.max(0, camera.x - windowWidth / 2), mapMaxWidth - windowWidth)
+    local y = math.min(math.max(0, camera.y - windowHeight / 2), mapMaxHeight - windowHeight)
 
     map:draw(-x, -y, scale, scale)
 
@@ -78,6 +78,39 @@ function state:keyreleased(key, code)
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
     if key == 'f' then camera:flash(0.015, {1, 0, 0, 1}) end -- working
     if key == 'i' then debug = not debug end
+    if key == "1" or key == "2" or key == "3" or key == "4" or key == "5" then
+        local key = tonumber(key)
+        local p = map.layers["Sprites"].player
+        local w = p.weaponsInventory.weapons[key]
+        -- weapon is set as current weapons if available
+        if w.available then p.weaponsInventory.selectedWeapon = w end
+    end
+end
+
+function love.wheelmoved(x, y)
+    local now = love.timer.getTime()
+    if now - state.lastChangeWeaponTime > 0.35 then
+        state.lastChangeWeaponTime = now
+        local p = map.layers["Sprites"].player
+        local w = p.weaponsInventory.selectedWeapon
+        local current, i = p.weaponsInventory.getWeapon(w.name)
+        if y > 0 then
+            if i <= 1 then
+                i = #p.weaponsInventory.weapons
+            else
+                i = i - 1;
+            end
+        elseif y < 0 then
+            if i >= #p.weaponsInventory.weapons then
+                i = 1
+            else
+                i = i + 1;
+            end
+        end
+        local c = p.weaponsInventory.weapons[i]
+        -- weapon is set as current weapons if available
+        if c.available then p.weaponsInventory.selectedWeapon = c end
+    end
 end
 
 --[[ function state:leave()
@@ -107,11 +140,10 @@ function fire()
         local mx, my = camera:getMousePosition()
         local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
-        local sign = angle < 0 and -1 or 1
         for _i = w.count, 1, -1 do
             handlers.bullets.create({
                 x = p.x + p.w / 2 + 32 * math.cos(angle),
-                y = p.y + p.h / 2 + 32 * sign * math.sin(angle)
+                y = p.y + p.h / 2 + 32 * math.sin(angle)
             }, angle, p)
         end
     else
@@ -149,19 +181,16 @@ function drawHUD()
     love.graphics.print("AP:" .. tostring(p.ap), 128, 32)
     love.graphics.print("Kills:" .. tostring(p.kills), 192, 32)
     -- current weapon and available shoots
-    love.graphics.print(w.name .. ':' .. w.shotNumber, 256, 32)
+    love.graphics.print(w.name .. ':' .. w.shotNumber, 288, 32)
     -- FPS
     local fps = love.timer.getFPS()
-    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,
-                        32)
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,32)
     -- Time of the current match
-    love.graphics.printf("Time: " .. tostring(GameCountdown.show()),
-                         love.graphics.getWidth() / 2, 32, 200, "center")
+    love.graphics.printf("Time: " .. tostring(GameCountdown.show()), (love.graphics.getWidth() / 2) - 64, 32, 200, "center")
     -- debug
     if debug then
         love.graphics.setFont(Fonts.sm)
-        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
-                             love.graphics.getWidth() / 2, 64, 250, "center")
+        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),love.graphics.getWidth() / 2, 64, 250, "center")
     end
 end
 

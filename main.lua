@@ -37,7 +37,7 @@ function love.load()
         ammo_Rifle = love.graphics.newImage("myTiles/ammo_Rifle.png"),
         -- ammo_Shotgun = love.graphics.newImage("myTiles/ammo.png"),
         -- ammo_Plasma = love.graphics.newImage("myTiles/ammo.png"),
-        -- ammo_Rocket = love.graphics.newImage("myTiles/ammo.png"),
+        -- ammo_Railgun = love.graphics.newImage("myTiles/ammo.png"),
         -- ammo_Railgun = love.graphics.newImage("myTiles/ammo.png"),
         -- -- weapons
         -- weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
@@ -46,7 +46,11 @@ function love.load()
         -- weaponRailgun = {of = 'Railgun', spawnTime = 30, amount = 5}
 
         -- Bullets
-        bullet_Rifle = love.graphics.newImage("myTiles/bullet_Rifle.png")
+        bullet_Rifle = love.graphics.newImage("myTiles/bullet_Rifle.png"),
+        bullet_Shotgun = love.graphics.newImage("myTiles/bullet_Shotgun.png"),
+        bullet_Plasma = love.graphics.newImage("myTiles/bullet_Plasma.png"),
+        bullet_Rocket = love.graphics.newImage("myTiles/bullet_Rocket.png"),
+        bullet_Railgun = love.graphics.newImage("myTiles/bullet_Railgun.png")
     }
      Fonts = {
         sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),
