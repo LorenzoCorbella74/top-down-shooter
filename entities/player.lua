@@ -3,9 +3,10 @@ local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
 
 local PlayerHandler = {}
 
-PlayerHandler.new = function()
+PlayerHandler.new = function(game)
 
     local self = map:addCustomLayer("Sprites", 4)
+    self.game = game -- reference to game state
 
     local playerFilter = function(item, other)
         if other.name == 'health' and other.visible then
@@ -46,17 +47,17 @@ PlayerHandler.new = function()
         p.hp = 100
         p.ap = 0
         p.alive = true
-        world:add(p, p.x, p.y, p.w, p.h) -- player bb is in the phisycs world
         p.weaponsInventory.resetWeapons()
+        world:add(p, p.x, p.y, p.w, p.h) -- player bb is in the phisycs world
     end
 
-    function self.die()
+    function self:die()
         local p = self.player
         p.alive = false
         world:remove(p) -- removing player from the phisycs world
         --[[ show countdown timer ]]
         Timer(10, function()
-            state.setCameraOnActor(p)
+            self.game.setCameraOnActor(p)
             self.spawn()
         end)
     end

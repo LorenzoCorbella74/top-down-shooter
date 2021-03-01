@@ -1,11 +1,11 @@
-PlayerHandler = require "entities.player" -- loading player
+SpawnPointsHandler = require "entities.spawn_points" -- Loading spawnPoints
+PlayerHandler = require "entities.player"            -- loading player
 require "entities.powerups" -- loading powerups
 require "entities.bullets" -- Loading bullets
-SpawnPointsHandler = require "entities.spawn_points" -- Loading spawnPoints
 
 local countdown = require "..helpers.countdown"
 
-local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}}
+local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = 'message'}
 
 -- init is called only once
 -- enter is called when push
@@ -32,7 +32,7 @@ function state:enter()
     handlers.spawn_points.getSpawnPointsFromMap()
 
     -- player
-    handlers.player = PlayerHandler.new()
+    handlers.player = PlayerHandler.new(state)
     handlers.player.init()
 
     -- powerups
@@ -50,8 +50,11 @@ function state:enter()
     GameCountdown = countdown.new(120)
 end
 
---set camera as method of game
+-- set camera as method of game
 function state.setCameraOnActor(actor) state.currentCameraTarget = actor end
+
+-- set game message
+function state.setMsg(msg) state.message = msg end
 
 function state:update(dt)
     -- if love.mouse.isDown(1) then fire() end TODO
@@ -160,11 +163,12 @@ function drawHUD()
     love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96, 32)
     -- Time of the current match
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()),(love.graphics.getWidth() / 2) - 64, 32, 200, "center")
+    -- game message
+    love.graphics.printf("MSG: " ..state.message,(love.graphics.getWidth() / 2) - 64, 64, 200, "center")
     -- debug
     if debug then
         love.graphics.setFont(Fonts.sm)
-        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
-                             love.graphics.getWidth() / 2, 64, 250, "center")
+        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)), love.graphics.getWidth() / 2, 64, 250, "center")
     end
 end
 
