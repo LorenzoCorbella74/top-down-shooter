@@ -184,10 +184,26 @@
  <objectgroup id="6" name="Spawn_points">
   <object id="4" gid="54" x="423.012" y="127.749" width="32" height="32" visible="0"/>
   <object id="5" gid="54" x="425.673" y="125.088" width="32" height="32" visible="0"/>
-  <object id="6" name="spawn" gid="54" x="383.459" y="320.906" width="32" height="32"/>
-  <object id="8" name="spawn" gid="54" x="1271.77" y="1492.61" width="32" height="32"/>
-  <object id="9" name="spawn" gid="54" x="750.276" y="1168" width="32" height="32"/>
-  <object id="11" name="spawn" gid="54" x="1428.75" y="242.086" width="32" height="32"/>
+  <object id="6" name="spawn" gid="54" x="383.459" y="320.906" width="32" height="32">
+   <properties>
+    <property name="orientation" type="int" value="90"/>
+   </properties>
+  </object>
+  <object id="8" name="spawn" gid="54" x="1271.77" y="1492.61" width="32" height="32">
+   <properties>
+    <property name="orientation" type="int" value="270"/>
+   </properties>
+  </object>
+  <object id="9" name="spawn" gid="54" x="377.609" y="1259.33" width="32" height="32">
+   <properties>
+    <property name="orientation" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="11" name="spawn" gid="54" x="1428.75" y="242.086" width="32" height="32">
+   <properties>
+    <property name="orientation" type="int" value="180"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="5" name="powerups">
   <object id="20" name="health" type="powerups" x="679.333" y="264.666" width="16" height="16" visible="0">

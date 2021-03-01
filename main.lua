@@ -23,6 +23,8 @@ debug = false
 function love.load()
     -- debug
     if arg[#arg] == "-debug" then require("mobdebug").start() end
+
+    math.randomseed(os.time ()) -- init generator
     
     love.graphics.setDefaultFilter("nearest", "nearest")
     Sprites = {

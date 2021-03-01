@@ -324,7 +324,9 @@ return {
           rotation = 0,
           gid = 54,
           visible = true,
-          properties = {}
+          properties = {
+            ["orientation"] = 90
+          }
         },
         {
           id = 8,
@@ -338,21 +340,25 @@ return {
           rotation = 0,
           gid = 54,
           visible = true,
-          properties = {}
+          properties = {
+            ["orientation"] = 270
+          }
         },
         {
           id = 9,
           name = "spawn",
           type = "",
           shape = "rectangle",
-          x = 750.276,
-          y = 1168,
+          x = 377.609,
+          y = 1259.33,
           width = 32,
           height = 32,
           rotation = 0,
           gid = 54,
           visible = true,
-          properties = {}
+          properties = {
+            ["orientation"] = 0
+          }
         },
         {
           id = 11,
@@ -366,7 +372,9 @@ return {
           rotation = 0,
           gid = 54,
           visible = true,
-          properties = {}
+          properties = {
+            ["orientation"] = 180
+          }
         }
       }
     },
@@ -506,7 +514,7 @@ return {
         {
           id = 32,
           name = "ammoRifle",
-          type = "ammos",
+          type = "ammo",
           shape = "rectangle",
           x = 168,
           y = 1416,
@@ -514,14 +522,12 @@ return {
           height = 16,
           rotation = 0,
           visible = true,
-          properties = {
-            ["points"] = 10
-          }
+          properties = {}
         },
         {
           id = 33,
           name = "ammoRifle",
-          type = "ammos",
+          type = "ammo",
           shape = "rectangle",
           x = 102,
           y = 1416,
@@ -529,9 +535,7 @@ return {
           height = 16,
           rotation = 0,
           visible = true,
-          properties = {
-            ["points"] = 10
-          }
+          properties = {}
         }
       }
     }

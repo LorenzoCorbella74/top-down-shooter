@@ -6,14 +6,8 @@ function CreatePlayer()
     local layer = map:addCustomLayer("Sprites", 4)
 
     -- Get player spawn object
-    local player
-    for k, object in pairs(map.objects) do
-        print(k)
-        if object.name == "spawn" then
-            player = object
-            break
-        end
-    end
+    local spawnPoint = {}
+    spawnPoint.x, spawnPoint.y, spawnPoint.orientation = handlers.spawn_points.getRandomSpawnPoint()
 
     local playerFilter = function(item, other)
         if other.name == 'health' and other.visible then
@@ -30,12 +24,12 @@ function CreatePlayer()
         name = 'player',
         team = 'player',
         sprite = sprite,
-        x = player.x,
-        y = player.y,
+        x = spawnPoint.x,
+        y = spawnPoint.y,
         w = sprite:getWidth(),
         h = sprite:getHeight(),
 
-        r = 0,              -- rotation angle (radians)
+        r = spawnPoint.orientation,              -- rotation angle (radians)
         speed = 256,        -- pixels per second
 
         hp = 100,

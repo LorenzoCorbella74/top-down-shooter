@@ -122,6 +122,7 @@ function CreatePowerUps()
             local object = self.powerups[i]
             if not object.visible and not object.inCheck then
                 object.inCheck = true
+                -- back to game
                 Timer.after(object.info.spawnTime, function()
                     world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world again
                     object.inCheck = false
@@ -158,11 +159,13 @@ function CreatePowerUps()
             who.ap = who.ap + powerup.info.ap;
         elseif powerup.info.name == 'quad' then
             who.damage = who.damage * powerup.info.multiplier;
+            -- apply effect
             Timer.after(powerup.info.duration, function()
                 who.damage = who.damage / powerup.info.multiplier;
             end)
         elseif powerup.info.name == 'speed' then
             who.speed = who.speed * powerup.info.multiplier;
+            -- remove effect
             Timer.after(powerup.info.duration, function()
                 who.speed = who.speed / powerup.info.multiplier;
             end)

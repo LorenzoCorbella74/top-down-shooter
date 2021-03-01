@@ -1,6 +1,7 @@
 require "entities.player" -- loading player
 require "entities.powerups" -- loading powerups
 require "entities.bullets" -- Loading bullets
+SpawnPointsHandler = require "entities.spawn_points" -- Loading spawnPoints
 
 local countdown = require "..helpers.countdown"
 
@@ -24,12 +25,14 @@ function state:enter()
     world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world) -- start the phisics engine in the map
 
-    handlers = {
-        player = CreatePlayer(), -- by calling the map layers are created ...
-        powerups = CreatePowerUps(),
-        bullets = CreateBulletHandler()
-    }
-
+    handlers = {}
+    
+    handlers.spawn_points = SpawnPointsHandler.new()
+    handlers.spawn_points.getSpawnPointsFromMap()
+    handlers.player = CreatePlayer() -- by calling the map layers are created ...
+    handlers.powerups = CreatePowerUps()
+    handlers.bullets = CreateBulletHandler()
+    
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
     map:removeLayer("powerups") -- Remove unneeded object layer from map
 
@@ -83,7 +86,7 @@ function state:keyreleased(key, code)
         local p = map.layers["Sprites"].player
         local w = p.weaponsInventory.weapons[key]
         -- weapon is set as current weapons if available
-        if w.available then p.weaponsInventory.selectedWeapon = w end
+        if w.available and w.shotNumber>0 then p.weaponsInventory.selectedWeapon = w end
     end
 end
 
@@ -109,7 +112,7 @@ function love.wheelmoved(x, y)
         end
         local c = p.weaponsInventory.weapons[i]
         -- weapon is set as current weapons if available
-        if c.available then p.weaponsInventory.selectedWeapon = c end
+        if c.available and c.shotNumber>0 then p.weaponsInventory.selectedWeapon = c end
     end
 end
 
@@ -150,27 +153,6 @@ function fire()
         p.weaponsInventory.getBest()
     end
 end
-
---[[ shoot(dt: number) {
-    if (this.alive && this.currentWeapon.shotNumber>0) {
-        let now = Date.now();
-        if (now - this.attackCounter < this.currentWeapon.frequency) return;
-        this.attackCounter = now;
-        let vX = (this.control.mouseX - (this.x - this.camera.x));
-        let vY = (this.control.mouseY - (this.y - this.camera.y));
-        let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-        vX = vX / dist;								// si normalizza
-        vY = vY / dist;
-        for (let i = this.currentWeapon.count-1; i >= 0; i--) {
-            this.bullet.create(this.x, this.y, vX, vY, 'player', this.index, this.damage, this.currentWeapon);  // 8 è la velocità del proiettile
-            this.currentWeapon.shotNumber--;
-        }
-    }else{
-        // da valutare se prevederlo in automatico
-        this.weaponsInventory.getBest();
-        this.currentWeapon = this.weaponsInventory.selectedWeapon;	// arma corrente
-    }
-} ]]
 
 function drawHUD()
     love.graphics.setFont(Fonts.md)
