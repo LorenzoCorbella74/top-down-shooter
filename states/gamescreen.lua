@@ -1,6 +1,6 @@
 SpawnPointsHandler = require "entities.spawn_points" -- Loading spawnPoints
 PlayerHandler = require "entities.player"            -- loading player
-require "entities.powerups" -- loading powerups
+PowerupsHandler = require "entities.powerups"        -- loading powerups
 require "entities.bullets" -- Loading bullets
 
 local countdown = require "..helpers.countdown"
@@ -36,7 +36,8 @@ function state:enter()
     handlers.player.init()
 
     -- powerups
-    handlers.powerups = CreatePowerUps()
+    handlers.powerups = PowerupsHandler.new()
+    handlers.powerups.init()
 
     -- Bullets
     handlers.bullets = CreateBulletHandler()

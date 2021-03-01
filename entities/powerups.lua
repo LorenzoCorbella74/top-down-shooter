@@ -1,6 +1,8 @@
-function CreatePowerUps()
+local PowerupsHandler = {}
 
-    local layer = map:addCustomLayer("Powerups", 5)
+PowerupsHandler.new = function()
+
+    local self = map:addCustomLayer("Powerups", 5)
 
     local tipiPowerUp = {
         -- powerups
@@ -93,38 +95,45 @@ function CreatePowerUps()
         }
     }
 
-    layer.powerups = {}
+    self.powerups = {}
 
-    for k, object in pairs(map.objects) do
-        if tipiPowerUp[object.name] ~= nil then
-            object.info = tipiPowerUp[object.name]
-            object.inCheck = false
-            -- if special collectable
-            if object.info.enterAfter ~= nil then
-                Timer.after(object.info.enterAfter, function() object.visible = true end)
-            else
-                object.visible = true
+    function self.init()
+        for k, object in pairs(map.objects) do
+            if tipiPowerUp[object.name] ~= nil then
+                object.info = tipiPowerUp[object.name]
+                object.inCheck = false
+                -- if special collectable
+                if object.info.enterAfter ~= nil then
+                    Timer.after(object.info.enterAfter,
+                                function()
+                        object.visible = true
+                    end)
+                else
+                    object.visible = true
+                end
+                -- if ammo or weapon
+                if object.info.of ~= nil and
+                    (object.info.type == 'ammo' or object.info.type == 'weapon') then
+                    object.amount = object.info.amount
+                    object.of = object.info.of
+                    object.type = object.info.type
+                end
+                world:add(object, object.x, object.y, object.width,
+                          object.height) -- powerups is in the phisycs world
+                table.insert(self.powerups, object)
             end
-            -- if ammo or weapon
-            if object.info.of ~= nil and (object.info.type == 'ammo' or object.info.type == 'weapon' )then
-                object.amount = object.info.amount
-                object.of = object.info.of
-                object.type = object.info.type
-            end
-            world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
-            table.insert(layer.powerups, object)
         end
     end
 
-    -- Update powerups
-    layer.update = function(self, dt)
+    function self.update(self, dt)
         for i = #self.powerups, 1, -1 do
             local object = self.powerups[i]
             if not object.visible and not object.inCheck then
                 object.inCheck = true
                 -- back to game
                 Timer.after(object.info.spawnTime, function()
-                    world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world again
+                    world:add(object, object.x, object.y, object.width,
+                              object.height) -- powerups is in the phisycs world again
                     object.inCheck = false
                     object.visible = true
                 end)
@@ -132,20 +141,22 @@ function CreatePowerUps()
         end
     end
 
-    -- Draw powerups
-    layer.draw = function(self)
+    function self.draw(self)
         for k, object in pairs(self.powerups) do
             if (object.visible) then
-                love.graphics.draw(object.info.sprite, math.floor(object.x), math.floor(object.y), 0, 1, 1)
+                love.graphics.draw(object.info.sprite, math.floor(object.x),
+                                   math.floor(object.y), 0, 1, 1)
                 if debug then
                     love.graphics.setFont(Fonts.sm)
-                    love.graphics.print(math.floor(object.x) .. ' ' .. math.floor(object.y), object.x - 16, object.y + 16)
+                    love.graphics.print(math.floor(object.x) .. ' ' ..
+                                            math.floor(object.y), object.x - 16,
+                                        object.y + 16)
                 end
             end
         end
     end
 
-    layer.applyPowerup = function(powerup, who)
+    function self.applyPowerup(powerup, who)
         -- camera:shake(12, 1, 60) only if player
         world:remove(powerup) -- powerup is no more in the phisycs world
         powerup.takenBy = who
@@ -173,18 +184,19 @@ function CreatePowerUps()
         powerup.visible = false
     end
 
-    layer.applyAmmo = function(powerup, who)
+    function self.applyAmmo(powerup, who)
         world:remove(powerup) -- powerup is no more in the phisycs world
-        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of, powerup.amount);
+        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of,powerup.amount);
         powerup.visible = false
     end
 
-    layer.applyWeapon = function(powerup, who)
+    function self.applyWeapon(powerup, who)
         world:remove(powerup) -- powerup is no more in the phisycs world
         who.weaponsInventory.setNumOfBullets(powerup.of, powerup.amount);
         powerup.visible = false
     end
 
-    return layer
+    return self
 end
 
+return PowerupsHandler
