@@ -1,13 +1,11 @@
 -- require "..helpers.boundingbox"
+local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
 
-local WeaponsInventory = require "entities.weapons"  -- loading weaponsInventory
+local PlayerHandler = {}
 
-function CreatePlayer()
-    local layer = map:addCustomLayer("Sprites", 4)
+PlayerHandler.new = function()
 
-    -- Get player spawn object
-    local spawnPoint = {}
-    spawnPoint.x, spawnPoint.y, spawnPoint.orientation = handlers.spawn_points.getRandomSpawnPoint()
+    local self = map:addCustomLayer("Sprites", 4)
 
     local playerFilter = function(item, other)
         if other.name == 'health' and other.visible then
@@ -17,45 +15,54 @@ function CreatePlayer()
         end
     end
 
-    -- Create player object
-    local sprite = Sprites.player
-    layer.player = {
-        index = math.random(1000000),  -- id
-        name = 'player',
-        team = 'player',
-        sprite = sprite,
-        x = spawnPoint.x,
-        y = spawnPoint.y,
-        w = sprite:getWidth(),
-        h = sprite:getHeight(),
+    function self.init()
+        -- Create player object
+        local sprite = Sprites.player
+        self.player = {
+            index = math.random(1000000), -- id
+            name = 'player',
+            team = 'player',
+            sprite = sprite,
+            w = sprite:getWidth(),
+            h = sprite:getHeight(),
+            speed = 256, -- pixels per second
 
-        r = spawnPoint.orientation,              -- rotation angle (radians)
-        speed = 256,        -- pixels per second
+            damage = 1, -- capacity to make damage (1 normal 4 for quad)
 
-        hp = 100,
-        ap = 0,
-        alive = true,
-        respawnTime = 0,
-        damage = 1,                 -- capacity to make damage (1 normal 4 for quad)
+            kills = 0, -- enemy killed
+            score = 0, -- numero di uccisioni
+            numberOfDeaths = 0, -- numero di volte in vui è stato ucciso
 
-        kills = 0,                  -- enemy killed
-        score = 0,			        -- numero di uccisioni
-        numberOfDeaths = 0,	        -- numero di volte in vui è stato ucciso
-        
-        godMode = false,
-    
-        weaponsInventory = WeaponsInventory.new(),
-        --[[ attackCounter: number = 0;		// frequenza di sparo
+            weaponsInventory = WeaponsInventory.new()
+            --[[ attackCounter: number = 0;		// frequenza di sparo
         // shootRate:     number = 200;	// frequenza di sparo ]]
-    }
+        }
+        self.spawn()
+    end
 
-    local p = layer.player
+    function self.spawn()
+        local p = self.player
+        p.x, p.y, p.r = handlers.spawn_points.getRandomSpawnPoint()
+        p.hp = 100
+        p.ap = 0
+        p.alive = true
+        world:add(p, p.x, p.y, p.w, p.h) -- player bb is in the phisycs world
+        p.weaponsInventory.resetWeapons()
+    end
 
-    world:add(layer.player, p.x, p.y, p.w, p.h) -- player bb is in the phisycs world
+    function self.die()
+        local p = self.player
+        p.alive = false
+        world:remove(p) -- removing player from the phisycs world
+        --[[ show countdown timer ]]
+        Timer(10, function()
+            state.setCameraOnActor(p)
+            self.spawn()
+        end)
+    end
 
     -- Add controls to player
-    layer.update = function(self, dt)
-
+    function self.update(self, dt)
         local p = self.player
         local futurex = p.x
         local futurey = p.y
@@ -83,6 +90,7 @@ function CreatePlayer()
         -- update the player associated bounding box in the world
         p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, playerFilter)
 
+        --[[ collisions ]]
         for i = 1, cols_len do
             local item = cols[i].other
             local col = cols[i]
@@ -103,11 +111,12 @@ function CreatePlayer()
         p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
     end
 
-    layer.draw = function(self)
+    function self.draw(self)
         -- Draw player
         local p = self.player
         local mx, my = camera:getMousePosition()
-        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,p.w / 2, p.h / 2)
+        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,
+                           p.w / 2, p.h / 2)
         -- cursor
         love.graphics.line(mx, my - 16, mx, my + 16)
         love.graphics.line(mx - 16, my, mx + 16, my)
@@ -118,7 +127,8 @@ function CreatePlayer()
             -- line to cursor
             love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
             love.graphics.setFont(Fonts.sm)
-            love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
+            love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my),
+                                mx - 16, my + 16)
         end
         -- debug for all collidable rectangles
         -- must be placed in the last layer of the map!!!
@@ -130,9 +140,30 @@ function CreatePlayer()
                 love.graphics.rectangle("line", x, y, w, h)
             end
         end
-
     end
 
-    return layer
+    function self.fire()
+        local p = self.player
+        local w = p.weaponsInventory.selectedWeapon
+        if p.alive and w.shotNumber > 0 then
+            -- Gets the position of the mouse in world coordinates 
+            -- equivals to camera:toWorldCoords(love.mouse.getPosition())
+            local mx, my = camera:getMousePosition()
+            local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
+
+            for _i = w.count, 1, -1 do
+                handlers.bullets.create({
+                    x = p.x + p.w / 2 + 32 * math.cos(angle),
+                    y = p.y + p.h / 2 + 32 * math.sin(angle)
+                }, angle, p)
+            end
+        else
+            p.weaponsInventory.getBest()
+        end
+    end
+
+    return self
 end
+
+return PlayerHandler
 

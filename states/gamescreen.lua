@@ -1,11 +1,11 @@
-require "entities.player" -- loading player
+PlayerHandler = require "entities.player" -- loading player
 require "entities.powerups" -- loading powerups
 require "entities.bullets" -- Loading bullets
 SpawnPointsHandler = require "entities.spawn_points" -- Loading spawnPoints
 
 local countdown = require "..helpers.countdown"
 
-local state = {lastChangeWeaponTime = 0}
+local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}}
 
 -- init is called only once
 -- enter is called when push
@@ -22,35 +22,42 @@ function state:enter()
     camera:setFollowLead(10) ]]
 
     map = sti("maps/dm1.lua", {'bump'}) -- Load map file
-    world = bump.newWorld(32) -- defining the world for collisions
-    map:bump_init(world) -- start the phisics engine in the map
+    world = bump.newWorld(32)           -- defining the world for collisions
+    map:bump_init(world)                -- start the phisics engine in the map
 
     handlers = {}
-    
+
+    -- spawn points
     handlers.spawn_points = SpawnPointsHandler.new()
     handlers.spawn_points.getSpawnPointsFromMap()
-    handlers.player = CreatePlayer() -- by calling the map layers are created ...
+
+    -- player
+    handlers.player = PlayerHandler.new()
+    handlers.player.init()
+
+    -- powerups
     handlers.powerups = CreatePowerUps()
+
+    -- Bullets
     handlers.bullets = CreateBulletHandler()
-    
+
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
     map:removeLayer("powerups") -- Remove unneeded object layer from map
 
-    setCameraOnActor(map.layers["Sprites"].player) -- default camera is following the player
+    self.setCameraOnActor(handlers.player.player) -- default camera is following the player
 
-    -- after the matchDuration go to game over screen 
+    -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(120)
-
 end
 
-function setCameraOnActor(actor) currentCameraTarget = actor end
+--set camera as method of game
+function state.setCameraOnActor(actor) state.currentCameraTarget = actor end
 
 function state:update(dt)
     -- if love.mouse.isDown(1) then fire() end TODO
-
     map:update(dt) -- Update internally all map layers
     camera:update(dt)
-    camera:follow(currentCameraTarget.x, currentCameraTarget.y)
+    camera:follow(state.currentCameraTarget.x, state.currentCameraTarget.y)
     Timer.update(dt)
     GameCountdown.update(dt)
 end
@@ -86,7 +93,9 @@ function state:keyreleased(key, code)
         local p = map.layers["Sprites"].player
         local w = p.weaponsInventory.weapons[key]
         -- weapon is set as current weapons if available
-        if w.available and w.shotNumber>0 then p.weaponsInventory.selectedWeapon = w end
+        if w.available and w.shotNumber > 0 then
+            p.weaponsInventory.selectedWeapon = w
+        end
     end
 end
 
@@ -112,7 +121,9 @@ function love.wheelmoved(x, y)
         end
         local c = p.weaponsInventory.weapons[i]
         -- weapon is set as current weapons if available
-        if c.available and c.shotNumber>0 then p.weaponsInventory.selectedWeapon = c end
+        if c.available and c.shotNumber > 0 then
+            p.weaponsInventory.selectedWeapon = c
+        end
     end
 end
 
@@ -126,32 +137,12 @@ end ]]
 function state:mousepressed(x, y, button, istouch, presses)
     if button == 1 then
         mousepressed = true
-        fire()
+        handlers.player.fire()
     end
 end
 
 function state:mousereleased(x, y, button, istouch, presses)
     if button == 1 then mousepressed = true end
-end
-
-function fire()
-    local p = map.layers["Sprites"].player
-    local w = p.weaponsInventory.selectedWeapon
-    if p.alive and w.shotNumber > 0 then
-        -- Gets the position of the mouse in world coordinates 
-        -- equivals to camera:toWorldCoords(love.mouse.getPosition())
-        local mx, my = camera:getMousePosition()
-        local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
-
-        for _i = w.count, 1, -1 do
-            handlers.bullets.create({
-                x = p.x + p.w / 2 + 32 * math.cos(angle),
-                y = p.y + p.h / 2 + 32 * math.sin(angle)
-            }, angle, p)
-        end
-    else
-        p.weaponsInventory.getBest()
-    end
 end
 
 function drawHUD()
@@ -166,13 +157,14 @@ function drawHUD()
     love.graphics.print(w.name .. ':' .. w.shotNumber, 288, 32)
     -- FPS
     local fps = love.timer.getFPS()
-    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96,32)
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96, 32)
     -- Time of the current match
-    love.graphics.printf("Time: " .. tostring(GameCountdown.show()), (love.graphics.getWidth() / 2) - 64, 32, 200, "center")
+    love.graphics.printf("Time: " .. tostring(GameCountdown.show()),(love.graphics.getWidth() / 2) - 64, 32, 200, "center")
     -- debug
     if debug then
         love.graphics.setFont(Fonts.sm)
-        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),love.graphics.getWidth() / 2, 64, 250, "center")
+        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)),
+                             love.graphics.getWidth() / 2, 64, 250, "center")
     end
 end
 
