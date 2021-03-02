@@ -18,17 +18,23 @@ GameoverScreen = require 'states.gameoverscreen'
 
 require 'helpers.printTable'
 
-debug = false
 
 function love.load()
     -- debug
     if arg[#arg] == "-debug" then require("mobdebug").start() end
 
-    math.randomseed(os.time ()) -- init generator
+    debug = false
+
+    math.randomseed(os.time()) -- init generator
     
     love.graphics.setDefaultFilter("nearest", "nearest")
     Sprites = {
+
         player = love.graphics.newImage("myTiles/player.png"),
+
+        red_bot = love.graphics.newImage("myTiles/red_bot.png"),
+        blue_bot = love.graphics.newImage("myTiles/blue_bot.png"),
+        -- powerups
         powerup_health = love.graphics.newImage("myTiles/powerup_health.png"),
         powerup_megaHealth = love.graphics.newImage("myTiles/powerup_megaHealth.png"),
         powerup_armour = love.graphics.newImage("myTiles/powerup_armour.png"),
@@ -37,10 +43,10 @@ function love.load()
         powerup_speed = love.graphics.newImage("myTiles/powerup_speed.png"),
         -- ammo packs
         ammo_Rifle = love.graphics.newImage("myTiles/ammo_Rifle.png"),
-        -- ammo_Shotgun = love.graphics.newImage("myTiles/ammo_Shotgun.png"),
-        -- ammo_Plasma = love.graphics.newImage("myTiles/ammo_Plasma.png"),
-        -- ammo_Rocket = love.graphics.newImage("myTiles/ammo_Rocket.png"),
-        -- ammo_Railgun = love.graphics.newImage("myTiles/ammo_Railgun.png"),
+        ammo_Shotgun = love.graphics.newImage("myTiles/ammo_Shotgun.png"),
+        ammo_Plasma = love.graphics.newImage("myTiles/ammo_Plasma.png"),
+        ammo_Rocket = love.graphics.newImage("myTiles/ammo_Rocket.png"),
+        ammo_Railgun = love.graphics.newImage("myTiles/ammo_Railgun.png"),
         -- -- weapons
         -- weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
         -- weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
