@@ -1,7 +1,7 @@
-SpawnPointsHandler = require "entities.spawn_points" -- Loading spawnPoints
-PlayerHandler = require "entities.player"            -- loading player
-PowerupsHandler = require "entities.powerups"        -- loading powerups
-require "entities.bullets" -- Loading bullets
+SpawnPointsHandler = require "entities.spawn_points"    -- Loading spawnPoints
+PlayerHandler    = require "entities.player"            -- loading player
+PowerupsHandler = require "entities.powerups"           -- loading powerups
+BulletsHandler  = require "entities.bullets"            -- Loading bullets
 
 local countdown = require "..helpers.countdown"
 
@@ -40,7 +40,7 @@ function state:enter()
     handlers.powerups.init()
 
     -- Bullets
-    handlers.bullets = CreateBulletHandler()
+    handlers.bullets = BulletsHandler.new()
 
     map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
     map:removeLayer("powerups") -- Remove unneeded object layer from map

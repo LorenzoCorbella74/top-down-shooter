@@ -1,10 +1,22 @@
-function CreateBulletHandler()
+local BulletsHandler = {}
 
-    local layer = map:addCustomLayer("bullets", 6)
+BulletsHandler.new = function()
 
-    layer.bullets = {}
+    local self = map:addCustomLayer("bullets", 6)
 
-    layer.create = function(origin, angle, who)
+    self.bullets = {}
+
+    local filter = function (item, other)
+        local kind = other.layer and other.layer.name or other
+        print(('Kind:%s'):format(kind))
+        if kind == 'walls' then
+            return "bounce"
+        else
+            return nil
+        end
+    end
+
+    function self.create(origin, angle, who)
         local b = {}
         local w = who.weaponsInventory.selectedWeapon
         local sprite = w.sprite
@@ -23,22 +35,11 @@ function CreateBulletHandler()
         b.damage = w.damage     -- how much damange it deals
 
         world:add(b, b.x, b.y, b.w, b.h) -- bullet is in the phisycs world
-        table.insert(layer.bullets, b)
+        table.insert(self.bullets, b)
         w.shotNumber = w.shotNumber - 1
     end
 
-    layer.filter = function(item, other)
-        local kind = other.layer and other.layer.name or other
-        print(('Kind:%s'):format(kind))
-        if kind == 'walls' then
-            return "bounce"
-        else
-            return nil
-        end
-    end
-
-    -- Update bullets
-    layer.update = function(self, dt)
+    function self.update(self, dt)
         for _i = #self.bullets, 1, -1 do
             local bullet = self.bullets[_i]
 
@@ -48,8 +49,7 @@ function CreateBulletHandler()
 
             local cols, cols_len
 
-            bullet.x, bullet.y, cols, cols_len =
-                world:move(bullet, futurex, futurey, layer.filter)
+            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, filter)
 
             -- collisions
             for i = 1, cols_len do
@@ -67,8 +67,7 @@ function CreateBulletHandler()
                     table.remove(self.bullets, _i)
                     break -- break after the first wall
                 end ]]
-                print(("item = %s, type = %s, x,y = %d,%d"):format(
-                          tostring(col), col.type, col.normal.x, col.normal.y))
+                print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out
@@ -86,17 +85,16 @@ function CreateBulletHandler()
         end
     end
 
-    -- Draw bullets
-    layer.draw = function(self)
+    function self.draw(self)
         for _i = #self.bullets, 1, -1 do
             local bullet = self.bullets[_i]
-            love.graphics.draw(bullet.sprite,
-                               math.floor(bullet.x + bullet.w / 2),
-                               math.floor(bullet.y + bullet.h / 2), bullet.r, 1,
-                               1, bullet.w / 2, bullet.h / 2)
+            love.graphics.draw(bullet.sprite, math.floor(bullet.x + bullet.w / 2), math.floor(bullet.y + bullet.h / 2), bullet.r, 1, 1, bullet.w / 2, bullet.h / 2)
         end
     end
 
-    return layer
+    return self
+
 end
+
+return BulletsHandler
 

@@ -37,10 +37,10 @@ function love.load()
         powerup_speed = love.graphics.newImage("myTiles/powerup_speed.png"),
         -- ammo packs
         ammo_Rifle = love.graphics.newImage("myTiles/ammo_Rifle.png"),
-        -- ammo_Shotgun = love.graphics.newImage("myTiles/ammo.png"),
-        -- ammo_Plasma = love.graphics.newImage("myTiles/ammo.png"),
-        -- ammo_Railgun = love.graphics.newImage("myTiles/ammo.png"),
-        -- ammo_Railgun = love.graphics.newImage("myTiles/ammo.png"),
+        -- ammo_Shotgun = love.graphics.newImage("myTiles/ammo_Shotgun.png"),
+        -- ammo_Plasma = love.graphics.newImage("myTiles/ammo_Plasma.png"),
+        -- ammo_Rocket = love.graphics.newImage("myTiles/ammo_Rocket.png"),
+        -- ammo_Railgun = love.graphics.newImage("myTiles/ammo_Railgun.png"),
         -- -- weapons
         -- weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
         -- weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
