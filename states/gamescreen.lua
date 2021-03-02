@@ -27,9 +27,9 @@ function state:enter()
 
     handlers = {}
 
-    -- spawn points
-    handlers.spawn_points = SpawnPointsHandler.new()
-    handlers.spawn_points.getSpawnPointsFromMap()
+    -- spawn_points and bots waypoints
+    handlers.points = SpawnPointsHandler.new()
+    handlers.points.getPointsFromMap()
 
     -- player
     handlers.player = PlayerHandler.new(state)
@@ -42,8 +42,10 @@ function state:enter()
     -- Bullets
     handlers.bullets = BulletsHandler.new()
 
-    map:removeLayer("Spawn_points") -- Remove unneeded object layer from map
-    map:removeLayer("powerups") -- Remove unneeded object layer from map
+    -- Remove unneeded object layer from map
+    map:removeLayer("Spawn_points")
+    map:removeLayer("powerups")
+    map:removeLayer("waypoints")
 
     self.setCameraOnActor(handlers.player.player) -- default camera is following the player
 

@@ -43,7 +43,7 @@ PlayerHandler.new = function(game)
 
     function self.spawn()
         local p = self.player
-        p.x, p.y, p.r = handlers.spawn_points.getRandomSpawnPoint()
+        p.x, p.y, p.r = handlers.points.getRandomSpawnPoint()
         p.hp = 100
         p.ap = 0
         p.alive = true
