@@ -1,6 +1,6 @@
-local SpawnPointsHandler = {}
+local PointsHandler = {}
 
-SpawnPointsHandler.new = function()
+PointsHandler.new = function()
 
     local self = {}
 
@@ -42,4 +42,4 @@ SpawnPointsHandler.new = function()
     return self
 end
 
-return SpawnPointsHandler
+return PointsHandler

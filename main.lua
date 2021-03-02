@@ -10,6 +10,9 @@ bump = require 'libs.bump'              -- https://github.com/kikito/bump.lua
 Camera = require 'libs.camera'          -- https://github.com/a327ex/STALKER-X
 Timer = require "libs.timer"            -- https://hump.readthedocs.io/en/latest/timer.html
 
+Grid = require ("libs.jumper.grid") -- The grid class
+Pathfinder = require ("libs.jumper.pathfinder") -- The pathfinder class
+
 -- GAME STATES / SCREENS
 TitleScreen = require 'states.titlescreen'
 GameScreen = require 'states.gamescreen'

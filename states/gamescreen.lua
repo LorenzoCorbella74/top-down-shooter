@@ -1,9 +1,11 @@
-SpawnPointsHandler = require "entities.spawn_points"    -- Loading spawnPoints
-PlayerHandler    = require "entities.player"            -- loading player
-PowerupsHandler = require "entities.powerups"           -- loading powerups
-BulletsHandler  = require "entities.bullets"            -- Loading bullets
+PointsHandler    = require "entities.points"          -- handler for spawnPoints, waypoints
+PlayerHandler    = require "entities.player"          -- handler for player
+PowerupsHandler  = require "entities.powerups"        -- handler for powerups
+BulletsHandler   = require "entities.bullets"         -- handler for bullets
 
 local countdown = require "..helpers.countdown"
+
+
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = 'message'}
 
@@ -18,17 +20,19 @@ function state:enter()
     mousepressed = false
 
     love.mouse.setVisible(false)
-    --[[ camera:setFollowLerp(0.2)
-    camera:setFollowLead(10) ]]
+    camera:setFollowLerp(0.2)
+    camera:setFollowLead(10)
 
-    map = sti("maps/dm1.lua", {'bump'}) -- Load map file
-    world = bump.newWorld(32)           -- defining the world for collisions
-    map:bump_init(world)                -- start the phisics engine in the map
+    map = sti("maps/dm1.lua", {'bump','jumper'})    -- Load map file
+    world = bump.newWorld(32)                       -- defining the world for collisions
+
+    map:bump_init(world)                                    -- start the phisics engine in the map
+    map:jumper_init('walls', 0, 'JPS', Grid, Pathfinder)    -- start the phisics engine in the map
 
     handlers = {}
 
     -- spawn_points and bots waypoints
-    handlers.points = SpawnPointsHandler.new()
+    handlers.points = PointsHandler.new()
     handlers.points.getPointsFromMap()
 
     -- player
@@ -47,7 +51,8 @@ function state:enter()
     map:removeLayer("powerups")
     map:removeLayer("waypoints")
 
-    self.setCameraOnActor(handlers.player.player) -- default camera is following the player
+    -- default camera is following the player
+    self.setCameraOnActor(handlers.player.player)
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(120)
@@ -92,7 +97,7 @@ function state:keyreleased(key, code)
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
-    if key == 'f' then camera:flash(0.015, {1, 0, 0, 1}) end -- working
+    if key == 'f' then camera:flash(0.15, {1, 0, 0, 1}) end -- working
     if key == 'i' then debug = not debug end
     if key == "1" or key == "2" or key == "3" or key == "4" or key == "5" then
         local key = tonumber(key)

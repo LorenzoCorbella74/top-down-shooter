@@ -104,7 +104,8 @@ PlayerHandler.new = function(game)
             if (item.type == 'weapons' and item.visible) then
                 handlers.powerups.applyWeapon(item, self.player)
             end
-            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
+            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
+                      col.other, col.type, col.normal.x, col.normal.y))
         end
 
         -- player rotation
@@ -158,9 +159,16 @@ PlayerHandler.new = function(game)
                     y = p.y + p.h / 2 + 32 * math.sin(angle)
                 }, angle, p)
             end
+
+            local start = {}
+            local final = {}
+            start.x, start.y = map:jumper_getCoord(p.x, p.y)
+            final.x, final.y = map:jumper_getCoord(mx, my)
+            p.path = map:jumper_calculatePath(start.x, start.y, final.x, final.y)
         else
             p.weaponsInventory.getBest()
         end
+
     end
 
     return self
