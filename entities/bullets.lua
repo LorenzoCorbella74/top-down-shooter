@@ -8,7 +8,7 @@ BulletsHandler.new = function()
 
     local filter = function (item, other)
         local kind = other.layer and other.layer.name or other
-        print(('Kind:%s'):format(kind))
+        -- print(('Kind:%s'):format(kind))
         if kind == 'walls' then
             return "bounce"
         else
@@ -67,7 +67,7 @@ BulletsHandler.new = function()
                     table.remove(self.bullets, _i)
                     break -- break after the first wall
                 end ]]
-                print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
+                -- print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out

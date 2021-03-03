@@ -5,6 +5,8 @@ BulletsHandler   = require "entities.bullets"         -- handler for bullets
 
 local countdown = require "..helpers.countdown"
 
+PathfindHandler = require "..helpers.pathfinding"
+
 
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = 'message'}
@@ -23,17 +25,19 @@ function state:enter()
     camera:setFollowLerp(0.2)
     camera:setFollowLead(10)
 
-    map = sti("maps/dm1.lua", {'bump','jumper'})    -- Load map file
+    map = sti("maps/dm1.lua", {'bump'})    -- Load map file
     world = bump.newWorld(32)                       -- defining the world for collisions
-
-    map:bump_init(world)                                    -- start the phisics engine in the map
-    map:jumper_init('walls', 0, 'JPS', Grid, Pathfinder)    -- start the phisics engine in the map
-
+    map:bump_init(world)
+    
     handlers = {}
 
     -- spawn_points and bots waypoints
     handlers.points = PointsHandler.new()
     handlers.points.getPointsFromMap()
+
+    -- path finding helpers for jumper
+    local map_for_jumper = require('maps/dm'..tostring(1))
+    handlers.pf = PathfindHandler.new(map_for_jumper, 'walls', 0, 'JPS')
 
     -- player
     handlers.player = PlayerHandler.new(state)

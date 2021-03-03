@@ -34,9 +34,13 @@ PlayerHandler.new = function(game)
             score = 0, -- numero di uccisioni
             numberOfDeaths = 0, -- numero di volte in vui è stato ucciso
 
-            weaponsInventory = WeaponsInventory.new()
-            --[[ attackCounter: number = 0;		// frequenza di sparo
-        // shootRate:     number = 200;	// frequenza di sparo ]]
+            weaponsInventory = WeaponsInventory.new(),
+
+            path = {_nodes = {}}
+            --[[ 
+                attackCounter: number = 0;		// frequenza di sparo
+        // shootRate:     number = 200;	// frequenza di sparo 
+        ]]
         }
         self.spawn()
     end
@@ -132,6 +136,7 @@ PlayerHandler.new = function(game)
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my),
                                 mx - 16, my + 16)
         end
+
         -- debug for all collidable rectangles
         -- must be placed in the last layer of the map!!!
         if debug then
@@ -140,6 +145,27 @@ PlayerHandler.new = function(game)
             for i = 1, len do
                 local x, y, w, h = world:getRect(items[i])
                 love.graphics.rectangle("line", x, y, w, h)
+            end
+        end
+
+        -- path
+        if debug and #p.path._nodes then
+            -- points to cursor
+            for i = 2, #p.path._nodes, 1 do
+                local n = p.path._nodes[i]
+                local nm = p.path._nodes[i - 1]
+                local a = {_x = 0, _y = 0}
+                local am = {_x = 0, _y = 0}
+                am._x, am._y = handlers.pf.tileToWorld(nm._x, nm._y )
+                a._x, a._y = handlers.pf.tileToWorld(n._x, n._y )
+                -- linea rossa tiene conto dell'offset al centro del player
+                love.graphics.setColor(1, 0, 0, 1)
+                love.graphics.circle('fill', am._x+ p.w/2, am._y+ p.h/2, 4)
+                love.graphics.line(am._x + p.w/2, am._y + p.h/2, a._x + p.w/2, a._y + p.h/2) -- origin is NOT moved
+                -- linea viola dall'origine
+                love.graphics.setColor(1, 0.5, 1, 1)
+                love.graphics.circle('fill',a._x, a._y, 4)
+                love.graphics.line(am._x, am._y , a._x , a._y ) -- origin is NOT moved
             end
         end
     end
@@ -160,11 +186,13 @@ PlayerHandler.new = function(game)
                 }, angle, p)
             end
 
+            -- test path finding
             local start = {}
             local final = {}
-            start.x, start.y = map:jumper_getCoord(p.x, p.y)
-            final.x, final.y = map:jumper_getCoord(mx, my)
-            p.path = map:jumper_calculatePath(start.x, start.y, final.x, final.y)
+            start.x, start.y = handlers.pf.worldToTile(p.x + p.w / 2, p.y + p.h / 2)
+            final.x, final.y = handlers.pf.worldToTile(mx, my)
+            p.path = handlers.pf.calculatePath(start.x, start.y, final.x,final.y)
+            -- test path finding
         else
             p.weaponsInventory.getBest()
         end

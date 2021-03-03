@@ -28,8 +28,14 @@ return {
         -- Creates a grid object
         local grid = map.jumper.Grid(map)
         -- Creates a pathfinder object using Jump Point Search
-        local myFinder = map.jumper.Pathfinder(grid, map.jumper.mode,
-                                               map.jumper.walkable)
+        local myFinder = map.jumper.Pathfinder(grid, map.jumper.mode, map.jumper.walkable)
+        local path, length = myFinder:getPath(xs, ys, xf, yf)
+        if path then
+            print(('Path found! Length: %.2f'):format(length))
+              for node, count in path:iter() do
+                print(('Step: %d - x: %d - y: %d'):format(count, node.x, node.y))
+              end
+          end
         return myFinder
     end,
 
