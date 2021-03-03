@@ -26,11 +26,12 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
     end
 
     self.collisionMap = {}
-
-    for x = 1, self.starting_map.width do
-        self.collisionMap[x] = {}
-        for y = 1, self.starting_map.height do
-            self.collisionMap[x][y] = self.data[(x-1) * self.starting_map.width + (y)]
+    -- rows
+    for y = 1, self.starting_map.height do
+        self.collisionMap[y] = {}
+        --columns
+        for x = 1, self.starting_map.width do
+            self.collisionMap[y][x] = self.data[(y-1) * self.starting_map.width + (x)]
         end
     end
 
@@ -48,16 +49,7 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
     function self.worldToTile(x, y)
         local cols = math.floor(x / self.starting_map.tilewidth)
         local rows = math.floor(y / self.starting_map.tileheight)
-       --[[  if d % 32 > 16 then
-            row = math.ceil(d)
-        else
-            row = math.floor(d)
-        end
-        if p % 32 > 16 then
-            col = math.ceil(p)
-        else
-            col = math.floor(p)
-        end ]]
+
         return cols, rows
     end
 

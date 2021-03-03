@@ -36,7 +36,8 @@ PlayerHandler.new = function(game)
 
             weaponsInventory = WeaponsInventory.new(),
 
-            path = {_nodes = {}}
+            path = {},
+            nodes = {}
             --[[ 
                 attackCounter: number = 0;		// frequenza di sparo
         // shootRate:     number = 200;	// frequenza di sparo 
@@ -108,8 +109,7 @@ PlayerHandler.new = function(game)
             if (item.type == 'weapons' and item.visible) then
                 handlers.powerups.applyWeapon(item, self.player)
             end
-            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
-                      col.other, col.type, col.normal.x, col.normal.y))
+            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
         end
 
         -- player rotation
@@ -120,21 +120,24 @@ PlayerHandler.new = function(game)
     function self.draw(self)
         -- Draw player
         local p = self.player
-        local mx, my = camera:getMousePosition()
-        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1,
-                           p.w / 2, p.h / 2)
+        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
         -- cursor
+        local mx, my = camera:getMousePosition()
         love.graphics.line(mx, my - 16, mx, my + 16)
         love.graphics.line(mx - 16, my, mx + 16, my)
         -- debug
         if debug then
             love.graphics.setColor(0, 1, 1, 1)
+            love.graphics.setFont(Fonts.sm)
             love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
+            -- coordinates
+            love.graphics.print(math.floor(p.x) .. ' ' .. math.floor(p.y), p.x,p.y + 32)
             -- line to cursor
             love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
-            love.graphics.setFont(Fonts.sm)
-            love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my),
-                                mx - 16, my + 16)
+            -- coordinates and angle with mouse
+            love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
+            love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
+            love.graphics.print("Angle: " .. tostring(math.deg(p.r)), mx - 16, my + 32)
         end
 
         -- debug for all collidable rectangles
@@ -149,29 +152,44 @@ PlayerHandler.new = function(game)
         end
 
         -- path
-        if debug and #p.path._nodes then
+        if debug and p.nodes and #p.nodes then
             -- points to cursor
-            for i = 2, #p.path._nodes, 1 do
-                local n = p.path._nodes[i]
-                local nm = p.path._nodes[i - 1]
-                local a = {_x = 0, _y = 0}
-                local am = {_x = 0, _y = 0}
-                am._x, am._y = handlers.pf.tileToWorld(nm._x, nm._y )
-                a._x, a._y = handlers.pf.tileToWorld(n._x, n._y )
+            for i = 2, #p.nodes, 1 do
+                local n = p.nodes[i]
+                local nm = p.nodes[i - 1]
+                local a = {x = 0, y = 0}
+                local am = {x = 0, y = 0}
+                am.x, am.y = handlers.pf.tileToWorld(nm.x, nm.y)
+                a.x, a.y = handlers.pf.tileToWorld(n.x, n.y)
                 -- linea rossa tiene conto dell'offset al centro del player
                 love.graphics.setColor(1, 0, 0, 1)
-                love.graphics.circle('fill', am._x+ p.w/2, am._y+ p.h/2, 4)
-                love.graphics.line(am._x + p.w/2, am._y + p.h/2, a._x + p.w/2, a._y + p.h/2) -- origin is NOT moved
+                love.graphics.circle('fill', am.x + 16, am.y + 16, 4)
+                love.graphics.line(am.x + 16, am.y + 16, a.x + 16, a.y + 16)
                 -- linea viola dall'origine
                 love.graphics.setColor(1, 0.5, 1, 1)
-                love.graphics.circle('fill',a._x, a._y, 4)
-                love.graphics.line(am._x, am._y , a._x , a._y ) -- origin is NOT moved
+                love.graphics.circle('fill', a.x, a.y, 4)
+                love.graphics.line(am.x, am.y, a.x, a.y)
+                love.graphics.rectangle('line', am.x, am.y, 32, 32)
+
+                -- debugging collision map
+                for y = 1, 50, 1 do
+                    for x = 1, 50, 1 do
+                        if handlers.pf.collisionMap[y][x] == 0 then
+                            love.graphics.setColor(0.5, 0.5, 0.5, 0.1)
+                        else
+                            love.graphics.setColor(0, 0, 1, 1)
+                        end
+                        love.graphics.rectangle('line', x * 32, y * 32, 32, 32)
+                    end
+                end
             end
         end
+
     end
 
     function self.fire()
         local p = self.player
+        p.nodes = {}
         local w = p.weaponsInventory.selectedWeapon
         if p.alive and w.shotNumber > 0 then
             -- Gets the position of the mouse in world coordinates 
@@ -187,12 +205,17 @@ PlayerHandler.new = function(game)
             end
 
             -- test path finding
-            local start = {}
-            local final = {}
-            start.x, start.y = handlers.pf.worldToTile(p.x + p.w / 2, p.y + p.h / 2)
-            final.x, final.y = handlers.pf.worldToTile(mx, my)
-            p.path = handlers.pf.calculatePath(start.x, start.y, final.x,final.y)
-            -- test path finding
+            local startx, starty = handlers.pf.worldToTile(p.x + p.w / 2, p.y + p.h / 2)
+            local finalx, finaly = handlers.pf.worldToTile(mx, my)
+            p.path = handlers.pf.calculatePath(startx, starty, finalx,finaly)
+            if p.path then
+                print(('Path found! Length: %.2f'):format(p.path:getLength()))
+                for node, count in p.path:nodes() do
+                    print(('Step: %d - x: %d - y: %d'):format(count, node:getX(), node:getY()))
+                    table.insert(p.nodes, {x = node:getX(), y = node:getY()})
+                end
+            end
+            
         else
             p.weaponsInventory.getBest()
         end

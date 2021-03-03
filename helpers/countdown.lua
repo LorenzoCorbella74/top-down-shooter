@@ -12,7 +12,7 @@ countdown.new = function(time)
     local counter = 0
 
     -- public
-    local stopIn = time or 60 * 5 -- how long the timer should run
+    local stopIn = time or (60 * 5) -- how long the timer should run
     self.timeTillStop = 0 --  holds the display time
 
     -- public fn

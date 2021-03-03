@@ -38,6 +38,7 @@ function state:enter()
     -- path finding helpers for jumper
     local map_for_jumper = require('maps/dm'..tostring(1))
     handlers.pf = PathfindHandler.new(map_for_jumper, 'walls', 0, 'JPS')
+    print(handlers.pf.collisionMap)
 
     -- player
     handlers.player = PlayerHandler.new(state)
@@ -177,11 +178,6 @@ function drawHUD()
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()),(love.graphics.getWidth() / 2) - 64, 32, 200, "center")
     -- game message
     love.graphics.printf("MSG: " ..state.message,(love.graphics.getWidth() / 2) - 64, 64, 200, "center")
-    -- debug
-    if debug then
-        love.graphics.setFont(Fonts.sm)
-        love.graphics.printf("Angle: " .. tostring(math.deg(p.r)), love.graphics.getWidth() / 2, 64, 250, "center")
-    end
 end
 
 return state
