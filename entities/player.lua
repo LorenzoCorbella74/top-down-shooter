@@ -133,7 +133,7 @@ PlayerHandler.new = function(game)
             -- coordinates
             love.graphics.print(math.floor(p.x) .. ' ' .. math.floor(p.y), p.x,p.y + 32)
             -- line to cursor
-            love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my) -- origin is NOT moved
+            love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my)
             -- coordinates and angle with mouse
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
@@ -165,23 +165,27 @@ PlayerHandler.new = function(game)
                 love.graphics.setColor(1, 0, 0, 1)
                 love.graphics.circle('fill', am.x + 16, am.y + 16, 4)
                 love.graphics.line(am.x + 16, am.y + 16, a.x + 16, a.y + 16)
-                -- linea viola dall'origine
-                love.graphics.setColor(1, 0.5, 1, 1)
+                -- linea gialla tiles del path
+                love.graphics.setColor(1, 1, 0, 1)
                 love.graphics.circle('fill', a.x, a.y, 4)
                 love.graphics.line(am.x, am.y, a.x, a.y)
                 love.graphics.rectangle('line', am.x, am.y, 32, 32)
 
                 -- debugging collision map
-                for y = 1, 50, 1 do
-                    for x = 1, 50, 1 do
+                --[[ local tw = handlers.pf.starting_map.tilewidth
+                local nw = handlers.pf.starting_map.width
+                local th = handlers.pf.starting_map.tileheight
+                local nh = handlers.pf.starting_map.height
+                for y = 1, nw, 1 do
+                    for x = 1, nh, 1 do
                         if handlers.pf.collisionMap[y][x] == 0 then
                             love.graphics.setColor(0.5, 0.5, 0.5, 0.1)
                         else
                             love.graphics.setColor(0, 0, 1, 1)
                         end
-                        love.graphics.rectangle('line', x * 32, y * 32, 32, 32)
+                        love.graphics.rectangle('line', (x-1) * tw, (y-1) * th, tw, th)
                     end
-                end
+                end ]]
             end
         end
 
@@ -205,14 +209,16 @@ PlayerHandler.new = function(game)
             end
 
             -- test path finding
-            local startx, starty = handlers.pf.worldToTile(p.x + p.w / 2, p.y + p.h / 2)
-            local finalx, finaly = handlers.pf.worldToTile(mx, my)
+            -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e finder
+            -- e poi si deve togliere 1 dai nodi calcolati
+            local startx, starty = handlers.pf.worldToTile(p.x + p.w / 2 + 32, p.y + p.h / 2 + 32)
+            local finalx, finaly = handlers.pf.worldToTile(mx + 32, my+32)
             p.path = handlers.pf.calculatePath(startx, starty, finalx,finaly)
             if p.path then
                 print(('Path found! Length: %.2f'):format(p.path:getLength()))
                 for node, count in p.path:nodes() do
                     print(('Step: %d - x: %d - y: %d'):format(count, node:getX(), node:getY()))
-                    table.insert(p.nodes, {x = node:getX(), y = node:getY()})
+                    table.insert(p.nodes, {x = node:getX()-1, y = node:getY()-1})
                 end
             end
             

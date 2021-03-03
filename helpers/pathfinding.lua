@@ -31,9 +31,10 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
         self.collisionMap[y] = {}
         --columns
         for x = 1, self.starting_map.width do
-            self.collisionMap[y][x] = self.data[(y-1) * self.starting_map.width + (x)]
+            self.collisionMap[y][x] = self.data[(y-1) * self.starting_map.width + (x)]==0 and 0 or 1
         end
     end
+    print(self.collisionMap)
 
     -- return the path
     function self.calculatePath(xs, ys, xf, yf)
@@ -41,6 +42,7 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
         local grid = Grid(self.collisionMap)
         -- Creates a pathfinder object using Jump Point Search
         local myFinder = Pathfinder(grid, self.mode, self.walkable)
+        -- myFinder:setHeuristic("MANHATTAN")
         local path = myFinder:getPath(xs, ys, xf, yf)
         return path
     end
@@ -49,7 +51,6 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
     function self.worldToTile(x, y)
         local cols = math.floor(x / self.starting_map.tilewidth)
         local rows = math.floor(y / self.starting_map.tileheight)
-
         return cols, rows
     end
 
