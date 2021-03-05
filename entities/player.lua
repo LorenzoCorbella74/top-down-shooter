@@ -3,10 +3,9 @@ local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
 
 local PlayerHandler = {}
 
-PlayerHandler.new = function(game)
+PlayerHandler.new = function()
 
     local self = map:addCustomLayer("Sprites", 4)
-    self.game = game -- reference to game state
 
     local playerFilter = function(item, other)
         if other.name == 'health' and other.visible then
@@ -60,10 +59,12 @@ PlayerHandler.new = function(game)
     function self:die()
         local p = self.player
         p.alive = false
-        world:remove(p) -- removing player from the phisycs world
+        p.numberOfDeaths = p.numberOfDeaths + 1
+        -- animazione morte
+        world:remove(p)
         --[[ show countdown timer ]]
-        Timer(10, function()
-            self.game.setCameraOnActor(p)
+        Timer.after(10, function()
+            handlers.camera.setCameraOnActor(p)
             self.spawn()
         end)
     end
@@ -214,7 +215,7 @@ PlayerHandler.new = function(game)
             -- test path finding
             -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e finder
             -- e poi si deve togliere 1 dai nodi calcolati
-            local startx, starty = handlers.pf.worldToTile(p.x + p.w / 2 + 32, p.y + p.h / 2 + 32)
+            --[[ local startx, starty = handlers.pf.worldToTile(p.x + p.w / 2 + 32, p.y + p.h / 2 + 32)
             local finalx, finaly = handlers.pf.worldToTile(mx + 32, my+32)
             p.path = handlers.pf.calculatePath(startx, starty, finalx,finaly)
             if p.path then
@@ -223,7 +224,7 @@ PlayerHandler.new = function(game)
                     print(('Step: %d - x: %d - y: %d'):format(count, node:getX(), node:getY()))
                     table.insert(p.nodes, {x = node:getX()-1, y = node:getY()-1})
                 end
-            end
+            end ]]
             
         else
             p.weaponsInventory.getBest()

@@ -6,13 +6,27 @@ BulletsHandler.new = function()
 
     self.bullets = {}
 
-    local filter = function (item, other)
+    local filter = function(item, other)
         local kind = other.layer and other.layer.name or other
-        -- print(('Kind:%s'):format(kind))
+        print(('Kind:%s'):format(kind))
         if kind == 'walls' then
             return "bounce"
         else
             return nil
+        end
+    end
+
+    function self.calculatePoints(actor, damage)
+        if actor.ap > 0 then
+            actor.ap = actor.ap - damage;
+            local what = actor.ap;
+            if what < 0 then 
+                actor.hp = actor.hp + what
+                actor.ap = 0
+            end
+        else
+            actor.ap = 0;
+            actor.hp = actor.hp - damage
         end
     end
 
@@ -32,8 +46,8 @@ BulletsHandler.new = function()
         b.dx = b.speed * math.cos(angle)
         b.dy = b.speed * math.sin(angle)
         -- state
-        b.ttl = w.ttl           -- how many seconds before despawning
-        b.damage = w.damage     -- how much damange it deals
+        b.ttl = w.ttl -- how many seconds before despawning
+        b.damage = w.damage -- how much damange it deals
 
         world:add(b, b.x, b.y, b.w, b.h) -- bullet is in the phisycs world
         table.insert(self.bullets, b)
@@ -50,7 +64,7 @@ BulletsHandler.new = function()
 
             local cols, cols_len
 
-            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, filter)
+            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey--[[ , filter ]])
 
             -- collisions
             for i = 1, cols_len do
@@ -63,12 +77,25 @@ BulletsHandler.new = function()
                     break -- break after the first impact
                 end
                 -- impact on bot or player
-                if (item.type and item.type=='actor') then
+                if (item.type and item.type == 'actor') then
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
+                    self.calculatePoints(item, bullet.damage);
+                    -- create blood
+                    -- sound death
+                    -- this.enemy.list[shot.index].kills ;    -- si aumenta lo score di chi ha sparato il proiettile
+                    -- print(`${chiSpara.index} killed ${item.index}`);
+                    if item.hp <= 0 then
+                        if item.name == 'player' then
+                            handlers.camera.setCameraOnActor(item)
+                            handlers.player.die()
+                        else
+                            handlers.bots.die(item)
+                        end
+                    end
                     break -- break after the first impact
                 end
-                -- print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
+                 print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out

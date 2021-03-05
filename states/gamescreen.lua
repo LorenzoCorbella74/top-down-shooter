@@ -10,10 +10,9 @@ local TimeManagement = require "..helpers.timeManagement"   -- handle time effec
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = 'message'}
 
-
-
-local GAME_BOTS_NUMBERS = 3
+local GAME_BOTS_NUMBERS = 1
 local GAME_MATCH_DURATION = 120
+local GAME_RESPAWN_TIME = 10
 
 -- init is called only once
 -- enter is called when push
@@ -44,7 +43,7 @@ function state:enter()
     handlers.pf = PathfindHandler.new(map_for_jumper, 'walls', 0, 'JPS')
 
     -- player
-    handlers.player = PlayerHandler.new(state)
+    handlers.player = PlayerHandler.new()
     handlers.player.create()
 
     -- powerups
@@ -69,6 +68,8 @@ function state:enter()
 
     -- default camera is following the player
     self.setCameraOnActor(handlers.player.player)
+    handlers.camera = {}
+    handlers.camera.setCameraOnActor = self.setCameraOnActor
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(GAME_MATCH_DURATION)

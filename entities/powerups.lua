@@ -132,8 +132,7 @@ PowerupsHandler.new = function()
                 object.inCheck = true
                 -- back to game
                 Timer.after(object.info.spawnTime, function()
-                    world:add(object, object.x, object.y, object.width,
-                              object.height) -- powerups is in the phisycs world again
+                    world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world again
                     object.inCheck = false
                     object.visible = true
                 end)
@@ -144,13 +143,10 @@ PowerupsHandler.new = function()
     function self.draw(self)
         for k, object in pairs(self.powerups) do
             if (object.visible) then
-                love.graphics.draw(object.info.sprite, math.floor(object.x),
-                                   math.floor(object.y), 0, 1, 1)
+                love.graphics.draw(object.info.sprite, math.floor(object.x), math.floor(object.y), 0, 1, 1)
                 if debug then
                     love.graphics.setFont(Fonts.sm)
-                    love.graphics.print(math.floor(object.x) .. ' ' ..
-                                            math.floor(object.y), object.x - 16,
-                                        object.y + 16)
+                    love.graphics.print(math.floor(object.x) .. ' ' .. math.floor(object.y), object.x - 16, object.y + 16)
                 end
             end
         end
