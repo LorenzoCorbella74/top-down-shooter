@@ -8,9 +8,9 @@ local countdown        = require "..helpers.countdown"      -- handler for game 
 local PathfindHandler = require "..helpers.pathfinding"     -- handler for jupiter wrapper
 local TimeManagement = require "..helpers.timeManagement"   -- handle time effect (ala Max payne)
 
-local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = 'message'}
+local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = ''}
 
-local GAME_BOTS_NUMBERS = 1
+local GAME_BOTS_NUMBERS = 2
 local GAME_MATCH_DURATION = 120
 local GAME_RESPAWN_TIME = 10
 
@@ -54,9 +54,12 @@ function state:enter()
     handlers.bullets = BulletsHandler.new()
 
     -- bots
+    handlers.actors = {}
+    table.insert(handlers.actors, handlers.player.player)
     handlers.bots = BotsHandler.new()
     for i = 1, GAME_BOTS_NUMBERS, 1 do
         handlers.bots.create()
+        table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information
     handlers.points.seedBotsInWaypoints(handlers.bots.bots)
@@ -67,9 +70,13 @@ function state:enter()
     map:removeLayer("waypoints")
 
     -- default camera is following the player
-    self.setCameraOnActor(handlers.player.player)
     handlers.camera = {}
-    handlers.camera.setCameraOnActor = self.setCameraOnActor
+    handlers.camera.setCameraOnActor = function (actor) state.currentCameraTarget = actor end
+    handlers.camera.setCameraOnActor(handlers.player.player)
+
+    -- set game message
+    handlers.ui = {}
+    handlers.ui.setMsg = function(msg) state.message = msg end
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(GAME_MATCH_DURATION)
@@ -77,10 +84,7 @@ function state:enter()
 end
 
 -- set camera as method of game
-function state.setCameraOnActor(actor) state.currentCameraTarget = actor end
 
--- set game message
-function state.setMsg(msg) state.message = msg end
 
 function state:update(dt)
     dt = handlers.timeManagement.processTime(dt)
@@ -96,7 +100,8 @@ function state:draw()
     camera:attach()
 
     -- Draw your game here
-    local scale = 1 -- Scale world with camera.scale
+    local scale = 1 
+    -- Scale world with camera.scale
 
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()
@@ -181,7 +186,7 @@ function drawHUD()
     local w = p.weaponsInventory.selectedWeapon
     -- Player data
     love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
-    love.graphics.print("AP:" .. tostring(p.ap), 128, 32)
+    love.graphics.print("AP:" .. tostring(p.ap), 140, 32)
     love.graphics.print("Kills:" .. tostring(p.kills), 192, 32)
     -- current weapon and available shoots
     love.graphics.print(w.name .. ':' .. w.shotNumber, 288, 32)
@@ -191,7 +196,7 @@ function drawHUD()
     -- Time of the current match
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()),(love.graphics.getWidth() / 2) - 64, 32, 200, "center")
     -- game message
-    love.graphics.printf("MSG: " ..state.message,(love.graphics.getWidth() / 2) - 64, 64, 200, "center")
+    love.graphics.printf(state.message,(love.graphics.getWidth() / 2) - 128, 64, 220, "center")
 end
 
 return state

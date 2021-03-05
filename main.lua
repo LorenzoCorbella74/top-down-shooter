@@ -1,4 +1,4 @@
--- Debug
+-- Debug with VSC
 if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
 end
@@ -10,19 +10,14 @@ bump = require 'libs.bump'              -- https://github.com/kikito/bump.lua
 Camera = require 'libs.camera'          -- https://github.com/a327ex/STALKER-X
 Timer = require "libs.timer"            -- https://hump.readthedocs.io/en/latest/timer.html
 
-
-
 -- GAME STATES / SCREENS
 TitleScreen = require 'states.titlescreen'
 GameScreen = require 'states.gamescreen'
 PauseScreen = require 'states.pausescreen'
 GameoverScreen = require 'states.gameoverscreen'
 
-require 'helpers.printTable'
-
-
 function love.load()
-    -- debug
+    -- debug with ZEROBRANE Studio
     if arg[#arg] == "-debug" then require("mobdebug").start() end
 
     debug = false
@@ -68,8 +63,8 @@ function love.load()
         lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 72)
     }
 
-    -- set first state
     Gamestate.registerEvents()
+    -- set first state
     Gamestate.switch(TitleScreen)
 end
 
