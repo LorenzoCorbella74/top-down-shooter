@@ -23,6 +23,7 @@ BulletsHandler.new = function()
         b.sprite = sprite
         b.w = sprite:getWidth()
         b.h = sprite:getHeight()
+        b.firedBy = who
         -- motion
         b.x = origin.x
         b.y = origin.y
@@ -59,14 +60,14 @@ BulletsHandler.new = function()
                 if (item.layer and item.layer.name == 'walls') then
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
-                    break -- break after the first wall
+                    break -- break after the first impact
                 end
                 -- impact on bot or player
-                --[[ if (item.layer and item.layer.name == 'walls') then
+                if (item.type and item.type=='actor') then
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
-                    break -- break after the first wall
-                end ]]
+                    break -- break after the first impact
+                end
                 -- print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 

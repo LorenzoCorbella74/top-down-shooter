@@ -1,15 +1,19 @@
-PointsHandler    = require "entities.points"          -- handler for spawnPoints, waypoints
-PlayerHandler    = require "entities.player"          -- handler for player
-PowerupsHandler  = require "entities.powerups"        -- handler for powerups
-BulletsHandler   = require "entities.bullets"         -- handler for bullets
+local PointsHandler    = require "entities.points"          -- handler for spawnPoints, waypoints
+local PlayerHandler    = require "entities.player"          -- handler for player
+local PowerupsHandler  = require "entities.powerups"        -- handler for powerups
+local BulletsHandler   = require "entities.bullets"         -- handler for bullets
+local BotsHandler      = require "entities.bots"            -- handler for bots
+local countdown        = require "..helpers.countdown"      -- handler for game countdown
 
-local countdown = require "..helpers.countdown"
-
-PathfindHandler = require "..helpers.pathfinding"
-
-
+local PathfindHandler = require "..helpers.pathfinding"     -- handler for jupiter wrapper
+local TimeManagement = require "..helpers.timeManagement"   -- handle time effect (ala Max payne)
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = 'message'}
+
+
+
+local GAME_BOTS_NUMBERS = 3
+local GAME_MATCH_DURATION = 120
 
 -- init is called only once
 -- enter is called when push
@@ -41,7 +45,7 @@ function state:enter()
 
     -- player
     handlers.player = PlayerHandler.new(state)
-    handlers.player.init()
+    handlers.player.create()
 
     -- powerups
     handlers.powerups = PowerupsHandler.new()
@@ -49,6 +53,14 @@ function state:enter()
 
     -- Bullets
     handlers.bullets = BulletsHandler.new()
+
+    -- bots
+    handlers.bots = BotsHandler.new()
+    for i = 1, GAME_BOTS_NUMBERS, 1 do
+        handlers.bots.create()
+    end
+    -- seed waypoints with each bot information
+    handlers.points.seedBotsInWaypoints(handlers.bots.bots)
 
     -- Remove unneeded object layer from map
     map:removeLayer("Spawn_points")
@@ -59,7 +71,8 @@ function state:enter()
     self.setCameraOnActor(handlers.player.player)
 
     -- after the matchDuration go to game over screen
-    GameCountdown = countdown.new(120)
+    GameCountdown = countdown.new(GAME_MATCH_DURATION)
+    handlers.timeManagement = TimeManagement.new()
 end
 
 -- set camera as method of game
@@ -69,6 +82,7 @@ function state.setCameraOnActor(actor) state.currentCameraTarget = actor end
 function state.setMsg(msg) state.message = msg end
 
 function state:update(dt)
+    dt = handlers.timeManagement.processTime(dt)
     -- if love.mouse.isDown(1) then fire() end TODO
     map:update(dt) -- Update internally all map layers
     camera:update(dt)
@@ -101,7 +115,7 @@ function state:keyreleased(key, code)
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
-    if key == 'f' then camera:flash(0.15, {1, 0, 0, 1}) end -- working
+    if key == 'f' then camera:flash(0.15, {1, 0, 0, 0.25}) end -- working
     if key == 'i' then debug = not debug end
     if key == "1" or key == "2" or key == "3" or key == "4" or key == "5" then
         local key = tonumber(key)

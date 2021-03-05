@@ -24,19 +24,30 @@ PointsHandler.new = function()
     end
 
     function self.getRandomSpawnPoint()
+        -- indices used
         local indices = {}
         for index, item in ipairs(self.spawnPoints) do
-            if item.used == false then
-                table.insert(indices, item)
-            end
+            if item.used == false then table.insert(indices, item) end
         end
         local randomIndex = math.random(1, #indices)
         local choosen = self.spawnPoints[randomIndex]
         choosen.used = true
-        Timer.after(1, function()
-            choosen.used = false
-        end)
+        Timer.after(1, function() choosen.used = false end)
         return choosen.x, choosen.y, choosen.orientation
+    end
+
+    -- waypoint visibility for each bot
+    -- when it's taken it's no more visible and a timer is called
+    -- after x sec the waypoint is once again visible
+    function self.seedBotsInWaypoints(bots)
+        for i = #self.waypoints, 1, -1 do
+            local waypoints = self.waypoints[i]
+            waypoints.bots = {}
+            for y = #bots, 1, -1 do
+                local bot = bots[y]
+                waypoints.bots[bot.index] = {visible = true}
+            end
+        end
     end
 
     return self

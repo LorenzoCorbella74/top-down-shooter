@@ -16,13 +16,14 @@ PlayerHandler.new = function(game)
         end
     end
 
-    function self.init()
+    function self.create()
         -- Create player object
         local sprite = Sprites.player
         self.player = {
             index = math.random(1000000), -- id
             name = 'player',
             team = 'player',
+            type= 'actor',
             sprite = sprite,
             w = sprite:getWidth(),
             h = sprite:getHeight(),
@@ -102,6 +103,8 @@ PlayerHandler.new = function(game)
             local col = cols[i]
             if (item.type == 'powerups' and item.visible) then
                 handlers.powerups.applyPowerup(item, self.player)
+                -- test time dilatation
+                handlers.timeManagement.setDilatation(0.5, 1)
             end
             if (item.type == 'ammo' and item.visible) then
                 handlers.powerups.applyAmmo(item, self.player)
