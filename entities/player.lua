@@ -22,7 +22,7 @@ PlayerHandler.new = function()
             index = math.random(1000000), -- id
             name = 'player',
             team = 'player',
-            type= 'actor',
+            type = 'actor',
             sprite = sprite,
             w = sprite:getWidth(),
             h = sprite:getHeight(),
@@ -37,11 +37,9 @@ PlayerHandler.new = function()
             weaponsInventory = WeaponsInventory.new(),
 
             path = {},
-            nodes = {}
-            --[[ 
-                attackCounter: number = 0;		// frequenza di sparo
-        // shootRate:     number = 200;	// frequenza di sparo 
-        ]]
+            nodes = {},
+
+            attackCounter = 0 -- frequenza di sparo
         }
         self.spawn()
     end
@@ -135,7 +133,7 @@ PlayerHandler.new = function()
             love.graphics.setFont(Fonts.sm)
             love.graphics.rectangle('line', p.x, p.y, p.w, p.h)
             -- coordinates
-            love.graphics.print(math.floor(p.x) .. ' ' .. math.floor(p.y), p.x,p.y + 32)
+            love.graphics.print(math.floor(p.x) .. ' ' .. math.floor(p.y), p.x, p.y + 32)
             -- line to cursor
             love.graphics.line(p.x + p.w / 2, p.y + p.h / 2, mx, my)
             -- coordinates and angle with mouse
@@ -195,21 +193,28 @@ PlayerHandler.new = function()
 
     end
 
-    function self.fire()
+    function self.fire(dt)
         local p = self.player
-        p.nodes = {}
+        -- p.nodes = {}
         local w = p.weaponsInventory.selectedWeapon
         if p.alive and w.shotNumber > 0 then
-            -- Gets the position of the mouse in world coordinates 
-            -- equivals to camera:toWorldCoords(love.mouse.getPosition())
-            local mx, my = camera:getMousePosition()
-            local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
-            for _i = w.count, 1, -1 do
-                handlers.bullets.create({
-                    x = p.x + p.w / 2 + 32 * math.cos(angle),
-                    y = p.y + p.h / 2 + 32 * math.sin(angle)
-                }, angle, p)
+            if p.attackCounter > 0 then
+                p.attackCounter = p.attackCounter - 1 * dt
+            else
+                -- Gets the position of the mouse in world coordinates 
+                -- equivals to camera:toWorldCoords(love.mouse.getPosition())
+                local mx, my = camera:getMousePosition()
+                local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
+
+                for _i = w.count, 1, -1 do
+                    handlers.bullets.create(
+                        {
+                            x = p.x + p.w / 2 + 32 * math.cos(angle),
+                            y = p.y + p.h / 2 + 32 * math.sin(angle)
+                        }, angle, p)
+                end
+                p.attackCounter = w.frequency
             end
 
             -- test path finding
@@ -225,7 +230,6 @@ PlayerHandler.new = function()
                     table.insert(p.nodes, {x = node:getX()-1, y = node:getY()-1})
                 end
             end ]]
-            
         else
             p.weaponsInventory.getBest()
         end

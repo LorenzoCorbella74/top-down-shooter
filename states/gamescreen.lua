@@ -22,8 +22,6 @@ function state:enter()
     camera = Camera()
     camera:setFollowStyle('TOPDOWN')
 
-    mousepressed = false
-
     love.mouse.setVisible(false)
     camera:setFollowLerp(0.2)
     camera:setFollowLead(10)
@@ -83,13 +81,14 @@ function state:enter()
     handlers.timeManagement = TimeManagement.new()
 end
 
--- set camera as method of game
-
 
 function state:update(dt)
     dt = handlers.timeManagement.processTime(dt)
-    -- if love.mouse.isDown(1) then fire() end TODO
     map:update(dt) -- Update internally all map layers
+    -- handle machine gun behaviour
+    if love.mouse.isDown(1) then
+        handlers.player.fire(dt)
+    end
     camera:update(dt)
     camera:follow(state.currentCameraTarget.x, state.currentCameraTarget.y)
     Timer.update(dt)
@@ -162,23 +161,6 @@ function love.wheelmoved(x, y)
     end
 end
 
---[[ function state:leave()
-    map = nil
-    world = nil
-    camera = nil
-    currentCameraTarget = nil
-end ]]
-
-function state:mousepressed(x, y, button, istouch, presses)
-    if button == 1 then
-        mousepressed = true
-        handlers.player.fire()
-    end
-end
-
-function state:mousereleased(x, y, button, istouch, presses)
-    if button == 1 then mousepressed = true end
-end
 
 function drawHUD()
     love.graphics.setFont(Fonts.md)
@@ -186,7 +168,7 @@ function drawHUD()
     local w = p.weaponsInventory.selectedWeapon
     -- Player data
     love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
-    love.graphics.print("AP:" .. tostring(p.ap), 140, 32)
+    love.graphics.print("AP:" .. tostring(p.ap), 32, 70)
     love.graphics.print("Kills:" .. tostring(p.kills), 192, 32)
     -- current weapon and available shoots
     love.graphics.print(w.name .. ':' .. w.shotNumber, 288, 32)

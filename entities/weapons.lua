@@ -8,7 +8,7 @@ WeaponsInventory.new = function()
         {
             name = 'Rifle',
             sprite = Sprites.bullet_Rifle, -- image for bullet
-            frequency = 200, --  è la frequenza di sparo = colpi al sec
+            frequency = 0.20, --  è la frequenza di sparo = one shot 
             count = 1, --  NUMERO DI PARTICELLE PER OGNI COLPO
             speed = 900, --  VELOCITA'
 
@@ -82,8 +82,7 @@ WeaponsInventory.new = function()
         }
     }
 
-    self.selectedWeapon = self.weapons[1]; -- default
-    -- self.selectedWeapon = self.setWeapon('Rifle'); -- default
+    self.selectedWeapon = self.weapons[1]; -- rifle as default
 
     function self.setWeapon(name)
         for i = #self.weapons, 1, -1 do

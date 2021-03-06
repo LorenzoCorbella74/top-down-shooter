@@ -1,6 +1,6 @@
 function love.conf(t)
     t.author = "LCorbella74"
-    t.title = "Tiles" 
+    t.title = "My Topdown shooter" 
 	t.version = "11.3"              -- The LÖVE version this game was made for 
 	
     t.window.width = 1024
