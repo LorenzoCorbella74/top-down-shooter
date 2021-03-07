@@ -70,11 +70,20 @@ BotsHandler.new = function()
             local bot = self.bots[_i]
             if bot.alive then
                 love.graphics.draw(bot.sprite, math.floor(bot.x + bot.w / 2), math.floor(bot.y + bot.h / 2), bot.r, 1, 1, bot.w / 2, bot.h / 2)
+                -- debug field of view
+                if debug then
+                    local delta = math.rad(60)
+                    local vision_length = 300
+                    love.graphics.setColor( 0, 0.9, 0, 0.25 )
+                    love.graphics.arc( "fill", bot.x + bot.w/2,bot.y+ bot.h/2 , vision_length, bot.r-delta, bot.r+delta )
+                    love.graphics.setColor( 0, 0.9, 0, 0.75 )
+                    love.graphics.arc( "line", bot.x + bot.w/2,bot.y+ bot.h/2 , vision_length, bot.r-delta, bot.r+delta )
+                    -- coordinates
+                    love.graphics.setColor( 1, 1, 1 )
+                    love.graphics.print(math.floor(bot.x) .. ' ' .. math.floor(bot.y), bot.x, bot.y + 32)
+                    love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
+                end
             end
-        end
-        -- debug
-        if debug then 
-        
         end
     end
 

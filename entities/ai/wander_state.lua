@@ -10,7 +10,9 @@ function wander.OnUpdate(dt, bot)
 
     if bot.alive then
 
-        helpers.turnProgressivelyTo(bot, handlers.player.player)
+        if helpers.isInConeOfView(bot, handlers.player.player) then 
+            helpers.turnProgressivelyTo(bot, handlers.player.player)
+        end
 
         bot.old_x = bot.x
         bot.old_y = bot.y

@@ -5,12 +5,12 @@ local BulletsHandler   = require "entities.bullets"         -- handler for bulle
 local BotsHandler      = require "entities.bots"            -- handler for bots
 local countdown        = require "..helpers.countdown"      -- handler for game countdown
 
-local PathfindHandler = require "..helpers.pathfinding"     -- handler for jupiter wrapper
-local TimeManagement = require "..helpers.timeManagement"   -- handle time effect (ala Max payne...)
+local PathfindHandler   = require "..helpers.pathfinding"     -- handler for jupiter wrapper
+local TimeManagement    = require "..helpers.timeManagement"   -- handle time effect (ala Max payne...)
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = ''}
 
-local GAME_BOTS_NUMBERS = 2
+local GAME_BOTS_NUMBERS = 1
 local GAME_MATCH_DURATION = 120
 local GAME_RESPAWN_TIME = 10
 

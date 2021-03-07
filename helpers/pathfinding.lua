@@ -34,7 +34,7 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
             self.collisionMap[y][x] = self.data[(y-1) * self.starting_map.width + (x)]==0 and 0 or 1
         end
     end
-    print(self.collisionMap)
+    -- print(self.collisionMap)
 
     -- return the path
     function self.calculatePath(xs, ys, xf, yf)
