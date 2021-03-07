@@ -6,7 +6,7 @@ local BotsHandler      = require "entities.bots"            -- handler for bots
 local countdown        = require "..helpers.countdown"      -- handler for game countdown
 
 local PathfindHandler = require "..helpers.pathfinding"     -- handler for jupiter wrapper
-local TimeManagement = require "..helpers.timeManagement"   -- handle time effect (ala Max payne)
+local TimeManagement = require "..helpers.timeManagement"   -- handle time effect (ala Max payne...)
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = ''}
 
@@ -78,6 +78,7 @@ function state:enter()
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(GAME_MATCH_DURATION)
+    -- bullet time management
     handlers.timeManagement = TimeManagement.new()
 end
 
@@ -101,6 +102,12 @@ function state:draw()
     -- Draw your game here
     local scale = 1 
     -- Scale world with camera.scale
+
+    if debug then
+        camera.draw_deadzone = true
+    else
+        camera.draw_deadzone = false
+    end
 
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()

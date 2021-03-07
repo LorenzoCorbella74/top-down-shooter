@@ -108,14 +108,14 @@ BulletsHandler.new = function()
                     if item.name == 'player' then
                         camera:flash(0.15, {1, 0, 0, 0.25})
                     end
-                    world:remove(bullet) -- powerup is no more in the phisycs world
-                    table.remove(self.bullets, _i)
+                    world:remove(bullet)            -- bullet is no more in the phisycs world
+                    table.remove(self.bullets, _i)  -- bullet is no more in the list of bullets
                     self.calculatePoints(item, bullet.damage);
                     if item.hp <= 0 then
                         bullet.firedBy.kills = bullet.firedBy.kills + 1 -- increase the score of who fired the bullet
                         -- sound death
                         if item.name == 'player' then
-                            handlers.camera.setCameraOnActor(item)
+                            handlers.camera.setCameraOnActor(bullet.firedBy)
                             handlers.player.die()
                         else
                             handlers.bots.die(item)

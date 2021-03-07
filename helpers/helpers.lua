@@ -16,20 +16,20 @@ end
 
 -- point an entity toward an actor
 helpers.pointTo = function(self, actor)
-        self.angle = helpers.angle(self, actor)
+        self.r = helpers.angle(self, actor)
 end
 
 -- turn progressively an entity to an actor
 helpers.turnProgressivelyTo = function(self, actor)
     local angle = helpers.angle(self, actor)
-    self.angle = self.angle + helpers.shortestArc(self.angle, angle) * 0.1 -- percentage of rotation;
+    self.r = self.r + helpers.shortestArc(self.r, angle) * 0.2 -- percentage of rotation;
     return self
 end
 
 -- move an entity according to an angle and a passed velocity
 helpers.move = function(self, velocity)
-    self.x = self.x + math.cos(self.angle) * velocity;
-    self.y = self.y + math.sin(self.angle) * velocity;
+    self.x = self.x + math.cos(self.r) * velocity;
+    self.y = self.y + math.sin(self.r) * velocity;
     return self;
 end
 

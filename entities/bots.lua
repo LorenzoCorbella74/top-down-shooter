@@ -1,4 +1,5 @@
-local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
+local WeaponsInventory  = require "entities.weapons" -- loading weaponsInventory
+local FsmMachine        = require"entities.ai.fsm"
 
 local BotsHandler = {}
 
@@ -31,8 +32,12 @@ BotsHandler.new = function()
             weaponsInventory = WeaponsInventory.new(),
 
             path = {},
-            nodes = {}
+            nodes = {},
         }
+        -- ai
+        bot.brain = FsmMachine.new(bot)
+        bot.brain.init() -- wamder as default
+
         table.insert(self.bots, bot)
         self.spawn(bot)
     end
@@ -56,29 +61,7 @@ BotsHandler.new = function()
     function self.update(self, dt)
         for _i = #self.bots, 1, -1 do
             local bot = self.bots[_i]
-
-            if bot.alive then
-
-                -- bot.brain.update(bot, dt);
-
-
-                bot.old_x = bot.x
-                bot.old_y = bot.y
-
-                -- update bot positions
-                local futurex = bot.x
-                local futurey = bot.y
-
-                local cols, cols_len
-
-                bot.x, bot.y, cols, cols_len = world:move(bot, futurex, futurey)
-
-                -- collisions
-
-                -- ai logics
-
-            end
-
+            bot.brain.update(dt)
         end
     end
 
@@ -90,7 +73,9 @@ BotsHandler.new = function()
             end
         end
         -- debug
-        if debug then end
+        if debug then 
+        
+        end
     end
 
     return self

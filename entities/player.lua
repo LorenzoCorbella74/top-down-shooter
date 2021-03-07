@@ -36,9 +36,6 @@ PlayerHandler.new = function()
 
             weaponsInventory = WeaponsInventory.new(),
 
-            path = {},
-            nodes = {},
-
             attackCounter = 0 -- frequenza di sparo
         }
         self.spawn()
