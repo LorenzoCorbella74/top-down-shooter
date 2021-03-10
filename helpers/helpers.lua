@@ -31,20 +31,21 @@ helpers.turnProgressivelyTo = function(self, actor)
     return self
 end
 
-helpers.correctAngle = function(angle)
-    return angle < 0 and math.rad(360) + angle or angle -- angle correction if negative
-end
-
 helpers.isInConeOfView = function(self, target)
-    local angle = helpers.correctAngle(helpers.angle(self, target)) -- angle between entities
+    local angle = helpers.angle(self, target) -- angle with target
     local distance = helpers.dist(self, target)
     local delta = math.rad(60) -- angle extent
-    local corrected = helpers.correctAngle(self.r)
     local vision_length = 400 -- distance with target
+    if self.r > 6.28 then self.r = self.r - 6.28 end
+    local difference
+    if math.abs(angle - self.r) > math.rad(180) then
+        difference = 6.2832 - math.abs(angle - self.r)
+    else
+        difference = angle - self.r
+    end
+    -- print(math.deg(angle), math.deg(self.r),  math.deg(difference))
 
-    print(math.deg(angle), math.deg(corrected))
-
-    if distance < vision_length and (corrected - angle <delta) then
+    if distance < vision_length and math.abs(difference) < delta then
         return true
     else
         return false
@@ -53,19 +54,15 @@ end
 
 -- if there is an obstacle hiding the entity from sight
 helpers.canBeSeen = function(point_sight, entity)
-    local items, len = world:querySegment(point_sight.x, point_sight.y,
-                                          entity.x, entity.y)
-    -- print(#items)
-    if len == 1 then
-        for i = 1, len do
-    
-            local col = items[i]
-            local item = items[i].other
-            -- impact with walls
-    
+    local items, len = world:querySegment(point_sight.x, point_sight.y,entity.x, entity.y)
+    for i = 1, len, 1 do 
+        local what = items[i]
+        if what.layer then
+            -- print('type '.. tostring(items[i].layer.name))
+            return false
         end
     end
-    return len == 0
+    return true
 end
 
 -- move an entity according to an angle and a passed velocity

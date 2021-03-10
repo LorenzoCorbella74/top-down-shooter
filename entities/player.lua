@@ -136,7 +136,7 @@ PlayerHandler.new = function()
             -- coordinates and angle with mouse
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
-            love.graphics.print("Angle: " .. tostring(p.r), mx - 16, my + 32)
+            love.graphics.print("Angle: " .. tostring(math.deg(p.r)), mx - 16, my + 32)
         end
 
         -- debug for all collidable rectangles
