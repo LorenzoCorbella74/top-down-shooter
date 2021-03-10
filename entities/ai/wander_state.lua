@@ -10,7 +10,10 @@ function wander.OnUpdate(dt, bot)
 
     if bot.alive then
 
-        if helpers.isInConeOfView(bot, handlers.player.player) then 
+        local canBeSeen = helpers.canBeSeen(bot, handlers.player.player)
+        -- print('canBeSeen '..tostring(canBeSeen))
+
+        if helpers.isInConeOfView(bot, handlers.player.player) --[[ and canBeSeen ]] then 
             helpers.turnProgressivelyTo(bot, handlers.player.player)
         end
 

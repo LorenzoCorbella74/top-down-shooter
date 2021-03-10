@@ -73,7 +73,7 @@ BotsHandler.new = function()
                 -- debug field of view
                 if debug then
                     local delta = math.rad(60)
-                    local vision_length = 300
+                    local vision_length = 400
                     love.graphics.setColor( 0, 0.9, 0, 0.25 )
                     love.graphics.arc( "fill", bot.x + bot.w/2,bot.y+ bot.h/2 , vision_length, bot.r-delta, bot.r+delta )
                     love.graphics.setColor( 0, 0.9, 0, 0.75 )

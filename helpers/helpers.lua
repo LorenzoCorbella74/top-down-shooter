@@ -31,23 +31,42 @@ helpers.turnProgressivelyTo = function(self, actor)
     return self
 end
 
-helpers.isInConeOfView = function(self, actor)
-    local angle = helpers.angle(self, actor)
-    local distance = helpers.dist(self, actor)
-    local delta = math.rad(60)
-    local vision_length = 300
-    print(math.deg(angle), math.deg(self.r), math.deg(self.r -delta), math.deg(self.r + delta))
-    
-    if (distance < vision_length and math.abs(self.r - delta) < math.abs(angle) and--[[ and angle < self.r) or
-        (distance < vision_length and self.r < angle and ]] math.abs(angle) < math.abs(self.r + delta)) then
+helpers.correctAngle = function(angle)
+    return angle < 0 and math.rad(360) + angle or angle -- angle correction if negative
+end
+
+helpers.isInConeOfView = function(self, target)
+    local angle = helpers.correctAngle(helpers.angle(self, target)) -- angle between entities
+    local distance = helpers.dist(self, target)
+    local delta = math.rad(60) -- angle extent
+    local corrected = helpers.correctAngle(self.r)
+    local vision_length = 400 -- distance with target
+
+    print(math.deg(angle), math.deg(corrected))
+
+    if distance < vision_length and (corrected - angle <delta) then
         return true
     else
         return false
     end
 end
 
--- -49.137190501824        172.32389986253 112.32389986253 232.32389986253  diretto ad est
--- -137.58957334894        270     210     330                              diretto a nord
+-- if there is an obstacle hiding the entity from sight
+helpers.canBeSeen = function(point_sight, entity)
+    local items, len = world:querySegment(point_sight.x, point_sight.y,
+                                          entity.x, entity.y)
+    -- print(#items)
+    if len == 1 then
+        for i = 1, len do
+    
+            local col = items[i]
+            local item = items[i].other
+            -- impact with walls
+    
+        end
+    end
+    return len == 0
+end
 
 -- move an entity according to an angle and a passed velocity
 helpers.move = function(self, velocity)
