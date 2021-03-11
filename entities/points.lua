@@ -32,7 +32,7 @@ PointsHandler.new = function()
         local randomIndex = math.random(1, #indices)
         local choosen = self.spawnPoints[randomIndex]
         choosen.used = true
-        Timer.after(1, function() choosen.used = false end)
+        Timer.after(3, function() choosen.used = false end)
         return choosen.x, choosen.y, choosen.orientation
     end
 
@@ -45,7 +45,7 @@ PointsHandler.new = function()
             waypoints.bots = {}
             for y = #bots, 1, -1 do
                 local bot = bots[y]
-                waypoints.bots[bot.index] = {visible = true}
+                waypoints.bots[bot.index] = {visible = true}  -- index o name ???
             end
         end
     end

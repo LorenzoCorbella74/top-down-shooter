@@ -1,5 +1,5 @@
-local WeaponsInventory  = require "entities.weapons" -- loading weaponsInventory
-local FsmMachine        = require"entities.ai.fsm"
+local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
+local FsmMachine = require "entities.ai.fsm"
 
 local BotsHandler = {}
 
@@ -31,8 +31,10 @@ BotsHandler.new = function()
 
             weaponsInventory = WeaponsInventory.new(),
 
+            attackCounter = 0, -- frequenza di sparo
+
             path = {},
-            nodes = {},
+            nodes = {}
         }
         -- ai
         bot.brain = FsmMachine.new(bot)
@@ -61,7 +63,7 @@ BotsHandler.new = function()
     function self.update(self, dt)
         for _i = #self.bots, 1, -1 do
             local bot = self.bots[_i]
-            bot.brain.update(dt)
+            if bot.alive then bot.brain.update(dt) end
         end
     end
 
@@ -74,13 +76,13 @@ BotsHandler.new = function()
                 if debug then
                     local delta = math.rad(60)
                     local vision_length = 400
-                    love.graphics.setColor( 0, 0.9, 0, 0.25 )
-                    love.graphics.arc( "fill", bot.x + bot.w/2,bot.y+ bot.h/2 , vision_length, bot.r-delta, bot.r+delta )
-                    love.graphics.setColor( 0, 0.9, 0, 0.75 )
-                    love.graphics.arc( "line", bot.x + bot.w/2,bot.y+ bot.h/2 , vision_length, bot.r-delta, bot.r+delta )
+                    love.graphics.setColor(0, 0.9, 0, 0.25)
+                    love.graphics.arc("fill", bot.x + bot.w / 2, bot.y + bot.h / 2, vision_length, bot.r - delta, bot.r + delta)
+                    love.graphics.setColor(0, 0.9, 0, 0.75)
+                    love.graphics.arc("line", bot.x + bot.w / 2, bot.y + bot.h / 2, vision_length, bot.r - delta, bot.r + delta)
                     -- coordinates
-                    love.graphics.setColor( 1, 1, 1 )
-                    love.graphics.print(math.floor(bot.x) .. ' ' .. math.floor(bot.y), bot.x, bot.y + 32)
+                    love.graphics.setColor(1, 1, 1)
+                    love.graphics.print(math.floor(bot.x) .. ' ' ..math.floor(bot.y), bot.x, bot.y + 32)
                     love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                 end
             end

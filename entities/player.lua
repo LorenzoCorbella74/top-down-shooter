@@ -1,19 +1,12 @@
 -- require "..helpers.boundingbox"
 local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
+local helpers = require "..helpers.helpers"
 
 local PlayerHandler = {}
 
 PlayerHandler.new = function()
 
     local self = map:addCustomLayer("Sprites", 4)
-
-    local playerFilter = function(item, other)
-        if other.name == 'health' and other.visible then
-            return 'cross'
-        else
-            return 'slide'
-        end
-    end
 
     function self.create()
         -- Create player object
@@ -89,27 +82,7 @@ PlayerHandler.new = function()
         p.old_x = p.x
         p.old_y = p.y
 
-        local cols, cols_len
-        -- update the player associated bounding box in the world
-        p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, playerFilter)
-
-        --[[ collisions ]]
-        for i = 1, cols_len do
-            local item = cols[i].other
-            local col = cols[i]
-            if (item.type == 'powerups' and item.visible) then
-                handlers.powerups.applyPowerup(item, self.player)
-                -- test time dilatation
-                handlers.timeManagement.setDilatation(0.5, 1)
-            end
-            if (item.type == 'ammo' and item.visible) then
-                handlers.powerups.applyAmmo(item, self.player)
-            end
-            if (item.type == 'weapons' and item.visible) then
-                handlers.powerups.applyWeapon(item, self.player)
-            end
-            print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
-        end
+        helpers.checkCollision(p,futurex, futurey)
 
         -- player rotation
         local mx, my = camera:getMousePosition()

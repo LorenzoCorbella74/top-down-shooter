@@ -1,5 +1,6 @@
-local wander = require "entities.ai.wander_state"
+local collect = require "entities.ai.collect_state"
 local fight = require "entities.ai.fight_state"
+local collectAndfight = require "entities.ai.collect_and_fight_state"
 
 local FsmMachine = {}
 
@@ -12,11 +13,12 @@ function FsmMachine.new(bot)
 
     function self.init()
         -- register all states
-        self.registerState(wander)
+        self.registerState(collect)
+        self.registerState(collectAndfight)
         self.registerState(fight)
 
-        -- default initialization (wander)
-        self.push(wander.stateName)
+        -- default initialization (collect)
+        self.push(collect.stateName)
     end
 
     -- register state
