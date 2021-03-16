@@ -1,3 +1,57 @@
+-- map, filter, reduce
+-- source: https://devforum.roblox.com/t/functional-shenanigans-map-filter-partition-reduce-two-ways/199027
+local map = function(sequence, transformation)
+    local newlist = {}
+    for i, v in pairs(sequence) do newlist[i] = transformation(v) end
+    return newlist
+end
+
+local filter = function(sequence, predicate)
+    local newlist = {}
+    if sequence then
+        for i, v in ipairs(sequence) do
+            if predicate(v) then table.insert(newlist, v) end
+        end
+    end
+    return newlist
+end
+
+local partition = function(sequence, predicate)
+    local left = {}
+    local right = {}
+    for i, v in ipairs(sequence) do
+        if (predicate(v)) then
+            table.insert(left, v)
+        else
+            table.insert(right, v)
+        end
+    end
+    return left, right
+end
+
+local reduce = function(sequence, operator)
+    if #sequence == 0 then return nil end
+    local out = nil
+    for i = 1, #sequence do out = operator(out, sequence[i]) end
+    return out
+end
+
+-- source: https://stackoverflow.com/a/1283608
+function tableMerge(t1, t2)
+    for k, v in pairs(t2) do
+        if type(v) == "table" then
+            if type(t1[k] or false) == "table" then
+                tableMerge(t1[k] or {}, t2[k] or {})
+            else
+                t1[k] = v
+            end
+        else
+            t1[k] = v
+        end
+    end
+    return t1
+end
+
 local helpers = {}
 
 -- calculate the minor angle
@@ -93,9 +147,68 @@ helpers.checkCollision = function(p, futurex, futurey)
         if (item.type == 'weapons' and item.visible) then
             handlers.powerups.applyWeapon(item, p)
         end
-        print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
+        print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
+                  col.other, col.type, col.normal.x, col.normal.y))
     end
+end
 
+helpers.getNearestVisibleEnemy = function(bot)
+    local output = {distance = 10000} 
+    local opponents = filter(handlers.actors, function(actor)
+        return actor.index ~= bot.index and actor.alive and actor.team ~=bot.team
+    end)
+    local visible_opponents = filter(opponents, function(actor)
+        return helpers.canBeSeen(bot, actor)
+    end)
+    if visible_opponents then
+        for index, enemy in ipairs(visible_opponents) do
+            local distance = helpers.dist(bot, enemy);
+            if output.distance > distance and distance < 400 then
+                output = {distance = distance, enemy = enemy};
+            end
+        end
+        return output;
+    else
+        return nil;
+    end
+end
+
+helpers.getNearestWaypoint = function(bot)
+    local output = {distance = 10000}
+    -- solo quelli non ancora attraversati dallo specifico bot
+    local waypoints = filter(handlers.points.waypoints, function(point)
+        return point[bot.index].visible == true
+    end)
+    -- solo quelli visibili
+    local visible_waypoints = filter(waypoints, function(point)
+        return helpers.canBeSeen(bot, point)
+    end)
+    if visible_waypoints then
+        for index, point in ipairs(visible_waypoints) do
+            local distance = helpers.dist(bot, point);
+            if output.distance > distance and distance < 600 then
+                output = {distance = distance, waypoint = point};
+            end
+        end
+    end
+    return output;
+end
+
+helpers.getNearestPowerup = function(bot)
+    local output = {distance = 10000}
+    -- si esclude quelli non visibili (quelli già presi!)
+    local visible_powerups = filter(handlers.powerups.powerups, function(point)
+        return point.visible == true
+    end)
+    if visible_powerups then
+        for index, item in ipairs(visible_powerups) do
+            local distance = helpers.dist(bot, item);
+            if output.distance > distance and distance < 600 then
+                output = {distance = distance, item = item};
+            end
+        end
+        return output;
+    end
 end
 
 return helpers

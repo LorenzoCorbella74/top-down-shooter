@@ -1,18 +1,19 @@
-local PointsHandler    = require "entities.points"          -- handler for spawnPoints, waypoints
-local PlayerHandler    = require "entities.player"          -- handler for player
-local PowerupsHandler  = require "entities.powerups"        -- handler for powerups
-local BulletsHandler   = require "entities.bullets"         -- handler for bullets
-local BotsHandler      = require "entities.bots"            -- handler for bots
-local countdown        = require "..helpers.countdown"      -- handler for game countdown
+local PointsHandler = require "entities.points" -- handler for spawnPoints, waypoints
+local PlayerHandler = require "entities.player" -- handler for player
+local PowerupsHandler = require "entities.powerups" -- handler for powerups
+local BulletsHandler = require "entities.bullets" -- handler for bullets
+local BotsHandler = require "entities.bots" -- handler for bots
+local countdown = require "..helpers.countdown" -- handler for game countdown
 
-local PathfindHandler   = require "..helpers.pathfinding"     -- handler for jupiter wrapper
-local TimeManagement    = require "..helpers.timeManagement"   -- handle time effect (ala Max payne...)
+local PathfindHandler = require "..helpers.pathfinding" -- handler for jupiter wrapper
+local TimeManagement = require "..helpers.timeManagement" -- handle time effect (ala Max payne...)
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = ''}
 
 local GAME_BOTS_NUMBERS = 1
 local GAME_MATCH_DURATION = 120
 local GAME_RESPAWN_TIME = 10
+local GAME_GAMETYPE = 'deathmatch'
 
 -- init is called only once
 -- enter is called when push
@@ -26,10 +27,10 @@ function state:enter()
     camera:setFollowLerp(0.2)
     camera:setFollowLead(10)
 
-    map = sti("maps/dm1.lua", {'bump'})    -- Load map file
-    world = bump.newWorld(32)              -- defining the world for collisions
+    map = sti("maps/dm1.lua", {'bump'}) -- Load map file
+    world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world)
-    
+
     handlers = {}
 
     -- spawn_points and bots waypoints
@@ -37,7 +38,7 @@ function state:enter()
     handlers.points.getPointsFromMap()
 
     -- path finding helpers for jumper
-    local map_for_jumper = require('maps/dm'..tostring(1))
+    local map_for_jumper = require('maps/dm' .. tostring(1))
     handlers.pf = PathfindHandler.new(map_for_jumper, 'walls', 0, 'JPS')
 
     -- player
@@ -56,7 +57,7 @@ function state:enter()
     table.insert(handlers.actors, handlers.player.player)
     handlers.bots = BotsHandler.new()
     for i = 1, GAME_BOTS_NUMBERS, 1 do
-        handlers.bots.create()
+        handlers.bots.create(state.defineTeams(i))
         table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information
@@ -69,7 +70,9 @@ function state:enter()
 
     -- default camera is following the player
     handlers.camera = {}
-    handlers.camera.setCameraOnActor = function (actor) state.currentCameraTarget = actor end
+    handlers.camera.setCameraOnActor = function(actor)
+        state.currentCameraTarget = actor
+    end
     handlers.camera.setCameraOnActor(handlers.player.player)
 
     -- set game message
@@ -82,14 +85,11 @@ function state:enter()
     handlers.timeManagement = TimeManagement.new()
 end
 
-
 function state:update(dt)
     dt = handlers.timeManagement.processTime(dt)
     map:update(dt) -- Update internally all map layers
     -- handle machine gun behaviour
-    if love.mouse.isDown(1) then
-        handlers.player.fire(dt)
-    end
+    if love.mouse.isDown(1) then handlers.player.fire(dt) end
     camera:update(dt)
     camera:follow(state.currentCameraTarget.x, state.currentCameraTarget.y)
     Timer.update(dt)
@@ -100,7 +100,7 @@ function state:draw()
     camera:attach()
 
     -- Draw your game here
-    local scale = 1 
+    local scale = 1
     -- Scale world with camera.scale
 
     if debug then
@@ -168,6 +168,17 @@ function love.wheelmoved(x, y)
     end
 end
 
+state.defineTeams = function(index)
+    if GAME_GAMETYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
+        return 'team$' .. index + 2
+    else -- per teamDeathMatch e CTF
+        if index < math.floor(GAME_BOTS_NUMBERS / 2) + 1 then
+            return 'team2'
+        else
+            return 'team1'
+        end
+    end
+end
 
 function drawHUD()
     love.graphics.setFont(Fonts.md)
@@ -183,9 +194,9 @@ function drawHUD()
     local fps = love.timer.getFPS()
     love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96, 32)
     -- Time of the current match
-    love.graphics.printf("Time: " .. tostring(GameCountdown.show()),(love.graphics.getWidth() / 2) - 64, 32, 200, "center")
+    love.graphics.printf("Time: " .. tostring(GameCountdown.show()), (love.graphics.getWidth() / 2) - 64, 32, 200, "center")
     -- game message
-    love.graphics.printf(state.message,(love.graphics.getWidth() / 2) - 128, 64, 220, "center")
+    love.graphics.printf(state.message, (love.graphics.getWidth() / 2) - 128, 64, 220, "center")
 end
 
 return state

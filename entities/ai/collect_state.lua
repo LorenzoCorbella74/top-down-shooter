@@ -4,7 +4,6 @@ local collect = {stateName = 'collect'}
 
 function collect.OnEnter(bot)
     print("collect.OnEnter() " .. bot.name)
-
     -- find best target of movement (collectable or waypoint)
     -- calculate path
     -- if path -> followPath
@@ -12,11 +11,15 @@ end
 
 function collect.OnUpdate(dt, bot)
 
-    local canBeSeen = helpers.canBeSeen(bot, handlers.player.player)
-    -- print('canBeSeen '..tostring(canBeSeen))
-
-    if helpers.isInConeOfView(bot, handlers.player.player) and canBeSeen then
-        helpers.turnProgressivelyTo(bot, handlers.player.player)
+    local current_enemy = helpers.getNearestVisibleEnemy(bot)
+    if current_enemy then
+        local enemy = current_enemy.enemy
+        if enemy and helpers.isInConeOfView(bot, enemy) then
+            bot.target = enemy
+            print(bot.name .. ' has ' .. enemy.name .. ' as target')
+            bot.brain.push('fight')
+            return
+        end
     end
 
     bot.old_x = bot.x
@@ -27,8 +30,7 @@ function collect.OnUpdate(dt, bot)
     local futurey = bot.y
 
     -- collisions
-    local cols, cols_len
-    bot.x, bot.y, cols, cols_len = world:move(bot, futurex, futurey)
+    helpers.checkCollision(bot,futurex, futurey)
 end
 
 function collect.OnLeave(bot)

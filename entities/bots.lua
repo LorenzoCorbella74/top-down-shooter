@@ -9,14 +9,14 @@ BotsHandler.new = function()
 
     self.bots = {}
 
-    function self.create()
+    function self.create(team)
 
         -- Create player object
         local sprite = Sprites.red_bot
         local bot = {
             index = math.random(1000000), -- id
             name = 'bot' .. #self.bots + 1,
-            team = 'red',
+            team = team,
             type = 'actor',
             sprite = sprite,
             w = sprite:getWidth(),
@@ -33,8 +33,9 @@ BotsHandler.new = function()
 
             attackCounter = 0, -- frequenza di sparo
 
-            path = {},
-            nodes = {}
+            path = {},          -- path to reach an item
+            target = {},        -- target for fighting
+            targetItem = {}     -- target of movement
         }
         -- ai
         bot.brain = FsmMachine.new(bot)
@@ -84,6 +85,7 @@ BotsHandler.new = function()
                     love.graphics.setColor(1, 1, 1)
                     love.graphics.print(math.floor(bot.x) .. ' ' ..math.floor(bot.y), bot.x, bot.y + 32)
                     love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
+                    love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 70)
                 end
             end
         end
