@@ -16,7 +16,7 @@ GameScreen = require 'states.gamescreen'
 PauseScreen = require 'states.pausescreen'
 GameoverScreen = require 'states.gameoverscreen'
 
-function love.load()
+function love.load(arg)
     -- debug with ZEROBRANE Studio
     if arg[#arg] == "-debug" then require("mobdebug").start() end
 

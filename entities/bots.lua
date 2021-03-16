@@ -33,7 +33,7 @@ BotsHandler.new = function()
 
             attackCounter = 0, -- frequenza di sparo
 
-            path = {},          -- path to reach an item
+            nodes = {},         -- path to reach an item
             target = {},        -- target for fighting
             targetItem = {}     -- target of movement
         }
@@ -86,6 +86,27 @@ BotsHandler.new = function()
                     love.graphics.print(math.floor(bot.x) .. ' ' ..math.floor(bot.y), bot.x, bot.y + 32)
                     love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 70)
+                end
+                -- debug path
+                if debug and bot.nodes and #bot.nodes then
+                    -- points to cursor
+                    for i = 2, #bot.nodes, 1 do
+                        local n = bot.nodes[i]
+                        local nm = bot.nodes[i - 1]
+                        local a = {x = 0, y = 0}
+                        local am = {x = 0, y = 0}
+                        am.x, am.y = handlers.pf.tileToWorld(nm.x, nm.y)
+                        a.x, a.y = handlers.pf.tileToWorld(n.x, n.y)
+                        -- linea rossa tiene conto dell'offset al centro del player
+                        love.graphics.setColor(1, 0, 0, 1)
+                        love.graphics.circle('fill', am.x + 16, am.y + 16, 4)
+                        love.graphics.line(am.x + 16, am.y + 16, a.x + 16, a.y + 16)
+                        -- linea gialla tiles del path
+                        love.graphics.setColor(1, 1, 0, 1)
+                        love.graphics.circle('fill', a.x, a.y, 4)
+                        love.graphics.line(am.x, am.y, a.x, a.y)
+                        love.graphics.rectangle('line', am.x, am.y, 32, 32)
+                    end
                 end
             end
         end

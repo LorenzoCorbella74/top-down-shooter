@@ -72,7 +72,7 @@ end
 helpers.dist = function(a, b)
     local dx = b.x - a.x
     local dy = b.y - a.y
-    return math.sqrt(dx * dx + dy * dy);
+    return math.sqrt(dx * dx + dy * dy), dx, dy;
 end
 
 -- point an entity toward an actor
@@ -139,7 +139,8 @@ helpers.checkCollision = function(p, futurex, futurey)
         if (item.type == 'powerups' and item.visible) then
             handlers.powerups.applyPowerup(item, p)
             -- test time dilatation
-            handlers.timeManagement.setDilatation(0.5, 1)
+            -- sound!
+            -- handlers.timeManagement.setDilatation(0.5, 1)
         end
         if (item.type == 'ammo' and item.visible) then
             handlers.powerups.applyAmmo(item, p)
@@ -147,13 +148,12 @@ helpers.checkCollision = function(p, futurex, futurey)
         if (item.type == 'weapons' and item.visible) then
             handlers.powerups.applyWeapon(item, p)
         end
-        print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(
-                  col.other, col.type, col.normal.x, col.normal.y))
+        print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
     end
 end
 
 helpers.getNearestVisibleEnemy = function(bot)
-    local output = {distance = 10000} 
+    local output = {distance = 10000}
     local opponents = filter(handlers.actors, function(actor)
         return actor.index ~= bot.index and actor.alive and actor.team ~=bot.team
     end)
@@ -195,12 +195,12 @@ helpers.getNearestWaypoint = function(bot)
 end
 
 helpers.getNearestPowerup = function(bot)
-    local output = {distance = 10000}
+    local output = {distance = 10000, item = nil}
     -- si esclude quelli non visibili (quelli già presi!)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
         return point.visible == true
     end)
-    if visible_powerups then
+    if visible_powerups and #visible_powerups then
         for index, item in ipairs(visible_powerups) do
             local distance = helpers.dist(bot, item);
             if output.distance > distance and distance < 600 then
@@ -209,6 +209,23 @@ helpers.getNearestPowerup = function(bot)
         end
         return output;
     end
+end
+
+helpers.findPath = function(bot, target)
+    -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e fine
+    -- e poi si deve togliere 1 dai nodi calcolati
+    local nodes = {}
+    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32, bot.y + bot.h / 2 + 32)
+    local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
+    local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
+    if path then
+        print(('Path found! Length: %.2f'):format(path:getLength()))
+        for node, count in path:nodes() do
+            -- print(('Step: %d - x: %d - y: %d'):format(count, node:getX(),node:getY()))
+            table.insert(nodes, {x = node:getX() - 1, y = node:getY() - 1})
+        end
+    end
+    return nodes
 end
 
 return helpers

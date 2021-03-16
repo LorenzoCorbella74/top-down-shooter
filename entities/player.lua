@@ -122,45 +122,6 @@ PlayerHandler.new = function()
                 love.graphics.rectangle("line", x, y, w, h)
             end
         end
-
-        -- path
-        if debug and p.nodes and #p.nodes then
-            -- points to cursor
-            for i = 2, #p.nodes, 1 do
-                local n = p.nodes[i]
-                local nm = p.nodes[i - 1]
-                local a = {x = 0, y = 0}
-                local am = {x = 0, y = 0}
-                am.x, am.y = handlers.pf.tileToWorld(nm.x, nm.y)
-                a.x, a.y = handlers.pf.tileToWorld(n.x, n.y)
-                -- linea rossa tiene conto dell'offset al centro del player
-                love.graphics.setColor(1, 0, 0, 1)
-                love.graphics.circle('fill', am.x + 16, am.y + 16, 4)
-                love.graphics.line(am.x + 16, am.y + 16, a.x + 16, a.y + 16)
-                -- linea gialla tiles del path
-                love.graphics.setColor(1, 1, 0, 1)
-                love.graphics.circle('fill', a.x, a.y, 4)
-                love.graphics.line(am.x, am.y, a.x, a.y)
-                love.graphics.rectangle('line', am.x, am.y, 32, 32)
-
-                -- debugging collision map
-                --[[ local tw = handlers.pf.starting_map.tilewidth
-                local nw = handlers.pf.starting_map.width
-                local th = handlers.pf.starting_map.tileheight
-                local nh = handlers.pf.starting_map.height
-                for y = 1, nw, 1 do
-                    for x = 1, nh, 1 do
-                        if handlers.pf.collisionMap[y][x] == 0 then
-                            love.graphics.setColor(0.5, 0.5, 0.5, 0.1)
-                        else
-                            love.graphics.setColor(0, 0, 1, 1)
-                        end
-                        love.graphics.rectangle('line', (x-1) * tw, (y-1) * th, tw, th)
-                    end
-                end ]]
-            end
-        end
-
     end
 
     function self.fire(dt)
@@ -187,19 +148,6 @@ PlayerHandler.new = function()
                 p.attackCounter = w.frequency
             end
 
-            -- test path finding
-            -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e finder
-            -- e poi si deve togliere 1 dai nodi calcolati
-            --[[ local startx, starty = handlers.pf.worldToTile(p.x + p.w / 2 + 32, p.y + p.h / 2 + 32)
-            local finalx, finaly = handlers.pf.worldToTile(mx + 32, my+32)
-            p.path = handlers.pf.calculatePath(startx, starty, finalx,finaly)
-            if p.path then
-                print(('Path found! Length: %.2f'):format(p.path:getLength()))
-                for node, count in p.path:nodes() do
-                    print(('Step: %d - x: %d - y: %d'):format(count, node:getX(), node:getY()))
-                    table.insert(p.nodes, {x = node:getX()-1, y = node:getY()-1})
-                end
-            end ]]
         else
             p.weaponsInventory.getBest()
         end
