@@ -125,7 +125,25 @@ PlayerHandler.new = function()
                 local x, y, w, h = world:getRect(items[i])
                 love.graphics.rectangle("line", x, y, w, h)
             end
+
+            -- debugging collision map
+            local tw = handlers.pf.starting_map.tilewidth
+            local nw = handlers.pf.starting_map.width
+            local th = handlers.pf.starting_map.tileheight
+            local nh = handlers.pf.starting_map.height
+            for y = 1, nw, 1 do
+                for x = 1, nh, 1 do
+                    if handlers.pf.collisionMap[y][x] == 0 then
+                        love.graphics.setColor(0.5, 0.5, 0.5, 0.1)
+                    else
+                        love.graphics.setColor(0, 0, 1, 1)
+                    end
+                    love.graphics.rectangle('line', (x-1) * tw, (y-1) * th, tw, th)
+                end
+            end
         end
+
+        
     end
 
     function self.fire(dt)

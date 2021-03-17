@@ -19,16 +19,19 @@ function collect.checkIfEnemy(bot)
 end
 
 function collect.init(bot)
-    local start_time = os.time()
+    local start_time = love.timer.getTime()
     local best_waypoint = helpers.getNearestWaypoint(bot)
     local best_powerup = helpers.getNearestPowerup(bot)
-        
+
     collect.checkIfEnemy(bot)
-    bot.nodes = helpers.findPath(bot, best_powerup.item or best_waypoint.item)
-    bot.targetItem = best_powerup.item or best_waypoint.item
-    local end_time = os.time()
-    local elapsed_time = os.difftime(end_time,start_time)
-    bot.info = tostring(elapsed_time)
+    if best_powerup.item or best_waypoint.item then
+        local best = best_powerup.item or best_waypoint.item
+        bot.nodes = helpers.findPath(bot, best)
+        bot.targetItem = best
+        local end_time = love.timer.getTime()
+        local elapsed_time = end_time - start_time
+        bot.info = tostring(elapsed_time)
+    end
 end
 
 function collect.OnEnter(bot)
@@ -46,7 +49,7 @@ function collect.OnUpdate(dt, bot)
     end
 
     local cell = bot.nodes[1]
-    bot.old_x = bot.x 
+    bot.old_x = bot.x
     bot.old_y = bot.y
     -- update bot positions
     local futurex = bot.x
@@ -58,8 +61,8 @@ function collect.OnUpdate(dt, bot)
     --  We need to get the distance
     local dist, dx, dy = helpers.dist(bot, am)
     if dist ~= 0 then
-        futurex = bot.x + dx/dist * bot.speed * dt
-        futurey = bot.y + dy/dist * bot.speed * dt
+        futurex = bot.x + dx / dist * bot.speed * dt
+        futurey = bot.y + dy / dist * bot.speed * dt
     end
     -- turn to current path node
     helpers.turnProgressivelyTo(bot, am)
@@ -71,7 +74,7 @@ function collect.OnUpdate(dt, bot)
         if #bot.nodes == 0 then
             bot.targetItem = {}
             collect.init(bot)
-         end
+        end
     end
 end
 

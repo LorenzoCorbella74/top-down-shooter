@@ -89,7 +89,7 @@ BotsHandler.new = function()
                     love.graphics.print(math.floor(bot.x) .. ' ' ..math.floor(bot.y), bot.x, bot.y + 32)
                     love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 70)
-                    love.graphics.print("Info: " .. bot.info, bot.x + 48, bot.y + 70)
+                    love.graphics.print("Info: " .. bot.info, bot.x + 70, bot.y + 70)
                 end
                 -- debug path
                 if debug and bot.nodes and #bot.nodes then
