@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 8,
-  nextobjectid = 38,
+  nextobjectid = 41,
   properties = {},
   tilesets = {
     {
@@ -591,6 +591,38 @@ return {
           shape = "rectangle",
           x = 1485.33,
           y = 1313.33,
+          width = 32,
+          height = 32,
+          rotation = 0,
+          gid = 13,
+          visible = true,
+          properties = {
+            ["objective"] = "navigation"
+          }
+        },
+        {
+          id = 38,
+          name = "waypoint",
+          type = "",
+          shape = "rectangle",
+          x = 1405.33,
+          y = 636,
+          width = 32,
+          height = 32,
+          rotation = 0,
+          gid = 13,
+          visible = true,
+          properties = {
+            ["objective"] = "navigation"
+          }
+        },
+        {
+          id = 40,
+          name = "waypoint",
+          type = "",
+          shape = "rectangle",
+          x = 1221.33,
+          y = 157.333,
           width = 32,
           height = 32,
           rotation = 0,

@@ -61,7 +61,10 @@ function state:enter()
         table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information
-    handlers.points.seedBotsInWaypoints(handlers.bots.bots)
+    handlers.points.seedBotsInWaypoints(handlers.actors)
+    for i = 1, GAME_BOTS_NUMBERS, 1 do
+        handlers.bots.bots[i].brain.init() -- wamder as default
+    end
 
     -- Remove unneeded object layer from map
     map:removeLayer("Spawn_points")
@@ -87,8 +90,10 @@ end
 
 function state:update(dt)
     dt = handlers.timeManagement.processTime(dt)
+
     map:update(dt) -- Update internally all map layers
-    -- handle machine gun behaviour
+
+    -- player firing !!!
     if love.mouse.isDown(1) then handlers.player.fire(dt) end
     camera:update(dt)
     camera:follow(state.currentCameraTarget.x, state.currentCameraTarget.y)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="38">
+<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="41">
  <editorsettings>
   <export target="dm1.lua" format="lua"/>
  </editorsettings>
@@ -261,6 +261,16 @@
    </properties>
   </object>
   <object id="37" name="waypoint" gid="13" x="1485.33" y="1313.33" width="32" height="32">
+   <properties>
+    <property name="objective" value="navigation"/>
+   </properties>
+  </object>
+  <object id="38" name="waypoint" gid="13" x="1405.33" y="636" width="32" height="32">
+   <properties>
+    <property name="objective" value="navigation"/>
+   </properties>
+  </object>
+  <object id="40" name="waypoint" gid="13" x="1221.33" y="157.333" width="32" height="32">
    <properties>
     <property name="objective" value="navigation"/>
    </properties>

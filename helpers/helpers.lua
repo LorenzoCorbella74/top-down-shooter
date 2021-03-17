@@ -109,7 +109,8 @@ end
 
 -- if there is an obstacle hiding the entity from sight (using bump)
 helpers.canBeSeen = function(point_sight, entity)
-    local items, len = world:querySegment(point_sight.x, point_sight.y,entity.x, entity.y)
+    local items, len = world:querySegment(point_sight.x, point_sight.y,
+                                          entity.x, entity.y)
     for i = 1, len, 1 do
         local what = items[i]
         if what.layer and what.layer.name == 'walls' then
@@ -129,8 +130,21 @@ end
 
 helpers.checkCollision = function(p, futurex, futurey)
     local cols, cols_len
+    local movementfilter = function(item, other)
+        if other.name == "waypoint" then
+            return 'cross'
+        elseif other.type == 'powerups' then
+            return 'cross'
+        elseif other.type == 'ammo' then
+            return 'cross'
+        elseif other.type == 'weapons' then
+            return 'cross'
+        else
+            return 'slide'
+        end
+    end
     -- update the actor associated bounding box in the world
-    p.x, p.y, cols, cols_len = world:move(p, futurex, futurey)
+    p.x, p.y, cols, cols_len = world:move(p, futurex, futurey, movementfilter)
 
     --[[ collisions ]]
     for i = 1, cols_len do
@@ -147,6 +161,13 @@ helpers.checkCollision = function(p, futurex, futurey)
         end
         if (item.type == 'weapons' and item.visible) then
             handlers.powerups.applyWeapon(item, p)
+        end
+        if (item.name == 'waypoint') then
+            item.bots[p.index].visible = false
+            --world:remove(item)
+            Timer.after(5, function()
+                item.bots[p.index].visible = true
+            end)
         end
         print(("col.other = %s, col.type = %s, col.normal = %d,%d"):format(col.other, col.type, col.normal.x, col.normal.y))
     end
@@ -174,10 +195,10 @@ helpers.getNearestVisibleEnemy = function(bot)
 end
 
 helpers.getNearestWaypoint = function(bot)
-    local output = {distance = 10000}
+    local output = {distance = 10000, item = nil}
     -- solo quelli non ancora attraversati dallo specifico bot
     local waypoints = filter(handlers.points.waypoints, function(point)
-        return point[bot.index].visible == true
+        return point.bots[bot.index].visible == true
     end)
     -- solo quelli visibili
     local visible_waypoints = filter(waypoints, function(point)
@@ -186,8 +207,8 @@ helpers.getNearestWaypoint = function(bot)
     if visible_waypoints then
         for index, point in ipairs(visible_waypoints) do
             local distance = helpers.dist(bot, point);
-            if output.distance > distance and distance < 600 then
-                output = {distance = distance, waypoint = point};
+            if output.distance > distance and distance < 1000 then
+                output = {distance = distance, item = point};
             end
         end
     end
@@ -203,7 +224,7 @@ helpers.getNearestPowerup = function(bot)
     if visible_powerups and #visible_powerups then
         for index, item in ipairs(visible_powerups) do
             local distance = helpers.dist(bot, item);
-            if output.distance > distance and distance < 600 then
+            if output.distance > distance and distance < 1000 then
                 output = {distance = distance, item = item};
             end
         end
@@ -215,7 +236,7 @@ helpers.findPath = function(bot, target)
     -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e fine
     -- e poi si deve togliere 1 dai nodi calcolati
     local nodes = {}
-    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32, bot.y + bot.h / 2 + 32)
+    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32,bot.y + bot.h / 2 + 32)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path then

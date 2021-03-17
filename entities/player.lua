@@ -21,6 +21,10 @@ PlayerHandler.new = function()
             h = sprite:getHeight(),
             speed = 256, -- pixels per second
 
+            x = 0,
+            y = 0,
+            r = 0,
+
             damage = 1, -- capacity to make damage (1 normal 4 for quad)
 
             kills = 0, -- enemy killed

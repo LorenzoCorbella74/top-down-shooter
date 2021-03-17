@@ -2,12 +2,9 @@ local helpers = require "../../helpers.helpers"
 
 local collect = {stateName = 'collect'}
 
-function collect.init(bot)
-    -- local current_enemy = helpers.getNearestVisibleEnemy(bot)
-    -- local best_waypoint = helpers.getNearestWaypoint(bot)
-    -- local best_powerup = helpers.getNearestPowerup(bot)
-
-    if  --[[ current_enemy and (best_powerup.distance<100 or best_waypoint.distance<100) then
+function collect.checkIfEnemy(bot)
+    local current_enemy = helpers.getNearestVisibleEnemy(bot)
+    if --[[ current_enemy and (best_powerup.distance<250 or best_waypoint.distance<100 ) then
         bot.brain.push('collectAndfight')
         return
     elseif ]] current_enemy then
@@ -19,27 +16,37 @@ function collect.init(bot)
             return
         end
     end
-    -- bot.nodes = helpers.findPath(bot, best_powerup.item --[[ or best_waypoint ]])
-    -- bot.targetItem = best_powerup.item --[[ or best_waypoint ]]
+end
+
+function collect.init(bot)
+    local start_time = os.time()
+    local best_waypoint = helpers.getNearestWaypoint(bot)
+    local best_powerup = helpers.getNearestPowerup(bot)
+        
+    collect.checkIfEnemy(bot)
+    bot.nodes = helpers.findPath(bot, best_powerup.item or best_waypoint.item)
+    bot.targetItem = best_powerup.item or best_waypoint.item
+    local end_time = os.time()
+    local elapsed_time = os.difftime(end_time,start_time)
+    bot.info = tostring(elapsed_time)
 end
 
 function collect.OnEnter(bot)
     print("collect.OnEnter() " .. bot.name)
-    -- find best target of movement (collectable or waypoint)
-    -- calculate path
-    -- if path -> followPath
     collect.init(bot)
 end
 
 function collect.OnUpdate(dt, bot)
+
+    collect.checkIfEnemy(bot)
     -- if there is a target item and a path to this target 
     if next(bot.nodes) == nil then
         -- myTable is empty
         return
     end
 
-    local cell = bot.nodes[0]
-    bot.old_x = bot.x
+    local cell = bot.nodes[1]
+    bot.old_x = bot.x 
     bot.old_y = bot.y
     -- update bot positions
     local futurex = bot.x
@@ -47,21 +54,20 @@ function collect.OnUpdate(dt, bot)
 
     local am = {x = 0, y = 0}
     am.x, am.y = handlers.pf.tileToWorld(cell.x, cell.y)
-    -- bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, cellx, celly);
-    --  We need to get the distance
 
+    --  We need to get the distance
     local dist, dx, dy = helpers.dist(bot, am)
     if dist ~= 0 then
-        futurex = bot.x + dx * bot.speed * dt
-        futurey = bot.y + dy * bot.speed * dt
+        futurex = bot.x + dx/dist * bot.speed * dt
+        futurey = bot.y + dy/dist * bot.speed * dt
     end
     -- turn to current path node
     helpers.turnProgressivelyTo(bot, am)
     -- collisions
     helpers.checkCollision(bot, futurex, futurey)
     -- if finished move to the next path element
-    if dist < 16 then
-        bot.path = table.remove(bot.nodes, 1);
+    if dist < 2 then
+        table.remove(bot.nodes, 1);
         if #bot.nodes == 0 then
             bot.targetItem = {}
             collect.init(bot)

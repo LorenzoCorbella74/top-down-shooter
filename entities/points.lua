@@ -7,17 +7,25 @@ PointsHandler.new = function()
     self.spawnPoints = {}
     self.waypoints = {}
 
+
+
     function self.getPointsFromMap()
         for k, object in pairs(map.objects) do
             -- spawnpoints
             if object.name == "spawn" then
                 object.used = false
+                object.w = object.width
+                object.h = object.height
                 object.orientation = math.rad(object.properties.orientation)
                 table.insert(self.spawnPoints, object)
             end
             -- bots' waypoints
             if object.name == "waypoint" then
+                object.w = object.width
+                object.h = object.height
+                object.inCheck = false
                 object.objective = object.properties.objective
+                world:add(object, object.x, object.y, object.width, object.height)
                 table.insert(self.waypoints, object)
             end
         end

@@ -1,7 +1,7 @@
 -- Debug with VSC
-if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+--[[ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
-end
+end ]]
 
 -- LIBRARIES
 Gamestate = require 'libs.gamestate'    -- https://hump.readthedocs.io/en/latest/gamestate.html
@@ -19,6 +19,8 @@ GameoverScreen = require 'states.gameoverscreen'
 function love.load(arg)
     -- debug with ZEROBRANE Studio
     if arg[#arg] == "-debug" then require("mobdebug").start() end
+    --[[ if pcall(require, "lldebugger") then require("lldebugger").start() end
+    if pcall(require, "mobdebug") then require("mobdebug").start() end ]]
 
     debug = false
 

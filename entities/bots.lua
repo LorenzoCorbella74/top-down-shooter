@@ -19,6 +19,9 @@ BotsHandler.new = function()
             team = team,
             type = 'actor',
             sprite = sprite,
+            x = 0,
+            y = 0,
+            r = 0,
             w = sprite:getWidth(),
             h = sprite:getHeight(),
             speed = 256, -- pixels per second
@@ -35,14 +38,14 @@ BotsHandler.new = function()
 
             nodes = {},         -- path to reach an item
             target = {},        -- target for fighting
-            targetItem = {}     -- target of movement
+            targetItem = {},    -- target of movement
+
+            info = ''           -- for debug
         }
         -- ai
         bot.brain = FsmMachine.new(bot)
-        bot.brain.init() -- wamder as default
-
-        table.insert(self.bots, bot)
         self.spawn(bot)
+        table.insert(self.bots, bot)
     end
 
     function self.spawn(bot)
@@ -86,6 +89,7 @@ BotsHandler.new = function()
                     love.graphics.print(math.floor(bot.x) .. ' ' ..math.floor(bot.y), bot.x, bot.y + 32)
                     love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 70)
+                    love.graphics.print("Info: " .. bot.info, bot.x + 48, bot.y + 70)
                 end
                 -- debug path
                 if debug and bot.nodes and #bot.nodes then

@@ -100,6 +100,8 @@ PowerupsHandler.new = function()
     function self.init()
         for k, object in pairs(map.objects) do
             if tipiPowerUp[object.name] ~= nil then
+                object.w = object.width
+                object.h = object.height
                 object.info = tipiPowerUp[object.name]
                 object.inCheck = false
                 -- if special collectable
@@ -118,8 +120,7 @@ PowerupsHandler.new = function()
                     object.of = object.info.of
                     object.type = object.info.type
                 end
-                world:add(object, object.x, object.y, object.width,
-                          object.height) -- powerups is in the phisycs world
+                world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
                 table.insert(self.powerups, object)
             end
         end
