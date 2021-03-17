@@ -49,7 +49,7 @@ function collect.OnUpdate(dt, bot)
         return
     end
     
-    -- if there is a target item and a path to this target 
+    -- if there is a target item and a path to this target
     local cell = bot.nodes[1]
     bot.old_x = bot.x
     bot.old_y = bot.y
@@ -60,7 +60,7 @@ function collect.OnUpdate(dt, bot)
     local am = {x = 0, y = 0}
     am.x, am.y = handlers.pf.tileToWorld(cell.x, cell.y)
 
-    --  We need to get the distance
+    -- get the distance
     local dist, dx, dy = helpers.dist(bot, am)
     if dist ~= 0 then
         futurex = bot.x + (dx / dist)* bot.speed * dt

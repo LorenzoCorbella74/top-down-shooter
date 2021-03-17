@@ -252,7 +252,7 @@ helpers.getNearestWaypoint = function(bot)
     if visible_waypoints then
         for index, point in ipairs(visible_waypoints) do
             local distance = helpers.dist(bot, point);
-            if output.distance > distance and distance < 1500 then
+            if output.distance > distance and distance < 2000 then
                 output = {distance = distance, item = point};
             end
         end
@@ -269,7 +269,7 @@ helpers.getNearestPowerup = function(bot)
     if visible_powerups and #visible_powerups then
         for index, item in ipairs(visible_powerups) do
             local distance = helpers.dist(bot, item);
-            if output.distance > distance and distance < 800 then
+            if output.distance > distance and distance < 1000 then
                 output = {distance = distance, item = item};
             end
         end
