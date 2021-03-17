@@ -133,6 +133,11 @@ function state:keyreleased(key, code)
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
     if key == 'f' then camera:flash(0.15, {1, 0, 0, 0.25}) end -- working
+    if key == 'l' then 
+        local filename = string.format("screenshot-%d.png", os.time())
+        love.graphics.captureScreenshot(filename)
+        print (string.format("written %s", filename))
+    end -- working
     if key == 'i' then debug = not debug end
     if key == "1" or key == "2" or key == "3" or key == "4" or key == "5" then
         local key = tonumber(key)

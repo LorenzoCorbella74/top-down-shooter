@@ -61,18 +61,19 @@ function collect.OnUpdate(dt, bot)
     --  We need to get the distance
     local dist, dx, dy = helpers.dist(bot, am)
     if dist ~= 0 then
-        futurex = bot.x + dx / dist * bot.speed * dt
-        futurey = bot.y + dy / dist * bot.speed * dt
+        futurex = bot.x + (dx / dist)* bot.speed * dt
+        futurey = bot.y + (dy / dist)* bot.speed * dt
     end
     -- turn to current path node
     helpers.turnProgressivelyTo(bot, am)
     -- collisions
     helpers.checkCollision(bot, futurex, futurey)
     -- if finished move to the next path element
-    if dist < 2 then
+    if dist < 10 then
         table.remove(bot.nodes, 1);
         if #bot.nodes == 0 then
             bot.targetItem = {}
+            bot.nodes = {}
             collect.init(bot)
         end
     end
