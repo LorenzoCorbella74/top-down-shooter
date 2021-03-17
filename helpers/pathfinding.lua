@@ -31,9 +31,7 @@ PathfindHandler.new = function(map_tiled, name, walkable, mode)
         self.collisionMap[y] = {}
         -- columns
         for x = 1, self.starting_map.width do
-            self.collisionMap[y][x] = self.data[(y - 1) *
-                                          self.starting_map.width + (x)] == 0 and
-                                          0 or 1
+            self.collisionMap[y][x] = self.data[(y - 1) * self.starting_map.width + (x)] == 0 and 0 or 1
         end
     end
     -- print(self.collisionMap)

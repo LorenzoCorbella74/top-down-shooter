@@ -41,13 +41,15 @@ end
 
 function collect.OnUpdate(dt, bot)
 
+    -- check if thre is a visible enemy
     collect.checkIfEnemy(bot)
-    -- if there is a target item and a path to this target 
+
     if next(bot.nodes) == nil then
-        -- myTable is empty
+        -- bot.nodes is empty
         return
     end
-
+    
+    -- if there is a target item and a path to this target 
     local cell = bot.nodes[1]
     bot.old_x = bot.x
     bot.old_y = bot.y

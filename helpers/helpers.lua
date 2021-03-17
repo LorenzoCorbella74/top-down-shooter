@@ -162,9 +162,9 @@ helpers.checkCollision = function(p, futurex, futurey)
             handlers.powerups.applyWeapon(item, p)
         end
         if (item.name == 'waypoint') then
-            item.bots[p.index].visible = false
+            item.players[p.index].visible = false
             Timer.after(6, function()
-                item.bots[p.index].visible = true
+                item.players[p.index].visible = true
             end)
         end
 
@@ -190,21 +190,26 @@ helpers.checkCollision = function(p, futurex, futurey)
                 p.x = p.x + t*2
                 p.y = p.y - t*2
             end
-            -- 4
-            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and col.normal.x ==0 and col.normal.y == -1 then
-                p.y = p.y + t*2
-                p.x = p.x + t*2
-            end
-            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and col.normal.x ==1 and col.normal.y == 0 then
-                p.y = p.y - t*2
-                p.x = p.x - t*2
-            end
             -- 2
             if len2 ~= 0 and len1 == 0 and len3 == 0 and len4 == 0 and col.normal.x ==-1 and col.normal.y == 0 then
                 p.y = p.y + t*2
                 p.x = p.x + t*2
             end
             if len2 ~= 0 and len1 == 0 and len3 == 0 and len4 == 0 and col.normal.x ==0 and col.normal.y == 1 then
+                p.y = p.y - t*2
+                p.x = p.x - t*2
+            end
+            -- 3
+            if len3 ~= 0 and len1 == 0 and len2 == 0 and len4 == 0 and col.normal.x ==-1 and col.normal.y == 0 then
+                p.y = p.y - t*2
+                p.x = p.x + t*2
+            end
+            -- 4
+            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and col.normal.x ==0 and col.normal.y == -1 then
+                p.y = p.y + t*2
+                p.x = p.x + t*2
+            end
+            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and col.normal.x ==1 and col.normal.y == 0 then
                 p.y = p.y - t*2
                 p.x = p.x - t*2
             end
@@ -238,16 +243,16 @@ helpers.getNearestWaypoint = function(bot)
     local output = {distance = 10000, item = nil}
     -- solo quelli non ancora attraversati dallo specifico bot
     local waypoints = filter(handlers.points.waypoints, function(point)
-        return point.bots[bot.index].visible == true
+        return point.players[bot.index].visible == true
     end)
     -- solo quelli visibili
-    local visible_waypoints = waypoints --[[ filter(waypoints, function(point)
+    local visible_waypoints =  filter(waypoints, function(point)
         return helpers.canBeSeen(bot, point)
-    end) ]]
+    end)
     if visible_waypoints then
         for index, point in ipairs(visible_waypoints) do
             local distance = helpers.dist(bot, point);
-            if output.distance > distance and distance < 1000 then
+            if output.distance > distance and distance < 1500 then
                 output = {distance = distance, item = point};
             end
         end
@@ -276,8 +281,7 @@ helpers.findPath = function(bot, target)
     -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e fine
     -- e poi si deve togliere 1 dai nodi calcolati
     local nodes = {}
-    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32,
-                                                   bot.y + bot.h / 2 + 32)
+    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32, bot.y + bot.h / 2 + 32)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path then

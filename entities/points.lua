@@ -47,13 +47,13 @@ PointsHandler.new = function()
     -- waypoint visibility for each bot
     -- when it's taken it's no more visible and a timer is called
     -- after x sec the waypoint is once again visible
-    function self.seedBotsInWaypoints(bots)
+    function self.seedBotsInWaypoints(players)
         for i = #self.waypoints, 1, -1 do
             local waypoints = self.waypoints[i]
-            waypoints.bots = {}
-            for y = #bots, 1, -1 do
-                local bot = bots[y]
-                waypoints.bots[bot.index] = {visible = true}  -- index o name ???
+            waypoints.players = {}
+            for y = #players, 1, -1 do
+                local player = players[y]
+                waypoints.players[player.index] = {visible = true}  -- index o name ???
             end
         end
     end
