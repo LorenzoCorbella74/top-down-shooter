@@ -165,8 +165,8 @@ PlayerHandler.new = function()
                 for _i = w.count, 1, -1 do
                     handlers.bullets.create(
                         {
-                            x = p.x + p.w / 2 + 32 * math.cos(angle),
-                            y = p.y + p.h / 2 + 32 * math.sin(angle)
+                            x = p.x + (p.w / 2) + 48 * math.cos(angle),
+                            y = p.y + (p.h / 2) + 48 * math.sin(angle)
                         }, angle, p)
                 end
                 p.attackCounter = w.frequency

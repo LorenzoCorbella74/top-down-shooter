@@ -6,13 +6,12 @@ BulletsHandler.new = function()
 
     self.bullets = {}
 
-    local filter = function(item, other)
+    local bulletFilter = function(item, other)
         local kind = other.layer and other.layer.name or other
-        print(('Kind:%s'):format(kind))
         if kind == 'walls' then
             return "bounce"
-        else
-            return nil
+        elseif other.type == 'actor' then
+            return 'cross'
         end
     end
 
@@ -32,7 +31,9 @@ BulletsHandler.new = function()
 
     function self.calculateRanking()
         local index;
-        table.sort(handlers.actors, function(a, b) return a.kills > b.kills end)
+        table.sort(handlers.actors, function(a, b)
+            return a.kills > b.kills
+        end)
         for i = 1, #handlers.actors, 1 do
             local e = handlers.actors[i]
             if e.name == 'player' then
@@ -89,7 +90,7 @@ BulletsHandler.new = function()
 
             local cols, cols_len
 
-            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey --[[ , filter ]] )
+            bullet.x, bullet.y, cols, cols_len =  world:move(bullet, futurex, futurey, bulletFilter)
 
             -- collisions
             for i = 1, cols_len do
@@ -108,8 +109,8 @@ BulletsHandler.new = function()
                     if item.name == 'player' then
                         camera:flash(0.15, {1, 0, 0, 0.25})
                     end
-                    world:remove(bullet)            -- bullet is no more in the phisycs world
-                    table.remove(self.bullets, _i)  -- bullet is no more in the list of bullets
+                    world:remove(bullet)                -- bullet is no more in the phisycs world
+                    table.remove(self.bullets, _i)      -- bullet is no more in the list of bullets
                     self.calculatePoints(item, bullet.damage);
                     if item.hp <= 0 then
                         bullet.firedBy.kills = bullet.firedBy.kills + 1 -- increase the score of who fired the bullet
@@ -123,15 +124,12 @@ BulletsHandler.new = function()
                                 'You fragged ' .. item.name .. ' - ' ..
                                     self.calculateRanking() .. ' place with ' ..
                                     bullet.firedBy.kills)
-                            Timer.after(6,
-                                        function()
-                                handlers.ui.setMsg('')
-                            end)
+                                    Timer.after(6, function() handlers.ui.setMsg('') end)
                         end
                     end
                     break -- break after the first impact
                 end
-                print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
+                -- print(("item = %s, type = %s, x,y = %d,%d"):format(tostring(col), col.type, col.normal.x, col.normal.y))
             end
 
             -- remove bullets that have timed out
