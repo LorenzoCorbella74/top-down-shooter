@@ -109,7 +109,21 @@ end
 
 -- if there is an obstacle hiding the entity from sight (using bump)
 helpers.canBeSeen = function(point_sight, entity)
-    local items, len = world:querySegment(point_sight.x, point_sight.y, entity.x, entity.y)
+    -- to perfezionare ...
+    local movementfilter = function(item)
+        if item.name == "waypoint" then
+            return false
+        elseif item.type == 'powerups' then
+            return false
+        elseif item.type == 'ammo' then
+            return false
+        elseif item.type == 'weapons' then
+            return false
+        else
+            return true
+        end
+    end
+    local items, len = world:querySegment(point_sight.x, point_sight.y, entity.x, entity.y, movementfilter)
     for i = 1, len, 1 do
         local what = items[i]
         if what.layer and what.layer.name == 'walls' then
@@ -182,36 +196,43 @@ helpers.checkCollision = function(p, futurex, futurey)
             -- 4  3
 
             -- 1
-            if len1 ~= 0 and len2 == 0 and len3 == 0 and len4 == 0 and col.normal.x ==1 and col.normal.y == 0 then
-                p.x = p.x - t*2
-                p.y = p.y + t*2
+            if len1 ~= 0 and len2 == 0 and len3 == 0 and len4 == 0 and
+                col.normal.x == 1 and col.normal.y == 0 then
+                p.x = p.x - t * 2
+                p.y = p.y + t * 2
             end
-            if len1 ~= 0 and len2 == 0 and len3 == 0 and len4 == 0 and col.normal.x ==0 and col.normal.y == 1 then
-                p.x = p.x + t*2
-                p.y = p.y - t*2
+            if len1 ~= 0 and len2 == 0 and len3 == 0 and len4 == 0 and
+                col.normal.x == 0 and col.normal.y == 1 then
+                p.x = p.x + t * 2
+                p.y = p.y - t * 2
             end
             -- 2
-            if len2 ~= 0 and len1 == 0 and len3 == 0 and len4 == 0 and col.normal.x ==-1 and col.normal.y == 0 then
-                p.y = p.y + t*2
-                p.x = p.x + t*2
+            if len2 ~= 0 and len1 == 0 and len3 == 0 and len4 == 0 and
+                col.normal.x == -1 and col.normal.y == 0 then
+                p.y = p.y + t * 2
+                p.x = p.x + t * 2
             end
-            if len2 ~= 0 and len1 == 0 and len3 == 0 and len4 == 0 and col.normal.x ==0 and col.normal.y == 1 then
-                p.y = p.y - t*2
-                p.x = p.x - t*2
+            if len2 ~= 0 and len1 == 0 and len3 == 0 and len4 == 0 and
+                col.normal.x == 0 and col.normal.y == 1 then
+                p.y = p.y - t * 2
+                p.x = p.x - t * 2
             end
             -- 3
-            if len3 ~= 0 and len1 == 0 and len2 == 0 and len4 == 0 and col.normal.x ==-1 and col.normal.y == 0 then
-                p.y = p.y - t*2
-                p.x = p.x + t*2
+            if len3 ~= 0 and len1 == 0 and len2 == 0 and len4 == 0 and
+                col.normal.x == -1 and col.normal.y == 0 then
+                p.y = p.y - t * 2
+                p.x = p.x + t * 2
             end
             -- 4
-            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and col.normal.x ==0 and col.normal.y == -1 then
-                p.y = p.y + t*2
-                p.x = p.x + t*2
+            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and
+                col.normal.x == 0 and col.normal.y == -1 then
+                p.y = p.y + t * 2
+                p.x = p.x + t * 2
             end
-            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and col.normal.x ==1 and col.normal.y == 0 then
-                p.y = p.y - t*2
-                p.x = p.x - t*2
+            if len4 ~= 0 and len1 == 0 and len2 == 0 and len3 == 0 and
+                col.normal.x == 1 and col.normal.y == 0 then
+                p.y = p.y - t * 2
+                p.x = p.x - t * 2
             end
         end
         print(("col.type = %s, col.normal = %d,%d"):format(col.type, col.normal.x, col.normal.y))
@@ -221,7 +242,8 @@ end
 helpers.getNearestVisibleEnemy = function(bot)
     local output = {distance = 10000}
     local opponents = filter(handlers.actors, function(actor)
-        return actor.index ~= bot.index and actor.alive and actor.team ~= bot.team
+        return actor.index ~= bot.index and actor.alive and actor.team ~=
+                   bot.team
     end)
     local visible_opponents = filter(opponents, function(actor)
         return helpers.canBeSeen(bot, actor)
@@ -239,23 +261,21 @@ helpers.getNearestVisibleEnemy = function(bot)
     end
 end
 
-helpers.getNearestWaypoint = function(bot)
+helpers.getRandomtWaypoint = function(bot)
     local output = {distance = 10000, item = nil}
-    -- solo quelli non ancora attraversati dallo specifico bot
-    local waypoints = filter(handlers.points.waypoints, function(point)
-        return point.players[bot.index].visible == true
-    end)
-    -- solo quelli visibili
-    local visible_waypoints =  filter(waypoints, function(point)
+    -- solo quelli che possono essere visti...
+    local visible_waypoints = filter(handlers.points.waypoints, function(point)
         return helpers.canBeSeen(bot, point)
     end)
-    if visible_waypoints then
-        for index, point in ipairs(visible_waypoints) do
-            local distance = helpers.dist(bot, point);
-            if output.distance > distance and distance < 2000 then
-                output = {distance = distance, item = point};
-            end
-        end
+    -- solo quelli non ancora attraversati dallo specifico bot ed ad una certa distanza
+    local waypoints = filter(visible_waypoints, function(point)
+        return point.players[bot.index].visible == true --[[ and helpers.dist(bot, point)<1000 ]]
+    end)
+    if waypoints then
+        -- random choice...
+        local random_waypoint = waypoints[ math.random( #waypoints ) ]
+        local distance = helpers.dist(bot, random_waypoint)
+        output = {distance = distance, item = random_waypoint};
     end
     return output;
 end
@@ -281,11 +301,13 @@ helpers.findPath = function(bot, target)
     -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e fine
     -- e poi si deve togliere 1 dai nodi calcolati
     local nodes = {}
-    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32, bot.y + bot.h / 2 + 32)
+    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32,
+                                                   bot.y + bot.h / 2 + 32)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path then
-        print(('Path found! Length: %.2f'):format(path:getLength()))
+        print(('Path found! Length: %.2f'):format(path:getLength()), bot.x,
+              target.x, bot.y, target.y)
         for node, count in path:nodes() do
             -- print(('Step: %d - x: %d - y: %d'):format(count, node:getX(),node:getY()))
             table.insert(nodes, {x = node:getX() - 1, y = node:getY() - 1})

@@ -2,9 +2,9 @@ local helpers = require "../../helpers.helpers"
 
 local collect = {stateName = 'collect'}
 
-function collect.checkIfEnemy(bot)
+function collect.checkIfEnemyIsNearby(bot)
     local current_enemy = helpers.getNearestVisibleEnemy(bot)
-    if --[[ current_enemy and (best_powerup.distance<250 or best_waypoint.distance<100 ) then
+    if --[[ current_enemy and (bot.best_powerup.distance<150) then
         bot.brain.push('collectAndfight')
         return
     elseif ]] current_enemy then
@@ -13,24 +13,28 @@ function collect.checkIfEnemy(bot)
             bot.target = enemy
             print(bot.name .. ' has ' .. enemy.name .. ' as target')
             bot.brain.push('fight')
-            return
+            return true
         end
     end
 end
 
 function collect.init(bot)
     local start_time = love.timer.getTime()
-    local best_waypoint = helpers.getNearestWaypoint(bot)
-    local best_powerup = helpers.getNearestPowerup(bot)
+    bot.best_waypoint = helpers.getRandomtWaypoint(bot)
+    bot.best_powerup = helpers.getNearestPowerup(bot)
 
-    collect.checkIfEnemy(bot)
-    if best_powerup.item or best_waypoint.item then
-        local best = best_powerup.item or best_waypoint.item
-        bot.nodes = helpers.findPath(bot, best)
-        bot.targetItem = best
-        local end_time = love.timer.getTime()
-        local elapsed_time = end_time - start_time
-        bot.info = tostring(elapsed_time)
+    -- check if there is an enemy
+    collect.checkIfEnemyIsNearby(bot)
+
+    if bot.best_powerup.item or bot.best_waypoint.item then
+        local best = bot.best_powerup.item or bot.best_waypoint.item
+        if best then
+            bot.nodes = helpers.findPath(bot, best)
+            bot.targetItem = best
+            local end_time = love.timer.getTime()
+            local elapsed_time = end_time - start_time
+            bot.info = tostring(elapsed_time)
+        end
     end
 end
 
@@ -41,14 +45,13 @@ end
 
 function collect.OnUpdate(dt, bot)
 
-    -- check if thre is a visible enemy
-    collect.checkIfEnemy(bot)
+    -- check if there is a visible enemy
+    collect.checkIfEnemyIsNearby(bot)
 
-    if next(bot.nodes) == nil then
-        -- bot.nodes is empty
+    if #bot.nodes==0 then
         return
     end
-    
+
     -- if there is a target item and a path to this target
     local cell = bot.nodes[1]
     bot.old_x = bot.x
@@ -63,8 +66,8 @@ function collect.OnUpdate(dt, bot)
     -- get the distance
     local dist, dx, dy = helpers.dist(bot, am)
     if dist ~= 0 then
-        futurex = bot.x + (dx / dist)* bot.speed * dt
-        futurey = bot.y + (dy / dist)* bot.speed * dt
+        futurex = bot.x + (dx / dist) * bot.speed * dt
+        futurey = bot.y + (dy / dist) * bot.speed * dt
     end
     -- turn to current path node
     helpers.turnProgressivelyTo(bot, am)
@@ -74,9 +77,17 @@ function collect.OnUpdate(dt, bot)
     if dist < 10 then
         table.remove(bot.nodes, 1);
         if #bot.nodes == 0 then
-            bot.targetItem = {}
+            print('dist '..dist)
             bot.nodes = {}
-            collect.init(bot)
+            bot.best_powerup = {}
+            -- block when distance is reduced fast (when speed powerup is staken) or no item are found
+            if dist > 2 then
+                collect.init(bot)
+            else
+                print('Bot is blocked...')
+                -- if no powerup go with the waypoint
+                bot.nodes = helpers.findPath(bot, bot.best_waypoint.item)
+            end
         end
     end
 end

@@ -38,7 +38,8 @@ BotsHandler.new = function()
 
             nodes = {},         -- path to reach an item
             target = {},        -- target for fighting
-            targetItem = {},    -- target of movement
+            best_powerup = {},    -- target of movement
+            best_waypoint = {},    -- target of movement
 
             info = ''           -- for debug
         }

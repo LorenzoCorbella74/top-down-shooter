@@ -42,7 +42,7 @@ PowerupsHandler.new = function()
             name = 'speed',
             multiplier = 1.5,
             spawnTime = 150,
-            enterAfter = 30,
+            enterAfter = 60,
             duration = 10,
             sprite = Sprites.powerup_speed
         },
