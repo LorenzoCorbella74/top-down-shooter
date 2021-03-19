@@ -295,10 +295,10 @@ helpers.getNearestPowerup = function(bot)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
         return point.visible == true
     end)
-    if visible_powerups and #visible_powerups then
+    if visible_powerups and #visible_powerups>0 then
         for index, item in ipairs(visible_powerups) do
             local distance = helpers.dist(bot, item);
-            if output.distance > distance and distance < 1000 then
+            if output.distance > distance and distance < 600 then
                 output = {distance = distance, item = item};
             end
         end

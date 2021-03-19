@@ -1,6 +1,5 @@
 local collect = require "entities.ai.collect_state"
 local fight = require "entities.ai.fight_state"
-local collectAndfight = require "entities.ai.collect_and_fight_state"
 
 local FsmMachine = {}
 
@@ -14,7 +13,6 @@ function FsmMachine.new(bot)
     function self.init()
         -- register all states
         self.registerState(collect)
-        self.registerState(collectAndfight)
         self.registerState(fight)
 
         -- default initialization (collect)

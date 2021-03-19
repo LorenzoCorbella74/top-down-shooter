@@ -106,6 +106,7 @@ PowerupsHandler.new = function()
                 object.inCheck = false
                 -- if special collectable
                 if object.info.enterAfter ~= nil then
+                    object.visible = false
                     Timer.after(object.info.enterAfter,
                                 function()
                         object.visible = true

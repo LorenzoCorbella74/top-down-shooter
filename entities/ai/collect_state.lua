@@ -3,16 +3,10 @@ local helpers = require "../../helpers.helpers"
 local collect = {stateName = 'collect'}
 
 function collect.checkIfAChangeStateIsNeeded(bot)
-    local current_enemy = helpers.getNearestVisibleEnemy(bot)
-    local enemy = current_enemy.enemy
-    if --[[ enemy and (bot.best_powerup.item and bot.best_powerup.distance<350) then
-        print(bot.name .. ' has ' .. enemy.name .. ' as target')
-        bot.target = enemy
-        bot.brain.push('collectAndfight')
-        return true
-    elseif ]] enemy then
-        print(bot.name .. ' has ' .. enemy.name .. ' as target')
-        if enemy and helpers.isInConeOfView(bot, enemy) then
+    local enemy = helpers.getNearestVisibleEnemy(bot).enemy
+    if enemy then
+            print(bot.name .. ' has ' .. enemy.name .. ' as target')
+            if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then
             bot.target = enemy
             bot.brain.push('fight')
             return true
@@ -25,9 +19,10 @@ function collect.init(bot)
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getNearestPowerup(bot)
 
-    -- check if there is an enemy
+    -- go to fight state if there is an enemy 
     local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
 
+    -- otherwise collect items
     if not needStateChange and bot.best_powerup.item or bot.best_waypoint.item then
         local best = bot.best_powerup.item or bot.best_waypoint.item
         if best then

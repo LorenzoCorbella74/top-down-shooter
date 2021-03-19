@@ -80,13 +80,17 @@ BotsHandler.new = function()
                 -- bullet prediction -> how well bots are aiming!!
                 local predvX = (p.target.x - p.target.old_x) / (p.target.speed * dt) / (p.speed * dt);
                 local predvY = (p.target.y - p.target.old_y) / (p.target.speed * dt) / (p.speed * dt);
-                print('Prediction :', tostring(predvX),tostring(predvY)) -- dell'ordine di +/- 0.25
+                -- print('Prediction :', tostring(predvX),tostring(predvY)) -- dell'ordine di +/- 0.25
+
+                -- bot skill level
+                predvX = math.random() < config.GAME.BOTS_PREDICTION_SKILL and predvX or 0
+                predvY = math.random() < config.GAME.BOTS_PREDICTION_SKILL and predvY or 0
+
 
                 local dist, dx, dy = helpers.dist(p, p.target)
                 local velX = dx / dist + predvX
                 local velY = dy / dist + predvY
-                
-
+                -- angle with target
                 local angle = math.atan2(velY, velX)
 
                 for _i = w.count, 1, -1 do
