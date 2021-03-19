@@ -2,16 +2,18 @@ local helpers = require "../../helpers.helpers"
 
 local collect = {stateName = 'collect'}
 
-function collect.checkIfEnemyIsNearby(bot)
+function collect.checkIfAChangeStateIsNeeded(bot)
     local current_enemy = helpers.getNearestVisibleEnemy(bot)
-    if --[[ current_enemy and (bot.best_powerup.distance<150) then
+    local enemy = current_enemy.enemy
+    if --[[ enemy and (bot.best_powerup.item and bot.best_powerup.distance<350) then
+        print(bot.name .. ' has ' .. enemy.name .. ' as target')
+        bot.target = enemy
         bot.brain.push('collectAndfight')
-        return
-    elseif ]] current_enemy then
-        local enemy = current_enemy.enemy
+        return true
+    elseif ]] enemy then
+        print(bot.name .. ' has ' .. enemy.name .. ' as target')
         if enemy and helpers.isInConeOfView(bot, enemy) then
             bot.target = enemy
-            print(bot.name .. ' has ' .. enemy.name .. ' as target')
             bot.brain.push('fight')
             return true
         end
@@ -24,13 +26,12 @@ function collect.init(bot)
     bot.best_powerup = helpers.getNearestPowerup(bot)
 
     -- check if there is an enemy
-    collect.checkIfEnemyIsNearby(bot)
+    local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
 
-    if bot.best_powerup.item or bot.best_waypoint.item then
+    if not needStateChange and bot.best_powerup.item or bot.best_waypoint.item then
         local best = bot.best_powerup.item or bot.best_waypoint.item
         if best then
             bot.nodes = helpers.findPath(bot, best)
-            bot.targetItem = best
             local end_time = love.timer.getTime()
             local elapsed_time = end_time - start_time
             bot.info = tostring(elapsed_time)
@@ -46,9 +47,9 @@ end
 function collect.OnUpdate(dt, bot)
 
     -- check if there is a visible enemy
-    collect.checkIfEnemyIsNearby(bot)
+    local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
 
-    if #bot.nodes==0 then
+    if #bot.nodes==0 or needStateChange then
         return
     end
 
