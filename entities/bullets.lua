@@ -1,3 +1,4 @@
+local config = require "config"
 local BulletsHandler = {}
 
 BulletsHandler.new = function()
@@ -118,13 +119,13 @@ BulletsHandler.new = function()
                         if item.name == 'player' then
                             handlers.camera.setCameraOnActor(bullet.firedBy)
                             handlers.player.die()
-                            local count = 10
+                            local count = config.GAME.RESPAWN_TIME
                             -- countdown for player
                             local countdown = Timer.every(1, function() 
                                 count = count - 1
                                 handlers.ui.setMsg('Respawn in '.. count)
-                            end, 10)
-                            Timer.after(10, function()
+                            end, config.GAME.RESPAWN_TIME)
+                            Timer.after(config.GAME.RESPAWN_TIME, function()
                                 Timer.cancel(countdown)
                                 handlers.ui.setMsg('')
                             end)

@@ -1,3 +1,5 @@
+local config = require "config"
+
 -- map, filter, reduce
 -- source: https://devforum.roblox.com/t/functional-shenanigans-map-filter-partition-reduce-two-ways/199027
 local map = function(sequence, transformation)
@@ -90,7 +92,7 @@ helpers.isInConeOfView = function(self, target)
     local angle = helpers.angle(self, target) -- angle with target
     local distance = helpers.dist(self, target)
     local delta = math.rad(60) -- angle extent
-    local vision_length = 400 -- distance with target
+    local vision_length = config.GAME.BOTS_VISION_LENGTH -- distance with target
     if self.r > 6.28 then self.r = self.r - 6.28 end
     local difference
     if math.abs(angle - self.r) > math.rad(180) then

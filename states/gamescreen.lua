@@ -4,16 +4,14 @@ local PowerupsHandler = require "entities.powerups" -- handler for powerups
 local BulletsHandler = require "entities.bullets" -- handler for bullets
 local BotsHandler = require "entities.bots" -- handler for bots
 local countdown = require "..helpers.countdown" -- handler for game countdown
+local config = require "config"
 
 local PathfindHandler = require "..helpers.pathfinding" -- handler for jupiter wrapper
 local TimeManagement = require "..helpers.timeManagement" -- handle time effect (ala Max payne...)
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = ''}
 
-local GAME_BOTS_NUMBERS = 1
-local GAME_MATCH_DURATION = 120
-local GAME_RESPAWN_TIME = 10
-local GAME_GAMETYPE = 'deathmatch'
+
 
 -- init is called only once
 -- enter is called when push
@@ -56,13 +54,13 @@ function state:enter()
     handlers.actors = {}
     table.insert(handlers.actors, handlers.player.player)
     handlers.bots = BotsHandler.new()
-    for i = 1, GAME_BOTS_NUMBERS, 1 do
+    for i = 1, config.GAME.BOTS_NUMBERS, 1 do
         handlers.bots.create(state.defineTeams(i))
         table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information
     handlers.points.seedBotsInWaypoints(handlers.actors)
-    for i = 1, GAME_BOTS_NUMBERS, 1 do
+    for i = 1, config.GAME.BOTS_NUMBERS, 1 do
         handlers.bots.bots[i].brain.init() -- wamder as default
     end
 
@@ -83,7 +81,7 @@ function state:enter()
     handlers.ui.setMsg = function(msg) state.message = msg end
 
     -- after the matchDuration go to game over screen
-    GameCountdown = countdown.new(GAME_MATCH_DURATION)
+    GameCountdown = countdown.new(config.GAME.MATCH_DURATION)
     -- bullet time management
     handlers.timeManagement = TimeManagement.new()
 end
@@ -179,10 +177,10 @@ function love.wheelmoved(x, y)
 end
 
 state.defineTeams = function(index)
-    if GAME_GAMETYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
+    if config.GAME.GAMETYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
         return 'team$' .. index + 2
     else -- per teamDeathMatch e CTF
-        if index < math.floor(GAME_BOTS_NUMBERS / 2) + 1 then
+        if index < math.floor(config.GAME.BOTS_NUMBERS / 2) + 1 then
             return 'team2'
         else
             return 'team1'
