@@ -90,7 +90,7 @@ BulletsHandler.new = function()
 
             local cols, cols_len
 
-            bullet.x, bullet.y, cols, cols_len =  world:move(bullet, futurex, futurey, bulletFilter)
+            bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, bulletFilter)
 
             -- collisions
             for i = 1, cols_len do
@@ -118,13 +118,25 @@ BulletsHandler.new = function()
                         if item.name == 'player' then
                             handlers.camera.setCameraOnActor(bullet.firedBy)
                             handlers.player.die()
+                            local count = 10
+                            -- countdown for player
+                            local countdown = Timer.every(1, function() 
+                                count = count - 1
+                                handlers.ui.setMsg('Respawn in '.. count)
+                            end, 10)
+                            Timer.after(10, function()
+                                Timer.cancel(countdown)
+                                handlers.ui.setMsg('')
+                            end)
                         else
                             handlers.bots.die(item)
                             handlers.ui.setMsg(
                                 'You fragged ' .. item.name .. ' - ' ..
                                     self.calculateRanking() .. ' place with ' ..
                                     bullet.firedBy.kills)
-                                    Timer.after(6, function() handlers.ui.setMsg('') end)
+                            Timer.after(6, function()
+                                handlers.ui.setMsg('')
+                            end)
                         end
                     end
                     break -- break after the first impact

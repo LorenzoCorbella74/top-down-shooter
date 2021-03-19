@@ -1,6 +1,8 @@
 local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
 local FsmMachine = require "entities.ai.fsm"
 
+local helpers = require "../helpers.helpers"
+
 local BotsHandler = {}
 
 BotsHandler.new = function()
@@ -74,7 +76,18 @@ BotsHandler.new = function()
             if p.attackCounter > 0 then
                 p.attackCounter = p.attackCounter - 1 * dt
             else
-                local angle = math.atan2(p.target.y - (p.y + p.h / 2), p.target.x - (p.x + p.w / 2))
+                -- bullet prediction -> how well bots are aiming!!
+                local predvX = (p.target.x - p.target.old_x) / (p.target.speed * dt) / (p.speed * dt);
+                local predvY = (p.target.y - p.target.old_y) / (p.target.speed * dt) / (p.speed * dt);
+                print('Prediction :', tostring(predvX),tostring(predvY)) -- dell'ordine di +/- 0.25
+
+                local dist, dx, dy = helpers.dist(p, p.target)
+                local velX = dx / dist + predvX
+                local velY = dy / dist + predvY
+                
+
+                local angle = math.atan2(velY, velX)
+
                 for _i = w.count, 1, -1 do
                     handlers.bullets.create(
                         {
