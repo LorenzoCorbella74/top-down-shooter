@@ -261,6 +261,11 @@ helpers.getNearestVisibleEnemy = function(bot)
     end
 end
 
+helpers.randomDirection = function(bot)
+    local directions = {bot.velX, -bot.velX, -bot.velY, bot.velY}
+    return directions[math.random( #directions )]
+end
+
 helpers.getRandomtWaypoint = function(bot)
     local output = {distance = 10000, item = nil}
     -- solo quelli che possono essere visti...
@@ -274,8 +279,10 @@ helpers.getRandomtWaypoint = function(bot)
     if waypoints then
         -- random choice...
         local random_waypoint = waypoints[ math.random( #waypoints ) ]
-        local distance = helpers.dist(bot, random_waypoint)
-        output = {distance = distance, item = random_waypoint};
+        if random_waypoint then
+            local distance = helpers.dist(bot, random_waypoint)
+            output = {distance = distance, item = random_waypoint};
+        end
     end
     return output;
 end
@@ -301,8 +308,7 @@ helpers.findPath = function(bot, target)
     -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e fine
     -- e poi si deve togliere 1 dai nodi calcolati
     local nodes = {}
-    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32,
-                                                   bot.y + bot.h / 2 + 32)
+    local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32, bot.y + bot.h / 2 + 32)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path then

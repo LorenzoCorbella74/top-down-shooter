@@ -22,6 +22,9 @@ BotsHandler.new = function()
             x = 0,
             y = 0,
             r = 0,
+            velX = 0,
+            velY = 0,
+
             w = sprite:getWidth(),
             h = sprite:getHeight(),
             speed = 256, -- pixels per second
@@ -63,6 +66,27 @@ BotsHandler.new = function()
         bot.numberOfDeaths = bot.numberOfDeaths + 1
         world:remove(bot) -- removing bot from the phisycs world
         Timer.after(10, function() self.spawn(bot) end)
+    end
+
+    function self.fire(p, dt)
+        local w = p.weaponsInventory.selectedWeapon
+        if p.alive and w.shotNumber > 0 then
+            if p.attackCounter > 0 then
+                p.attackCounter = p.attackCounter - 1 * dt
+            else
+                local angle = math.atan2(p.target.y - (p.y + p.h / 2), p.target.x - (p.x + p.w / 2))
+                for _i = w.count, 1, -1 do
+                    handlers.bullets.create(
+                        {
+                            x = p.x + (p.w / 2) + 48 * math.cos(angle),
+                            y = p.y + (p.h / 2) + 48 * math.sin(angle)
+                        }, angle, p)
+                end
+                p.attackCounter = w.frequency
+            end
+        else
+            p.weaponsInventory.getBest()
+        end
     end
 
     function self.update(self, dt)

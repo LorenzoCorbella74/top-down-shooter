@@ -48,7 +48,7 @@ PlayerHandler.new = function()
         world:add(p, p.x, p.y, p.w, p.h) -- player bb is in the phisycs world
     end
 
-    function self:die()
+    function self.die()
         local p = self.player
         p.alive = false
         p.numberOfDeaths = p.numberOfDeaths + 1
@@ -61,46 +61,51 @@ PlayerHandler.new = function()
         end)
     end
 
-    -- Add controls to player
     function self.update(self, dt)
         local p = self.player
-        local futurex = p.x
-        local futurey = p.y
-        -- Move player up
-        if love.keyboard.isDown("w", "up") then
-            futurey = p.y - p.speed * dt
-        end
-        -- Move player down
-        if love.keyboard.isDown("s", "down") then
-            futurey = p.y + p.speed * dt
-        end
-        -- Move player left
-        if love.keyboard.isDown("a", "left") then
-            futurex = p.x - p.speed * dt
-        end
-        -- Move player right
-        if love.keyboard.isDown("d", "right") then
-            futurex = p.x + p.speed * dt
+
+        if p.alive then
+            local futurex = p.x
+            local futurey = p.y
+            -- Move player up
+            if love.keyboard.isDown("w", "up") then
+                futurey = p.y - p.speed * dt
+            end
+            -- Move player down
+            if love.keyboard.isDown("s", "down") then
+                futurey = p.y + p.speed * dt
+            end
+            -- Move player left
+            if love.keyboard.isDown("a", "left") then
+                futurex = p.x - p.speed * dt
+            end
+            -- Move player right
+            if love.keyboard.isDown("d", "right") then
+                futurex = p.x + p.speed * dt
+            end
+
+            p.old_x = p.x
+            p.old_y = p.y
+
+            helpers.checkCollision(p, futurex, futurey)
+
+            -- player rotation
+            local mx, my = camera:getMousePosition()
+            p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
         end
 
-        p.old_x = p.x
-        p.old_y = p.y
-
-        helpers.checkCollision(p,futurex, futurey)
-
-        -- player rotation
-        local mx, my = camera:getMousePosition()
-        p.r = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
     end
 
     function self.draw(self)
         -- Draw player
         local p = self.player
-        love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
-        -- cursor
         local mx, my = camera:getMousePosition()
-        love.graphics.line(mx, my - 16, mx, my + 16)
-        love.graphics.line(mx - 16, my, mx + 16, my)
+        if p.alive then
+            love.graphics.draw(p.sprite, p.x + p.w / 2, p.y + p.h / 2, p.r, 1, 1, p.w / 2, p.h / 2)
+            -- cursor
+            love.graphics.line(mx, my - 16, mx, my + 16)
+            love.graphics.line(mx - 16, my, mx + 16, my)
+        end
         -- debug
         if debug then
             love.graphics.setColor(0, 1, 1, 1)
@@ -114,8 +119,8 @@ PlayerHandler.new = function()
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
             love.graphics.print(math.floor(mx) .. ' ' .. math.floor(my), mx - 16, my + 16)
             love.graphics.print("Angle: " .. tostring(math.deg(p.r)), mx - 16, my + 32)
-            local dist = helpers.dist(p, {x=mx, y=my})
-            love.graphics.print("Dist: " .. tostring(dist), mx +16, my + 48)
+            local dist = helpers.dist(p, {x = mx, y = my})
+            love.graphics.print("Dist: " .. tostring(dist), mx + 16, my + 48)
         end
 
         -- debug for all collidable rectangles
@@ -140,12 +145,12 @@ PlayerHandler.new = function()
                     else
                         love.graphics.setColor(0, 0, 1, 1)
                     end
-                    love.graphics.rectangle('line', (x-1) * tw, (y-1) * th, tw, th)
+                    love.graphics.rectangle('line', (x - 1) * tw, (y - 1) * th,
+                                            tw, th)
                 end
             end
         end
 
-        
     end
 
     function self.fire(dt)
@@ -171,11 +176,9 @@ PlayerHandler.new = function()
                 end
                 p.attackCounter = w.frequency
             end
-
         else
             p.weaponsInventory.getBest()
         end
-
     end
 
     return self
