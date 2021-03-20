@@ -7,7 +7,7 @@ function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 function fight.OnUpdate(dt, bot)
 
     local current_enemy = bot.target
-    local best_powerup = helpers.getNearestPowerup(bot)
+    bot.best_powerup = helpers.getNearestPowerup(bot)
 
     -- local last_visible_position = {x = current_enemy.x, y = current_enemy.y}
 
@@ -19,15 +19,15 @@ function fight.OnUpdate(dt, bot)
 
     if current_enemy and current_enemy.alive and helpers.isInConeOfView(bot, current_enemy) and helpers.canBeSeen(bot, current_enemy) then
 
-        bot.info = tostring(bot.best_powerup.distance)
         -- face the target
         helpers.turnProgressivelyTo(bot, current_enemy)
-
+        
         -- collect close powerup while fighting NOT WORKING!!!!!
-        if best_powerup.item and bot.best_powerup.distance < 250 then
+        if bot.best_powerup.item and bot.best_powerup.distance < 250 then
             fight.stateName = 'fight_&_collect'
+            bot.info = tostring(bot.best_powerup.distance)
             -- get the distance
-            local dist, dx, dy = helpers.dist(bot, best_powerup.item)
+            local dist, dx, dy = helpers.dist(bot, bot.best_powerup.item)
             if dist >= 10 then
                 futurex = bot.x + (dx / dist) * bot.speed * dt
                 futurey = bot.y + (dy / dist) * bot.speed * dt

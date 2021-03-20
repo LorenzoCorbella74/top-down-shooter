@@ -244,8 +244,7 @@ end
 helpers.getNearestVisibleEnemy = function(bot)
     local output = {distance = 10000}
     local opponents = filter(handlers.actors, function(actor)
-        return actor.index ~= bot.index and actor.alive and actor.team ~=
-                   bot.team
+        return actor.index ~= bot.index and actor.alive and actor.team ~= bot.team
     end)
     local visible_opponents = filter(opponents, function(actor)
         return helpers.canBeSeen(bot, actor)
@@ -304,6 +303,7 @@ helpers.getNearestPowerup = function(bot)
         end
         return output;
     end
+    return output;
 end
 
 helpers.findPath = function(bot, target)

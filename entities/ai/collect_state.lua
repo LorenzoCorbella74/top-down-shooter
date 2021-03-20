@@ -75,7 +75,7 @@ function collect.OnUpdate(dt, bot)
         if #bot.nodes == 0 then
             print('dist '..dist)
             bot.nodes = {}
-            bot.best_powerup = {}
+            bot.best_powerup = helpers.getNearestPowerup(bot)
             -- block when distance is reduced fast (when speed powerup is staken) or no item are found
             if dist > 2 then
                 collect.init(bot)
