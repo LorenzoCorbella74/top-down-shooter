@@ -2,7 +2,9 @@ local helpers = require "../../helpers.helpers"
 
 local fight = {stateName = 'fight'}
 
-function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
+function fight.OnEnter(bot) 
+    print("fight.OnEnter() " .. bot.name)
+end
 
 function fight.OnUpdate(dt, bot)
 
@@ -57,8 +59,9 @@ function fight.OnUpdate(dt, bot)
         helpers.checkCollision(bot, futurex, futurey)
         -- fire - > according to a bot characteristics
         -- handlers.bots.fire(bot, dt)
-    -- if no more visible go to last visible enemy position
+    -- if enemy is no more visible go to last enemy position
     elseif bot.last_visible_position then
+        bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
         fight.stateName = 'last_enemy_position'
         local dist, dx, dy = helpers.dist(bot, bot.last_visible_position)
         if dist >= 10 then
@@ -70,6 +73,7 @@ function fight.OnUpdate(dt, bot)
             bot.last_visible_position = nil
         end
     else
+        bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
         bot.target = {}
         bot.brain.pop()
         return

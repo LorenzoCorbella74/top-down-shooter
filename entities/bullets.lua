@@ -105,6 +105,9 @@ BulletsHandler.new = function()
                 end
                 -- impact with bots or player
                 if (item.type and item.type == 'actor') then
+
+                    item.underAttack = true
+                    item.underAttackPoint = col.touch
                     -- create blood
                     -- red flash if player
                     if item.name == 'player' then

@@ -42,10 +42,11 @@ BotsHandler.new = function()
 
             attackCounter = 0, -- frequenza di sparo
 
-            nodes = {},         -- path to reach an item
-            target = {},        -- target for fighting
+            nodes = {},           -- path to reach an item
+            target = {},          -- target for fighting
             best_powerup = {},    -- target of movement
-            best_waypoint = {},    -- target of movement
+            best_waypoint = {},   -- target of movement
+            underAttack = false,  -- if underAttack turn to the bullet_collision_point
 
             info = ''           -- for debug
         }
@@ -85,7 +86,6 @@ BotsHandler.new = function()
                 -- bot skill level
                 predvX = math.random() < config.GAME.BOTS_PREDICTION_SKILL and predvX or 0
                 predvY = math.random() < config.GAME.BOTS_PREDICTION_SKILL and predvY or 0
-
 
                 local dist, dx, dy = helpers.dist(p, p.target)
                 local velX = dx / dist + predvX

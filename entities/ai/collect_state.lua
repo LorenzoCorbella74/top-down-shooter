@@ -48,6 +48,13 @@ function collect.OnUpdate(dt, bot)
         return
     end
 
+    -- if underAttack turn to the point of impact of the received bullet
+    if bot.underAttack then
+        local  contact_point = bot.underAttackPoint
+        helpers.turnProgressivelyTo(bot, contact_point)
+        return
+    end
+
     -- if there is a target item and a path to this target
     local cell = bot.nodes[1]
     bot.old_x = bot.x
