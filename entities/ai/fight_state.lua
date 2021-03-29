@@ -9,20 +9,19 @@ function fight.OnUpdate(dt, bot)
     local current_enemy = bot.target
     bot.best_powerup = helpers.getNearestPowerup(bot)
 
-    -- local last_visible_position = {x = current_enemy.x, y = current_enemy.y}
-
     bot.old_x = bot.x
     bot.old_y = bot.y
-
+    
     local futurex = bot.x
     local futurey = bot.y
-
+    
     if current_enemy and current_enemy.alive and helpers.isInConeOfView(bot, current_enemy) and helpers.canBeSeen(bot, current_enemy) then
-
+        
+        bot.last_visible_position = {x = current_enemy.x, y = current_enemy.y}
         -- face the target
         helpers.turnProgressivelyTo(bot, current_enemy)
         
-        -- collect close powerup while fighting NOT WORKING!!!!!
+        -- collect close powerup while fighting!!!!!
         if bot.best_powerup.item and bot.best_powerup.distance < 250 then
             fight.stateName = 'fight_&_collect'
             bot.info = tostring(bot.best_powerup.distance)
@@ -56,8 +55,20 @@ function fight.OnUpdate(dt, bot)
 
         -- check collision
         helpers.checkCollision(bot, futurex, futurey)
-        -- fire
-        handlers.bots.fire(bot, dt)
+        -- fire - > according to a bot characteristics
+        -- handlers.bots.fire(bot, dt)
+    -- if no more visible go to last visible enemy position
+    elseif bot.last_visible_position then
+        fight.stateName = 'last_enemy_position'
+        local dist, dx, dy = helpers.dist(bot, bot.last_visible_position)
+        if dist >= 10 then
+            futurex = bot.x + (dx / dist) * bot.speed * dt
+            futurey = bot.y + (dy / dist) * bot.speed * dt
+            -- check collision
+            helpers.checkCollision(bot, futurex, futurey)
+        else
+            bot.last_visible_position = nil
+        end
     else
         bot.target = {}
         bot.brain.pop()
