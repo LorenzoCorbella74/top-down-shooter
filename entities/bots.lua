@@ -12,6 +12,23 @@ BotsHandler.new = function()
 
     self.bots = {}
 
+    function self.createPersonality(level)          -- 0 to 5
+        return {    
+                aggression = .8,                    -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
+                fire_throttle = 8,                  -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
+                self_preservation = 7,              -- attitudine ad auto preserviarsi         -> "quanto" sceglierà di ripiegare
+                alertness = 7,                      -- attitudine ad essere vigile ???     -> 
+                camp = 1,                           -- attitudine a stare fermo
+
+                view_length = 300 + 40 * level,     -- capacità di visione 
+                view_angle = 40 + 4*(level),        -- angolo di visione in gradi (sx <- direzione -> dx)
+
+                reaction_time = 0.35,               -- tempo di reazione (ms)  a seguito di visione   
+                aim_prediction_skill = 0.2*level,   -- capacità di mirare (predirre la posizione del target)
+                aim_accuracy = 4,                   -- accuratezza del mirare () ampiezza scostamento dal target
+        }
+    end
+
     function self.create(team)
 
         -- Create player object
@@ -121,7 +138,7 @@ BotsHandler.new = function()
                 love.graphics.draw(bot.sprite, math.floor(bot.x + bot.w / 2), math.floor(bot.y + bot.h / 2), bot.r, 1, 1, bot.w / 2, bot.h / 2)
                 -- debug field of view
                 if debug then
-                    local delta = math.rad(60)
+                    local delta = math.rad(config.GAME.BOTS_VISION_ANGLE)
                     local vision_length = config.GAME.BOTS_VISION_LENGTH
                     love.graphics.setColor(0, 0.9, 0, 0.25)
                     love.graphics.arc("fill", bot.x + bot.w / 2, bot.y + bot.h / 2, vision_length, bot.r - delta, bot.r + delta)

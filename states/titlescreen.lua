@@ -13,7 +13,7 @@ function state:draw()
     love.graphics.printf("2D ARENA", 0, H / 3, W, 'center')
     if elapsed % 100 > BLINK_INTERVAL then
         love.graphics.setFont(Fonts.md) 
-        love.graphics.printf("< Press SPACE to play or ESC to exit>", 0,H / 2, W, 'center')
+        love.graphics.printf("< Press SPACE to play or ESC to exit >", 0,H / 2, W, 'center')
     end
 end
 

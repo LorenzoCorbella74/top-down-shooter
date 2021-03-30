@@ -35,12 +35,15 @@ function fight.OnUpdate(dt, bot)
             else
                 bot.best_powerup = helpers.getNearestPowerup(bot)
             end
-
         else
             fight.stateName = 'fight'
             local dist, dx, dy = helpers.dist(bot, current_enemy)
 
-            if dist < 250 then
+            --[[ if bot.hp<40 and dist > 250 then
+                -- retreat if low on health
+                bot.velX = -dx / dist
+                bot.velY = -dy / dist
+            else  ]]if dist < 250 then
                 bot.velX = -dx / dist
                 bot.velY = -dy / dist
             elseif dist >= 250 and dist < 400 then
@@ -62,9 +65,9 @@ function fight.OnUpdate(dt, bot)
     -- if enemy is no more visible go to last enemy position
     elseif bot.last_visible_position then
         bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
-        fight.stateName = 'last_enemy_position'
+        fight.stateName = 'get_last_enemy_position'
         local dist, dx, dy = helpers.dist(bot, bot.last_visible_position)
-        if dist >= 10 then
+        if dist >= 12 then
             futurex = bot.x + (dx / dist) * bot.speed * dt
             futurey = bot.y + (dy / dist) * bot.speed * dt
             -- check collision
@@ -73,7 +76,7 @@ function fight.OnUpdate(dt, bot)
             bot.last_visible_position = nil
         end
     else
-        bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
+        bot.underAttack = false -- set default
         bot.target = {}
         bot.brain.pop()
         return
