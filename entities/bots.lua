@@ -23,9 +23,9 @@ BotsHandler.new = function()
                 view_length = 300 + 40 * level,     -- capacità di visione
                 view_angle = 40 + 4*(level),        -- angolo di visione in gradi (sx <- direzione -> dx)
 
-                reaction_time = 0.35,               -- tempo di reazione (ms) a seguito di visione
-                aim_prediction_skill = 0.2*level,   -- capacità di mirare (predirre la posizione del target)
-                aim_accuracy = 4,                   -- accuratezza del mirare () ampiezza scostamento dal target
+                reaction_time = 1 -0.2*level,       -- tempo di reazione (ms) a seguito di visione
+                aim_prediction_skill = 0.2*level,   -- capacità di mirare (predirre la posizione del target) -- can be from 0 to 1  // 5 difficulties 0, .25 .5 .75 1
+                -- aim_accuracy = 4,                   -- accuratezza del mirare () ampiezza scostamento dal target
         }
     end
 
@@ -56,18 +56,20 @@ BotsHandler.new = function()
             numberOfDeaths = 0, -- numero di volte in vui è stato ucciso
 
             weaponsInventory = WeaponsInventory.new(),
+            parameters = self.createPersonality(3),
 
             attackCounter = 0,    -- frequenza di sparo
-            reactionCounter = 1,  -- tempo di reazione una volta avvistato un nemico
-
+            
             nodes = {},           -- path to reach an item
             target = {},          -- target for fighting
             best_powerup = {},    -- target of movement
             best_waypoint = {},   -- target of movement
             underAttack = false,  -- if underAttack turn to the bullet_collision_point
-
+            
             info = ''           -- for debug
         }
+
+        bot.reactionCounter = bot.parameters.reaction_time  -- tempo di reazione una volta avvistato un nemico
         -- ai
         bot.brain = FsmMachine.new(bot)
         self.spawn(bot)
@@ -102,8 +104,8 @@ BotsHandler.new = function()
                 -- print('Prediction :', tostring(predvX),tostring(predvY)) -- dell'ordine di +/- 0.25
 
                 -- bot skill level
-                predvX = math.random() < config.GAME.BOTS_PREDICTION_SKILL and predvX or 0
-                predvY = math.random() < config.GAME.BOTS_PREDICTION_SKILL and predvY or 0
+                predvX = math.random() < p.parameters.aim_prediction_skill and predvX or 0
+                predvY = math.random() < p.parameters.aim_prediction_skill and predvY or 0
 
                 local dist, dx, dy = helpers.dist(p, p.target)
                 local velX = dx / dist + predvX
@@ -139,8 +141,8 @@ BotsHandler.new = function()
                 love.graphics.draw(bot.sprite, math.floor(bot.x + bot.w / 2), math.floor(bot.y + bot.h / 2), bot.r, 1, 1, bot.w / 2, bot.h / 2)
                 -- debug field of view
                 if debug then
-                    local delta = math.rad(config.GAME.BOTS_VISION_ANGLE)
-                    local vision_length = config.GAME.BOTS_VISION_LENGTH
+                    local delta = math.rad(bot.parameters.view_angle)
+                    local vision_length = bot.parameters.view_length
                     love.graphics.setColor(0, 0.9, 0, 0.25)
                     love.graphics.arc("fill", bot.x + bot.w / 2, bot.y + bot.h / 2, vision_length, bot.r - delta, bot.r + delta)
                     love.graphics.setColor(0, 0.9, 0, 0.75)

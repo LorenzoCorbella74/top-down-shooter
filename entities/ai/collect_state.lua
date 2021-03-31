@@ -49,9 +49,9 @@ function collect.OnUpdate(dt, bot)
         if bot.reactionCounter> 0 then
             bot.reactionCounter = bot.reactionCounter - 1 * dt
         else 
-            --sound "discovered"
+            --sound "found enemy"
             bot.brain.push('fight')
-            bot.reactionCounter = 1 -- default
+            bot.reactionCounter = bot.parameters.reaction_time -- default
         end
         return
     end

@@ -91,8 +91,8 @@ end
 helpers.isInConeOfView = function(self, target)
     local angle = helpers.angle(self, target) -- angle with target
     local distance = helpers.dist(self, target)
-    local delta = math.rad(config.GAME.BOTS_VISION_ANGLE) -- angle extent
-    local vision_length = config.GAME.BOTS_VISION_LENGTH -- distance with target
+    local delta = math.rad(self.parameters.view_angle) -- angle extent
+    local vision_length = self.parameters.view_length-- distance with target
     if self.r > 6.28 then self.r = self.r - 6.28 end
     local difference
     if math.abs(angle - self.r) > math.rad(180) then
