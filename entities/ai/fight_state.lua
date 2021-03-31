@@ -2,9 +2,7 @@ local helpers = require "../../helpers.helpers"
 
 local fight = {stateName = 'fight'}
 
-function fight.OnEnter(bot) 
-    print("fight.OnEnter() " .. bot.name)
-end
+function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 
 function fight.OnUpdate(dt, bot)
 
@@ -13,16 +11,16 @@ function fight.OnUpdate(dt, bot)
 
     bot.old_x = bot.x
     bot.old_y = bot.y
-    
+
     local futurex = bot.x
     local futurey = bot.y
-    
+
     if current_enemy and current_enemy.alive and helpers.isInConeOfView(bot, current_enemy) and helpers.canBeSeen(bot, current_enemy) then
         -- setting last visible position
         bot.last_visible_position = {x = current_enemy.x, y = current_enemy.y}
         -- face the target
         helpers.turnProgressivelyTo(bot, current_enemy)
-        
+
         -- collect close powerup while fighting!!!!!
         if bot.best_powerup.item and bot.best_powerup.distance < 250 then
             fight.stateName = 'fight_&_collect'
@@ -42,13 +40,18 @@ function fight.OnUpdate(dt, bot)
             if dist < 250 then
                 bot.velX = -dx / dist
                 bot.velY = -dy / dist
-            elseif dist >= 250 and dist < 400 then
+            elseif dist >= 250 and dist < 375 then
                 bot.velX = math.random() < 0.95 and bot.velX or helpers.randomDirection(bot)
                 bot.velY = math.random() < 0.95 and bot.velY or helpers.randomDirection(bot)
-            elseif dist >= 400 then
+            elseif dist >= 375 then
                 -- ci si avvicina solo in base al livello di aggressività e all'attitudine ad auto preserviarsi
-                bot.velX = dx / dist
-                bot.velY = dy / dist
+                if bot.parameters.aggression > bot.parameters.self_preservation then
+                    bot.velX = dx / dist
+                    bot.velY = dy / dist
+                else
+                    bot.velX = -dx / dist
+                    bot.velY = -dy / dist
+                end
             end
             -- update bot positions
             futurex = bot.x + bot.velX * bot.speed * dt;
@@ -58,8 +61,8 @@ function fight.OnUpdate(dt, bot)
         -- check collision
         helpers.checkCollision(bot, futurex, futurey)
         -- fire - > according to a bot characteristics
-        -- handlers.bots.fire(bot, dt)
-    -- if enemy is no more visible go to last enemy position
+        handlers.bots.fire(bot, dt)
+        -- if enemy is no more visible go to last enemy position
     elseif bot.last_visible_position then
         bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
         fight.stateName = 'get_last_enemy_position'

@@ -55,7 +55,7 @@ function state:enter()
     table.insert(handlers.actors, handlers.player.player)
     handlers.bots = BotsHandler.new()
     for i = 1, config.GAME.BOTS_NUMBERS, 1 do
-        handlers.bots.create(state.defineTeams(i))
+        handlers.bots.create(state.defineTeams(i), math.random(1,5)) -- bot skill levels
         table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information

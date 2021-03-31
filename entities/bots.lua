@@ -14,9 +14,9 @@ BotsHandler.new = function()
 
     function self.createPersonality(level)          -- 0 to 5
         return {    
-                aggression = 0.8,                   -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
-                fire_throttle = 0.8,                -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
-                self_preservation = 7,              -- attitudine ad auto preserviarsi         -> "quanto" sceglierà di ripiegare
+                aggression = math.random(0.5,1),   -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
+                self_preservation = math.random(0.5,1),  -- attitudine ad auto preserviarsi         -> "quanto" sceglierà di ripiegare
+                fire_throttle = 1,                -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
                 alertness = 7,                      -- attitudine ad essere vigile ???
                 camp = 1,                           -- attitudine a stare fermo
 
@@ -29,7 +29,7 @@ BotsHandler.new = function()
         }
     end
 
-    function self.create(team)
+    function self.create(team, level)
 
         -- Create player object
         local sprite = Sprites.red_bot
@@ -56,7 +56,7 @@ BotsHandler.new = function()
             numberOfDeaths = 0, -- numero di volte in vui è stato ucciso
 
             weaponsInventory = WeaponsInventory.new(),
-            parameters = self.createPersonality(3),
+            parameters = self.createPersonality(level),
 
             attackCounter = 0,    -- frequenza di sparo
             
@@ -96,7 +96,7 @@ BotsHandler.new = function()
         local w = p.weaponsInventory.selectedWeapon
         if p.alive and w.shotNumber > 0 then
             if p.attackCounter > 0 then
-                p.attackCounter = p.attackCounter - 1 * dt
+                p.attackCounter = p.attackCounter - 1 * dt * (math.random() < p.parameters.fire_throttle and 1 or 0.5)
             else
                 -- bullet prediction -> how well bots are aiming!!
                 local predvX = (p.target.x - p.target.old_x) / (p.target.speed * dt) / (p.speed * dt);
