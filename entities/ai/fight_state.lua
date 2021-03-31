@@ -18,7 +18,7 @@ function fight.OnUpdate(dt, bot)
     local futurey = bot.y
     
     if current_enemy and current_enemy.alive and helpers.isInConeOfView(bot, current_enemy) and helpers.canBeSeen(bot, current_enemy) then
-        
+        -- setting last visible position
         bot.last_visible_position = {x = current_enemy.x, y = current_enemy.y}
         -- face the target
         helpers.turnProgressivelyTo(bot, current_enemy)
@@ -39,17 +39,14 @@ function fight.OnUpdate(dt, bot)
             fight.stateName = 'fight'
             local dist, dx, dy = helpers.dist(bot, current_enemy)
 
-            --[[ if bot.hp<40 and dist > 250 then
-                -- retreat if low on health
-                bot.velX = -dx / dist
-                bot.velY = -dy / dist
-            else  ]]if dist < 250 then
+            if dist < 250 then
                 bot.velX = -dx / dist
                 bot.velY = -dy / dist
             elseif dist >= 250 and dist < 400 then
                 bot.velX = math.random() < 0.95 and bot.velX or helpers.randomDirection(bot)
                 bot.velY = math.random() < 0.95 and bot.velY or helpers.randomDirection(bot)
             elseif dist >= 400 then
+                -- ci si avvicina solo in base al livello di aggressività e all'attitudine ad auto preserviarsi
                 bot.velX = dx / dist
                 bot.velY = dy / dist
             end
@@ -76,6 +73,7 @@ function fight.OnUpdate(dt, bot)
             bot.last_visible_position = nil
         end
     else
+        bot.last_visible_position = nil
         bot.underAttack = false -- set default
         bot.target = {}
         bot.brain.pop()

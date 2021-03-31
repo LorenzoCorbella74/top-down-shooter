@@ -5,25 +5,22 @@ local collect = {stateName = 'collect'}
 function collect.checkIfAChangeStateIsNeeded(bot)
     local enemy = helpers.getNearestVisibleEnemy(bot).enemy
     if enemy then
+        if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then
             print(bot.name .. ' has ' .. enemy.name .. ' as target')
-            if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then
             bot.target = enemy
-            bot.brain.push('fight')
             return true
         end
     end
+    return false
 end
 
-function collect.init(bot)
+function collect.getTargetOfMovement(bot)
     local start_time = love.timer.getTime()
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getNearestPowerup(bot)
 
-    -- go to fight state if there is an enemy 
-    local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
-
     -- otherwise collect items
-    if not needStateChange and bot.best_powerup.item or bot.best_waypoint.item then
+    if  bot.best_powerup.item or bot.best_waypoint.item then
         local best = bot.best_powerup.item or bot.best_waypoint.item
         if best then
             bot.nodes = helpers.findPath(bot, best)
@@ -36,7 +33,7 @@ end
 
 function collect.OnEnter(bot)
     print("collect.OnEnter() " .. bot.name)
-    collect.init(bot)
+    collect.getTargetOfMovement(bot)
 end
 
 function collect.OnUpdate(dt, bot)
@@ -44,7 +41,18 @@ function collect.OnUpdate(dt, bot)
     -- check if there is a visible enemy
     local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
 
-    if #bot.nodes==0 or needStateChange then
+    if #bot.nodes== 0 then
+        return
+    end
+
+    if needStateChange then
+        if bot.reactionCounter> 0 then
+            bot.reactionCounter = bot.reactionCounter - 1 * dt
+        else 
+            --sound "discovered"
+            bot.brain.push('fight')
+            bot.reactionCounter = 1 -- default
+        end
         return
     end
 
@@ -85,7 +93,7 @@ function collect.OnUpdate(dt, bot)
             bot.best_powerup = helpers.getNearestPowerup(bot)
             -- block when distance is reduced fast (when speed powerup is staken) or no item are found
             if dist > 2 then
-                collect.init(bot)
+                collect.getTargetOfMovement(bot)
             else
                 print('Bot is blocked...')
                 -- if no powerup go with the waypoint

@@ -296,9 +296,10 @@ helpers.getNearestPowerup = function(bot)
     end)
     if visible_powerups and #visible_powerups>0 then
         for index, item in ipairs(visible_powerups) do
+            -- local path, distance = helpers.findPath(bot, item);
             local distance = helpers.dist(bot, item);
             if output.distance > distance and distance < 600 then
-                output = {distance = distance, item = item};
+                output = {distance = distance, item = item--[[ , path = path ]]};
             end
         end
         return output;
@@ -314,14 +315,13 @@ helpers.findPath = function(bot, target)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path then
-        print(('Path found! Length: %.2f'):format(path:getLength()), bot.x,
-              target.x, bot.y, target.y)
+        print(('Path found! Length: %.2f'):format(path:getLength()), bot.x, target.x, bot.y, target.y)
         for node, count in path:nodes() do
             -- print(('Step: %d - x: %d - y: %d'):format(count, node:getX(),node:getY()))
             table.insert(nodes, {x = node:getX() - 1, y = node:getY() - 1})
         end
     end
-    return nodes
+    return nodes, path:getLength()
 end
 
 return helpers

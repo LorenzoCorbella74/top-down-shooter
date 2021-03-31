@@ -14,16 +14,16 @@ BotsHandler.new = function()
 
     function self.createPersonality(level)          -- 0 to 5
         return {    
-                aggression = .8,                    -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
-                fire_throttle = 8,                  -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
+                aggression = 0.8,                   -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
+                fire_throttle = 0.8,                -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
                 self_preservation = 7,              -- attitudine ad auto preserviarsi         -> "quanto" sceglierà di ripiegare
-                alertness = 7,                      -- attitudine ad essere vigile ???     -> 
+                alertness = 7,                      -- attitudine ad essere vigile ???
                 camp = 1,                           -- attitudine a stare fermo
 
-                view_length = 300 + 40 * level,     -- capacità di visione 
+                view_length = 300 + 40 * level,     -- capacità di visione
                 view_angle = 40 + 4*(level),        -- angolo di visione in gradi (sx <- direzione -> dx)
 
-                reaction_time = 0.35,               -- tempo di reazione (ms)  a seguito di visione   
+                reaction_time = 0.35,               -- tempo di reazione (ms) a seguito di visione
                 aim_prediction_skill = 0.2*level,   -- capacità di mirare (predirre la posizione del target)
                 aim_accuracy = 4,                   -- accuratezza del mirare () ampiezza scostamento dal target
         }
@@ -57,7 +57,8 @@ BotsHandler.new = function()
 
             weaponsInventory = WeaponsInventory.new(),
 
-            attackCounter = 0, -- frequenza di sparo
+            attackCounter = 0,    -- frequenza di sparo
+            reactionCounter = 1,  -- tempo di reazione una volta avvistato un nemico
 
             nodes = {},           -- path to reach an item
             target = {},          -- target for fighting
