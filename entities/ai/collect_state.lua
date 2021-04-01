@@ -18,8 +18,6 @@ function collect.getTargetOfMovement(bot)
     local start_time = love.timer.getTime()
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getNearestPowerup(bot)
-
-    -- otherwise collect items
     if  bot.best_powerup.item or bot.best_waypoint.item then
         local best = bot.best_powerup.item or bot.best_waypoint.item
         if best then

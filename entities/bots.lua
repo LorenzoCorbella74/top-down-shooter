@@ -12,20 +12,28 @@ BotsHandler.new = function()
 
     self.bots = {}
 
-    function self.createPersonality(level)          -- 0 to 5
-        return {    
-                aggression = math.random(0.5,1),   -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
-                self_preservation = math.random(0.5,1),  -- attitudine ad auto preserviarsi         -> "quanto" sceglierà di ripiegare
-                fire_throttle = 1,                -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
-                alertness = 7,                      -- attitudine ad essere vigile ???
-                camp = 1,                           -- attitudine a stare fermo
+    --  per team play (una sola tra le prox tre)
+    function self.createRole()
+        return {
+            attack = 10, -- attitudine ad attaccare un obiettivo (attaccante)
+            defend = 6, -- attitudice a difendere un obittivo   (difensore)
+            assist = 8 -- attitudine al supporto compagni      (supporto)
+        }
+    end
 
-                view_length = 300 + 40 * level,     -- capacità di visione
-                view_angle = 40 + 4*(level),        -- angolo di visione in gradi (sx <- direzione -> dx)
+    function self.createPersonality(level) -- 0 to 5
+        return {
+            aggression = math.random(0.5, 1),           -- attitudine ad attaccare un nemico       -> "quanto" sceglierà l'attacco
+            self_preservation = math.random(0.5, 1),    -- attitudine ad auto preserviarsi         -> "quanto" sceglierà di ripiegare
+            fire_throttle = 0.5,                        -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
+            -- camp = 1,                                -- attitudine a stare fermo
 
-                reaction_time = 1 -0.2*level,       -- tempo di reazione (ms) a seguito di visione
-                aim_prediction_skill = 0.2*level,   -- capacità di mirare (predirre la posizione del target) -- can be from 0 to 1  // 5 difficulties 0, .25 .5 .75 1
-                -- aim_accuracy = 4,                   -- accuratezza del mirare () ampiezza scostamento dal target
+            view_length = 300 + 40 * level,             -- capacità di visione
+            view_angle = 40 + 4 * (level),              -- angolo di visione in gradi (sx <- direzione -> dx)
+
+            reaction_time = 0.75 - 0.15 * level,        -- tempo di reazione (ms) a seguito di visione
+            aim_prediction_skill = 0.2 * level          -- capacità di mirare (predirre la posizione del target) -- can be from 0 to 1  // 5 difficulties 0, .25 .5 .75 1
+            -- aim_accuracy = 4,                        -- accuratezza del mirare () ampiezza scostamento dal target
         }
     end
 
@@ -47,7 +55,7 @@ BotsHandler.new = function()
 
             w = sprite:getWidth(),
             h = sprite:getHeight(),
-            speed = 256, -- pixels per second
+            speed = config.GAME.ACTORS_SPEED, -- pixels per second
 
             damage = 1, -- capacity to make damage (1 normal 4 for quad)
 
@@ -58,18 +66,18 @@ BotsHandler.new = function()
             weaponsInventory = WeaponsInventory.new(),
             parameters = self.createPersonality(level),
 
-            attackCounter = 0,    -- frequenza di sparo
-            
-            nodes = {},           -- path to reach an item
-            target = {},          -- target for fighting
-            best_powerup = {},    -- target of movement
-            best_waypoint = {},   -- target of movement
-            underAttack = false,  -- if underAttack turn to the bullet_collision_point
-            
-            info = ''           -- for debug
+            attackCounter = 0, -- frequenza di sparo
+
+            nodes = {}, -- path to reach an item
+            target = {}, -- target for fighting
+            best_powerup = {}, -- target of movement
+            best_waypoint = {}, -- target of movement
+            underAttack = false, -- if underAttack turn to the bullet_collision_point
+
+            info = '' -- for debug
         }
 
-        bot.reactionCounter = bot.parameters.reaction_time  -- tempo di reazione una volta avvistato un nemico
+        bot.reactionCounter = bot.parameters.reaction_time -- tempo di reazione una volta avvistato un nemico
         -- ai
         bot.brain = FsmMachine.new(bot)
         self.spawn(bot)
@@ -96,7 +104,7 @@ BotsHandler.new = function()
         local w = p.weaponsInventory.selectedWeapon
         if p.alive and w.shotNumber > 0 then
             if p.attackCounter > 0 then
-                p.attackCounter = p.attackCounter - 1 * dt * (math.random() < p.parameters.fire_throttle and 1 or 0.5)
+                p.attackCounter = p.attackCounter - 1 * dt * p.parameters.fire_throttle
             else
                 -- bullet prediction -> how well bots are aiming!!
                 local predvX = (p.target.x - p.target.old_x) / (p.target.speed * dt) / (p.speed * dt);
@@ -149,7 +157,7 @@ BotsHandler.new = function()
                     love.graphics.arc("line", bot.x + bot.w / 2, bot.y + bot.h / 2, vision_length, bot.r - delta, bot.r + delta)
                     -- coordinates
                     love.graphics.setColor(1, 1, 1)
-                    love.graphics.print(math.floor(bot.x) .. ' ' ..math.floor(bot.y), bot.x, bot.y + 32)
+                    love.graphics.print(math.floor(bot.x) .. ' ' ..  math.floor(bot.y), bot.x, bot.y + 32)
                     love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 70)
                     love.graphics.print("Info: " .. bot.info, bot.x + 70, bot.y + 70)
@@ -167,7 +175,8 @@ BotsHandler.new = function()
                         -- linea rossa tiene conto dell'offset al centro del player
                         love.graphics.setColor(1, 0, 0, 1)
                         love.graphics.circle('fill', am.x + 16, am.y + 16, 4)
-                        love.graphics.line(am.x + 16, am.y + 16, a.x + 16, a.y + 16)
+                        love.graphics.line(am.x + 16, am.y + 16, a.x + 16,
+                                           a.y + 16)
                         -- linea gialla tiles del path
                         love.graphics.setColor(1, 1, 0, 1)
                         love.graphics.circle('fill', a.x, a.y, 4)

@@ -1,6 +1,7 @@
 -- require "..helpers.boundingbox"
 local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
 local helpers = require "..helpers.helpers"
+local config = require "config"
 
 local PlayerHandler = {}
 
@@ -19,7 +20,7 @@ PlayerHandler.new = function()
             sprite = sprite,
             w = sprite:getWidth(),
             h = sprite:getHeight(),
-            speed = 256, -- pixels per second
+            speed = config.GAME.ACTORS_SPEED, 
 
             x = 0,
             y = 0,
