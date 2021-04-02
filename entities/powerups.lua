@@ -10,28 +10,33 @@ PowerupsHandler.new = function()
             name = 'health',
             hp = 5,
             spawnTime = 30,
+            type = 'health',
             sprite = Sprites.powerup_health
         },
         megaHealth = {
             name = 'megaHealth',
+            type = 'special_powerup',
             hp = 50,
             spawnTime = 30,
             sprite = Sprites.powerup_megaHealth
         },
         armour = {
             name = 'armour',
+            type = 'health',
             ap = 5,
             spawnTime = 30,
             sprite = Sprites.powerup_armour
         },
         megaArmour = {
             name = 'megaArmour',
+            type = 'special_powerup',
             ap = 50,
             spawnTime = 30,
             sprite = Sprites.powerup_megaArmour
         },
         quad = {
             name = 'quad',
+            type = 'special_powerup',
             multiplier = 4,
             spawnTime = 150,
             enterAfter = 60,
@@ -40,6 +45,7 @@ PowerupsHandler.new = function()
         },
         speed = {
             name = 'speed',
+            type = 'special_powerup',
             multiplier = 1.5,
             spawnTime = 150,
             enterAfter = 60,
@@ -121,6 +127,7 @@ PowerupsHandler.new = function()
                     object.of = object.info.of
                     object.type = object.info.type
                 end
+                object.id = math.random(1000000)
                 world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
                 table.insert(self.powerups, object)
             end
@@ -192,6 +199,32 @@ PowerupsHandler.new = function()
         world:remove(powerup) -- powerup is no more in the phisycs world
         who.weaponsInventory.setNumOfBullets(powerup.of, powerup.amount);
         powerup.visible = false
+    end
+
+    function self.trackBot(id, bot)
+        for i = #self.powerups, 1, -1 do
+            local powerup = self.powerups[i]
+            if powerup.id == id then
+                powerup.players[bot.index].visible = false
+                Timer.after(12, function()
+                    powerup.players[bot.index].visible = true
+                end)
+            end
+        end
+    end
+
+    -- powerup visibility for each bot
+    -- when it's taken it's no more visible and a timer is called
+    -- after x sec the powerup is once again visible
+    function self.seedBotsInPowerups(players)
+        for i = #self.powerups, 1, -1 do
+            local powerup = self.powerups[i]
+            powerup.players = {}
+            for y = #players, 1, -1 do
+                local player = players[y]
+                powerup.players[player.index] = {visible = true}  -- index o name ???
+            end
+        end
     end
 
     return self

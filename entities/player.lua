@@ -34,7 +34,8 @@ PlayerHandler.new = function()
 
             weaponsInventory = WeaponsInventory.new(),
 
-            attackCounter = 0      -- frequenza di sparo
+            attackCounter = 0,      -- frequenza di sparo
+            invisible = false        -- debug
         }
         self.spawn()
     end

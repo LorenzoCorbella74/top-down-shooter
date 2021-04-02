@@ -12,13 +12,25 @@ BotsHandler.new = function()
 
     self.bots = {}
 
-    --  per team play (una sola tra le prox tre)
-    function self.createRole()
+    -- in futuro sarà una tabella con tutti i nomi dei bot e relative preferenze di armi
+    function self.createWeaponPreferences()
         return {
-            attack = 10, -- attitudine ad attaccare un obiettivo (attaccante)
-            defend = 6, -- attitudice a difendere un obittivo   (difensore)
-            assist = 8 -- attitudine al supporto compagni      (supporto)
+                rifle= 0,
+                shotgun= 0.8,
+                rocket= 0.6,
+                plasma= 0.7,
+                railgun= 0.9
+            }
+    end
+
+    --  per team play (una sola tra le prox tre): in futuro sarà impostato in fase di creazione in funz del game_type
+    function self.createRole()
+        local role = {
+            'attack',   -- attitudine ad attaccare un obiettivo (attaccante)
+            'defend',   -- attitudice a difendere un obittivo   (difensore)
+            'support'   -- attitudine al supporto compagni      (supporto)
         }
+        return role[math.random(1,3)]
     end
 
     function self.createPersonality(level) -- 0 to 5
@@ -39,7 +51,7 @@ BotsHandler.new = function()
 
     function self.create(team, level)
 
-        -- Create player object
+        -- Create bot object
         local sprite = Sprites.red_bot
         local bot = {
             index = math.random(1000000), -- id
@@ -65,19 +77,21 @@ BotsHandler.new = function()
 
             weaponsInventory = WeaponsInventory.new(),
             parameters = self.createPersonality(level),
+            team_role = self.createRole(),
+            weapons_preferences = self.createWeaponPreferences(),
 
-            attackCounter = 0, -- frequenza di sparo
+            attackCounter = 0,      -- frequenza di sparo
 
-            nodes = {}, -- path to reach an item
-            target = {}, -- target for fighting
-            best_powerup = {}, -- target of movement
-            best_waypoint = {}, -- target of movement
-            underAttack = false, -- if underAttack turn to the bullet_collision_point
+            nodes = {},             -- path to reach an item
+            target = {},            -- target for fighting
+            best_powerup = {},      -- target of movement
+            best_waypoint = {},     -- target of movement
+            underAttack = false,    -- if underAttack turn to the bullet_collision_point
 
-            info = '' -- for debug
+            info = ''               -- for debug
         }
 
-        bot.reactionCounter = bot.parameters.reaction_time -- tempo di reazione una volta avvistato un nemico
+        bot.reactionCounter = bot.parameters.reaction_time -- tempo di reazione una volta avvistato un nemico (x -> fight state)
         -- ai
         bot.brain = FsmMachine.new(bot)
         self.spawn(bot)

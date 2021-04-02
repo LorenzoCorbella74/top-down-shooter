@@ -60,6 +60,8 @@ function state:enter()
     end
     -- seed waypoints with each bot information
     handlers.points.seedBotsInWaypoints(handlers.actors)
+    -- seed waypoints with each bot information
+    handlers.powerups.seedBotsInPowerups(handlers.actors)
     for i = 1, config.GAME.BOTS_NUMBERS, 1 do
         handlers.bots.bots[i].brain.init() -- wamder as default
     end
@@ -127,6 +129,7 @@ function state:draw()
 end
 
 function state:keyreleased(key, code)
+    local p = map.layers["Sprites"].player
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
@@ -135,11 +138,13 @@ function state:keyreleased(key, code)
         local filename = string.format("screenshot-%d.png", os.time())
         love.graphics.captureScreenshot(filename)
         print (string.format("written %s", filename))
-    end -- working
-    if key == 'i' then debug = not debug end
+    end -- not working
+    if key == 'i' then 
+        debug = not debug 
+        p.invisible = not p.invisible
+    end
     if key == "1" or key == "2" or key == "3" or key == "4" or key == "5" then
         local key = tonumber(key)
-        local p = map.layers["Sprites"].player
         local w = p.weaponsInventory.weapons[key]
         -- weapon is set as current weapons if available
         if w.available and w.shotNumber > 0 then

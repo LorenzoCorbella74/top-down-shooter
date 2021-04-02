@@ -54,6 +54,37 @@ function tableMerge(t1, t2)
     return t1
 end
 
+
+local gameTypes_priorities = {
+    deathmatch = {
+        health = .5,
+        special_powerup = 1,
+        ammo = .5,
+        weapon = .75
+    },
+    team_deathmatch = {
+        health = .5,
+        special_powerup = 1,
+        ammo = .5,
+        weapon = .75
+    },
+    ctf = {
+        health = .5,
+        special_powerup = 1,
+        ammo = .5,
+        weapon = .75,
+        objectives = 0.9   -- recupero enemy_flag e team_flag
+    }--[[ ,
+    -- gare ad obiettivi
+    missions = {
+        health = .5,
+        special_powerup = 1,
+        ammo = .5,
+        weapon = .75,
+        objectives = 0.9
+    } ]]
+}
+
 local helpers = {}
 
 -- calculate the minor angle
@@ -167,6 +198,9 @@ helpers.checkCollision = function(p, futurex, futurey)
         local col = cols[i]
         if (item.type == 'powerups' and item.visible) then
             handlers.powerups.applyPowerup(item, p)
+            if p.name ~= 'player' then
+                handlers.powerups.trackBot(item.id, p)
+            end
             -- test time dilatation
             -- sound!
             -- handlers.timeManagement.setDilatation(0.5, 1)
@@ -178,10 +212,7 @@ helpers.checkCollision = function(p, futurex, futurey)
             handlers.powerups.applyWeapon(item, p)
         end
         if (item.name == 'waypoint') then
-            item.players[p.index].visible = false
-            Timer.after(6, function()
-                item.players[p.index].visible = true
-            end)
+            handlers.powerups.trackBot(item.id, p)
         end
 
         -- fix a probable error in bump library to make bots able to cut the corners of walls
@@ -247,7 +278,7 @@ helpers.getNearestVisibleEnemy = function(bot)
         return actor.index ~= bot.index and actor.alive and actor.team ~= bot.team
     end)
     local visible_opponents = filter(opponents, function(actor)
-        return helpers.canBeSeen(bot, actor)
+        return helpers.canBeSeen(bot, actor) and not actor.invisible
     end)
     if visible_opponents then
         for index, enemy in ipairs(visible_opponents) do
@@ -290,9 +321,12 @@ end
 
 helpers.getNearestPowerup = function(bot)
     local output = {distance = 10000, item = nil}
-    -- si esclude quelli non visibili (quelli già presi!)
+
+    local priorities = gameTypes_priorities[config.GAME.GAMETYPE]
+
+    -- get only the visible one or the ones that cannot be seen
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
-        return point.visible == true
+        return (point.players[bot.index].visible == true and point.visible == true) or ( point.players[bot.index].visible == true and point.visible == false and not helpers.canBeSeen(bot, point))
     end)
     if visible_powerups and #visible_powerups>0 then
         for index, item in ipairs(visible_powerups) do

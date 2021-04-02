@@ -7,8 +7,6 @@ PointsHandler.new = function()
     self.spawnPoints = {}
     self.waypoints = {}
 
-
-
     function self.getPointsFromMap()
         for k, object in pairs(map.objects) do
             -- spawnpoints
