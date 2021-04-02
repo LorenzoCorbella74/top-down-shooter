@@ -306,7 +306,7 @@ helpers.getRandomtWaypoint = function(bot)
     end)
     -- solo quelli non ancora attraversati dallo specifico bot ed ad una certa distanza
     local waypoints = filter(visible_waypoints, function(point)
-        return point.players[bot.index].visible == true --[[ and helpers.dist(bot, point)<1000 ]]
+        return point.players[bot.index].visible == true and helpers.dist(bot, point)<800
     end)
     if waypoints then
         -- random choice...
@@ -319,26 +319,23 @@ helpers.getRandomtWaypoint = function(bot)
     return output;
 end
 
-helpers.getNearestPowerup = function(bot)
-    local output = {distance = 10000, item = nil}
-
+helpers.getObjective = function(bot)
     local priorities = gameTypes_priorities[config.GAME.GAMETYPE]
 
-    -- get only the visible one or the ones that cannot be seen
+    -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
         return (point.players[bot.index].visible == true and point.visible == true) or ( point.players[bot.index].visible == true and point.visible == false and not helpers.canBeSeen(bot, point))
     end)
     if visible_powerups and #visible_powerups>0 then
         for index, item in ipairs(visible_powerups) do
             -- local path, distance = helpers.findPath(bot, item);
-            local distance = helpers.dist(bot, item);
-            if output.distance > distance and distance < 600 then
-                output = {distance = distance, item = item--[[ , path = path ]]};
-            end
+            item.distance = helpers.dist(bot, item);
+            item.score = priorities[item.info.type]*1/item.distance
         end
-        return output;
+        table.sort(visible_powerups, function (a,b) return a.score > b.score end)
+        return {item = visible_powerups[1], distance=visible_powerups[1].distance }
     end
-    return output;
+    return nil
 end
 
 helpers.findPath = function(bot, target)

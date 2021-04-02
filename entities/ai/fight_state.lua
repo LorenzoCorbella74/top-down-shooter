@@ -7,7 +7,7 @@ function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 function fight.OnUpdate(dt, bot)
 
     local current_enemy = bot.target
-    bot.best_powerup = helpers.getNearestPowerup(bot)
+    bot.best_powerup = helpers.getObjective(bot)
 
     bot.old_x = bot.x
     bot.old_y = bot.y
@@ -31,7 +31,7 @@ function fight.OnUpdate(dt, bot)
                 futurex = bot.x + (dx / dist) * bot.speed * dt
                 futurey = bot.y + (dy / dist) * bot.speed * dt
             else
-                bot.best_powerup = helpers.getNearestPowerup(bot)
+                bot.best_powerup = helpers.getObjective(bot)
             end
         else
             fight.stateName = 'fight'
