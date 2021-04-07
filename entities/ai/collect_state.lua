@@ -5,11 +5,9 @@ local collect = {stateName = 'collect'}
 function collect.checkIfAChangeStateIsNeeded(bot)
     local enemy = helpers.getNearestVisibleEnemy(bot).enemy
     if enemy then
-        if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then
-            print(bot.name .. ' has ' .. enemy.name .. ' as target')
-            bot.target = enemy
-            return true
-        end
+        print(bot.name .. ' has ' .. enemy.name .. ' as target')
+        bot.target = enemy
+        return true
     end
     return false
 end

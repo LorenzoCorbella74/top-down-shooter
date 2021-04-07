@@ -183,7 +183,7 @@ BotsHandler.new = function()
                     -- love.graphics.print(math.floor(bot.x) .. ' ' ..  math.floor(bot.y), bot.x, bot.y + 32)
                     -- love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 48)
-                    if bot.brain.curState.stateName=='fight' and bot.target then
+                    if bot.target then
                         love.graphics.print("Target: " .. bot.target.name, bot.x -16, bot.y + 64)
                     elseif bot.best then
                         love.graphics.print("Target ID: " .. bot.best.id, bot.x -16, bot.y + 64)

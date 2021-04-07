@@ -273,7 +273,7 @@ helpers.getNearestVisibleEnemy = function(bot)
                    bot.team
     end)
     local visible_opponents = filter(opponents, function(actor)
-        return helpers.canBeSeen(bot, actor) and not actor.invisible
+        return helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor) and not actor.invisible
     end)
     if visible_opponents then
         for index, enemy in ipairs(visible_opponents) do
