@@ -136,7 +136,7 @@ BulletsHandler.new = function()
                             end)
                         else
                             handlers.bots.die(item)
-                            if bullet.firedBy.player then
+                            if bullet.firedBy.name =='player' then
                                 handlers.ui.setMsg(
                                     'You fragged ' .. item.name .. ' - ' ..
                                         self.calculateRanking() .. ' place with ' ..

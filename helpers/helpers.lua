@@ -349,7 +349,7 @@ helpers.calcDesiderability = function(item, bot)
     -- if special powerups
     if item.info.type == 'special_powerup' then output = 1 end
 
-    -- if game is type team and bot role is appropiate -> to to item or tactical waypoint
+    -- if game is type team and bot role is appropiate -> go to item or tactical waypoint
 
     return output
 end
