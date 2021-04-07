@@ -29,7 +29,7 @@ PlayerHandler.new = function()
             damage = 1, -- capacity to make damage (1 normal 4 for quad)
 
             kills = 0, -- enemy killed
-            score = 0, -- numero di uccisioni
+            score = 0, -- punti per team_deathmatch & ctf
             numberOfDeaths = 0, -- numero di volte in vui è stato ucciso
 
             weaponsInventory = WeaponsInventory.new(),

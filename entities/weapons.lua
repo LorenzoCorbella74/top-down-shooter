@@ -18,7 +18,8 @@ WeaponsInventory.new = function()
             damage = 5, --  DANNO INFLITTO
             --  destroy = false,            --  SE DISTRUGGE
             available = true, --  SE L'ARMA E' DISPONIBILE
-            shotNumber = 100 --  numero di colpi iniziale
+            shotNumber = 100, --  numero di colpi iniziale,
+            complete = 100
         }, {
             name = 'Shotgun',
             sprite = Sprites.bullet_Shotgun, -- image for bullet
@@ -33,7 +34,8 @@ WeaponsInventory.new = function()
             damage = 10,
             --  destroy = false,
             available = true,
-            shotNumber = 10 --  60
+            shotNumber = 10, --  60
+            complete = 10
         }, {
             name = 'Plasma',
             sprite = Sprites.bullet_Plasma, -- image for bullet
@@ -48,7 +50,8 @@ WeaponsInventory.new = function()
             damage = 3,
             --  destroy = false,
             available = true,
-            shotNumber = 10 --  80
+            shotNumber = 80, --  80
+            complete = 80
         }, {
             name = 'Rocket',
             sprite = Sprites.bullet_Rocket, -- image for bullet
@@ -63,7 +66,8 @@ WeaponsInventory.new = function()
             damage = 65,
             -- destroy = true,
             available = true,
-            shotNumber = 10
+            shotNumber = 10,
+            complete = 10
         }, {
             name = 'Railgun',
             sprite = Sprites.bullet_Railgun, -- image for bullet
@@ -78,7 +82,8 @@ WeaponsInventory.new = function()
             damage = 110,
             -- destroy = false,
             available = true,
-            shotNumber = 10 --  100
+            shotNumber = 10,
+            complete = 10
         }
     }
 
@@ -123,6 +128,17 @@ WeaponsInventory.new = function()
         -- defaults
         self.weapons[1].shotNumber = 100;
         self.weapons[1].available = true;
+    end
+
+    function self.checkAvailability(w)
+        for i = #self.weapons, 1, -1 do
+            local weapon = self.weapons[i]
+            if weapon == w and weapon.available then
+                return true
+            else
+                return false
+            end
+        end
     end
 
     -- quando si colleziona un'arma e una cassa di munizioni

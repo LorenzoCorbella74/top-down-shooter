@@ -54,14 +54,8 @@ function tableMerge(t1, t2)
     return t1
 end
 
-
 local gameTypes_priorities = {
-    deathmatch = {
-        health = .5,
-        special_powerup = 1,
-        ammo = .5,
-        weapon = .75
-    },
+    deathmatch = {health = .5, special_powerup = 1, ammo = .5, weapon = .75},
     team_deathmatch = {
         health = .5,
         special_powerup = 1,
@@ -73,8 +67,8 @@ local gameTypes_priorities = {
         special_powerup = 1,
         ammo = .5,
         weapon = .75,
-        objectives = 0.9   -- recupero enemy_flag e team_flag
-    }--[[ ,
+        objectives = 0.9 -- recupero enemy_flag e team_flag
+    } --[[ ,
     -- gare ad obiettivi
     missions = {
         health = .5,
@@ -123,7 +117,7 @@ helpers.isInConeOfView = function(self, target)
     local angle = helpers.angle(self, target) -- angle with target
     local distance = helpers.dist(self, target)
     local delta = math.rad(self.parameters.view_angle) -- angle extent
-    local vision_length = self.parameters.view_length-- distance with target
+    local vision_length = self.parameters.view_length -- distance with target
     if self.r > 6.28 then self.r = self.r - 6.28 end
     local difference
     if math.abs(angle - self.r) > math.rad(180) then
@@ -156,7 +150,8 @@ helpers.canBeSeen = function(point_sight, entity)
             return true
         end
     end
-    local items, len = world:querySegment(point_sight.x, point_sight.y, entity.x, entity.y, movementfilter)
+    local items, len = world:querySegment(point_sight.x, point_sight.y,
+                                          entity.x, entity.y, movementfilter)
     for i = 1, len, 1 do
         local what = items[i]
         if what.layer and what.layer.name == 'walls' then
@@ -268,14 +263,17 @@ helpers.checkCollision = function(p, futurex, futurey)
                 p.x = p.x - t * 2
             end
         end
-        print(("col.type = %s, col.normal = %d,%d"):format(col.type, col.normal.x, col.normal.y))
+        print(("col.type = %s, col.normal = %d,%d"):format(col.type,
+                                                           col.normal.x,
+                                                           col.normal.y))
     end
 end
 
 helpers.getNearestVisibleEnemy = function(bot)
     local output = {distance = 10000}
     local opponents = filter(handlers.actors, function(actor)
-        return actor.index ~= bot.index and actor.alive and actor.team ~= bot.team
+        return actor.index ~= bot.index and actor.alive and actor.team ~=
+                   bot.team
     end)
     local visible_opponents = filter(opponents, function(actor)
         return helpers.canBeSeen(bot, actor) and not actor.invisible
@@ -295,7 +293,7 @@ end
 
 helpers.randomDirection = function(bot)
     local directions = {bot.velX, -bot.velX, -bot.velY, bot.velY}
-    return directions[math.random( #directions )]
+    return directions[math.random(#directions)]
 end
 
 helpers.getRandomtWaypoint = function(bot)
@@ -306,11 +304,12 @@ helpers.getRandomtWaypoint = function(bot)
     end)
     -- solo quelli non ancora attraversati dallo specifico bot ed ad una certa distanza
     local waypoints = filter(visible_waypoints, function(point)
-        return point.players[bot.index].visible == true and helpers.dist(bot, point)<800
+        return point.players[bot.index].visible == true and
+                   helpers.dist(bot, point) < 800
     end)
     if waypoints then
         -- random choice...
-        local random_waypoint = waypoints[ math.random( #waypoints ) ]
+        local random_waypoint = waypoints[math.random(#waypoints)]
         if random_waypoint then
             local distance = helpers.dist(bot, random_waypoint)
             output = {distance = distance, item = random_waypoint};
@@ -319,21 +318,67 @@ helpers.getRandomtWaypoint = function(bot)
     return output;
 end
 
+helpers.weaponIsNotYetOwn = function(weapon, actor)
+    return not actor.weaponsInventory.checkAvailability(weapon)
+end
+
+helpers.logistic = function(x, threshold)
+    return 1 / (1 + (2.718 * 0.45) ^ (x + threshold))
+end
+helpers.exponential = function(x, exponent)
+    return (100 - x ^ exponent) / (100 ^ exponent)
+end
+
+helpers.calcDesiderability = function(item, bot)
+    local output
+    local health = bot.hp + bot.ap
+    local health_threshold = 40
+    -- if health type
+    if item.info.type == 'health' and health < health_threshold then
+        output = 1
+    else
+        output = helpers.logistic(health, health_threshold)
+    end
+    -- if weapon type desiderability is calculated according to bot weapons preferences
+    if item.info.type == 'weapon' and helpers.weaponIsNotYetOwn(item, bot) then
+        output = 1 * bot.weapons_preferences[item.info.name]
+    elseif item.info.type == 'weapon' then
+        output = 0.5 * bot.weapons_preferences[item.info.name] --  half of desiderability if already owned
+    end
+    -- if ammo type
+    if item.info.type == 'ammo' then
+        local ratio = bot.weaponsInventory.selectedWeapon.shotNumber / bot.weaponsInventory.selectedWeapon.complete
+        output = helpers.exponential(ratio, 4)
+    end
+    -- if special powerups
+    if item.info.type == 'special_powerup' then output = 1 end
+
+    -- if game is type team and bot role is appropiate -> to to item or tactical waypoint
+
+    return output
+end
+
 helpers.getObjective = function(bot)
-    local priorities = gameTypes_priorities[config.GAME.GAMETYPE]
+    local priorities = gameTypes_priorities[config.GAME.MATCH_TYPE]
 
     -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
-        return (point.players[bot.index].visible == true and point.visible == true) or ( point.players[bot.index].visible == true and point.visible == false and not helpers.canBeSeen(bot, point))
+        return (point.players[bot.index].visible == true and point.visible == true) or
+                   (point.players[bot.index].visible == true and point.visible == false and not helpers.canBeSeen(bot, point))
     end)
-    if visible_powerups and #visible_powerups>0 then
+    if visible_powerups and #visible_powerups > 0 then
         for index, item in ipairs(visible_powerups) do
             -- local path, distance = helpers.findPath(bot, item);
             item.distance = helpers.dist(bot, item);
-            item.score = priorities[item.info.type]*1/item.distance
+            item.score = priorities[item.info.type] * (1 / item.distance) --[[ * helpers.calcDesiderability(item, bot) ]]
         end
-        table.sort(visible_powerups, function (a,b) return a.score > b.score end)
-        return {item = visible_powerups[1], distance=visible_powerups[1].distance }
+        table.sort(visible_powerups, function(a, b)
+            return a.score > b.score
+        end)
+        return {
+            item = visible_powerups[1],
+            distance = visible_powerups[1].distance
+        }
     end
     return nil
 end

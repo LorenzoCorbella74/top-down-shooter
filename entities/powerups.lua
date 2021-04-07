@@ -1,3 +1,5 @@
+local config = require "config"
+
 local PowerupsHandler = {}
 
 PowerupsHandler.new = function()
@@ -206,7 +208,7 @@ PowerupsHandler.new = function()
             local powerup = self.powerups[i]
             if powerup.id == id then
                 powerup.players[bot.index].visible = false
-                Timer.after(12, function()
+                Timer.after(config.GAME.WAYPOINTS_TIMING, function()
                     powerup.players[bot.index].visible = true
                 end)
             end

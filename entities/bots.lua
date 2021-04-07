@@ -15,11 +15,11 @@ BotsHandler.new = function()
     -- in futuro sarà una tabella con tutti i nomi dei bot e relative preferenze di armi
     function self.createWeaponPreferences()
         return {
-                rifle= 0,
-                shotgun= 0.8,
-                rocket= 0.6,
-                plasma= 0.7,
-                railgun= 0.9
+                Rifle= 0.5,
+                Shotgun= 0.9,
+                Rocket= 0.6,
+                Plasma= 0.7,
+                Railgun= 1
             }
     end
 
@@ -72,7 +72,7 @@ BotsHandler.new = function()
             damage = 1, -- capacity to make damage (1 normal 4 for quad)
 
             kills = 0, -- enemy killed
-            score = 0, -- numero di uccisioni
+            score = 0, -- punti per team_deathmatch & ctf
             numberOfDeaths = 0, -- numero di volte in vui è stato ucciso
 
             weaponsInventory = WeaponsInventory.new(),
