@@ -133,6 +133,7 @@ PlayerHandler.new = function()
             for i = 1, len do
                 local x, y, w, h = world:getRect(items[i])
                 love.graphics.rectangle("line", x, y, w, h)
+                -- love.graphics.print('ID:'..math.floor(items[i].id), x - 16, y - 16) non ha l'ID!!!!
             end
 
             -- debugging collision map
@@ -147,8 +148,7 @@ PlayerHandler.new = function()
                     else
                         love.graphics.setColor(0, 0, 1, 1)
                     end
-                    love.graphics.rectangle('line', (x - 1) * tw, (y - 1) * th,
-                                            tw, th)
+                    love.graphics.rectangle('line', (x - 1) * tw, (y - 1) * th, tw, th)
                 end
             end
         end

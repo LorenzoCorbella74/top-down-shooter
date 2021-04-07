@@ -129,7 +129,7 @@ PowerupsHandler.new = function()
                     object.of = object.info.of
                     object.type = object.info.type
                 end
-                object.id = math.random(1000000)
+                -- object.id is coming from tiled map
                 world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
                 table.insert(self.powerups, object)
             end
@@ -157,6 +157,7 @@ PowerupsHandler.new = function()
                 love.graphics.draw(object.info.sprite, math.floor(object.x), math.floor(object.y), 0, 1, 1)
                 if debug then
                     love.graphics.setFont(Fonts.sm)
+                    love.graphics.print('ID:'..math.floor(object.id), object.x - 16, object.y - 16)
                     love.graphics.print(math.floor(object.x) .. ' ' .. math.floor(object.y), object.x - 16, object.y + 16)
                 end
             end

@@ -88,6 +88,7 @@ end
 
 function state:update(dt)
     dt = handlers.timeManagement.processTime(dt)
+    handlers.timeManagement.setCounter()
 
     map:update(dt) -- Update internally all map layers
 
@@ -99,8 +100,7 @@ function state:update(dt)
     GameCountdown.update(dt)
 
     for index, actor in ipairs(handlers.actors) do
-        if actor.kills == config.GAME.SCORE_TO_WIN or actor.score ==
-            config.GAME.SCORE_TO_WIN then
+        if actor.kills == config.GAME.SCORE_TO_WIN or actor.score == config.GAME.SCORE_TO_WIN then
             Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
             return
         end

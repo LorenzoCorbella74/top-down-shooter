@@ -301,8 +301,7 @@ helpers.getRandomtWaypoint = function(bot)
     end)
     -- solo quelli non ancora attraversati dallo specifico bot ed ad una certa distanza
     local waypoints = filter(visible_waypoints, function(point)
-        return point.players[bot.index].visible == true and
-                   helpers.dist(bot, point) < 1200
+        return point.players[bot.index].visible == true and helpers.dist(bot, point) < 1200
     end)
     if waypoints then
         -- random choice...
@@ -361,7 +360,7 @@ helpers.getObjective = function(bot)
     -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
         return (point.players[bot.index].visible == true and point.visible == true) or
-                   (point.players[bot.index].visible == true and point.visible == false and not helpers.canBeSeen(bot, point))
+                   (point.players[bot.index].visible == true --[[ and point.visible == false ]] and not helpers.canBeSeen(bot, point))
     end)
     if visible_powerups and #visible_powerups > 0 then
         for index, item in ipairs(visible_powerups) do

@@ -108,7 +108,7 @@ BotsHandler.new = function()
 
         -- ai
         bot.nodes = {}             -- path to reach an item
-        bot.target = {}            -- target for fighting
+        bot.target = nil            -- target for fighting
         bot.best_powerup = {}      -- target of movement
         bot.best_waypoint = {}     -- target of movement
         bot.underAttack = false    -- if underAttack turn to the bullet_collision_point
@@ -179,10 +179,15 @@ BotsHandler.new = function()
                     love.graphics.arc("line", bot.x + bot.w / 2, bot.y + bot.h / 2, vision_length, bot.r - delta, bot.r + delta)
                     -- coordinates
                     love.graphics.setColor(1, 1, 1)
-                    love.graphics.print(math.floor(bot.x) .. ' ' ..  math.floor(bot.y), bot.x, bot.y + 32)
-                    love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
-                    love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 70)
-                    love.graphics.print("Info: " .. bot.info, bot.x + 70, bot.y + 70)
+                    love.graphics.print(bot.name, bot.x - 16, bot.y - 16)
+                    -- love.graphics.print(math.floor(bot.x) .. ' ' ..  math.floor(bot.y), bot.x, bot.y + 32)
+                    -- love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
+                    love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 48)
+                    if bot.brain.curState.stateName=='fight' and bot.target then
+                        love.graphics.print("Target: " .. bot.target.name, bot.x -16, bot.y + 64)
+                    elseif bot.best then
+                        love.graphics.print("Target ID: " .. bot.best.id, bot.x -16, bot.y + 64)
+                    end
                 end
                 -- debug path
                 if debug and bot.nodes and #bot.nodes then
@@ -197,8 +202,7 @@ BotsHandler.new = function()
                         -- linea rossa tiene conto dell'offset al centro del player
                         love.graphics.setColor(1, 0, 0, 1)
                         love.graphics.circle('fill', am.x + 16, am.y + 16, 4)
-                        love.graphics.line(am.x + 16, am.y + 16, a.x + 16,
-                                           a.y + 16)
+                        love.graphics.line(am.x + 16, am.y + 16, a.x + 16, a.y + 16)
                         -- linea gialla tiles del path
                         love.graphics.setColor(1, 1, 0, 1)
                         love.graphics.circle('fill', a.x, a.y, 4)

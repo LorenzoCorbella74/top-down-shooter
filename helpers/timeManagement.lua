@@ -5,6 +5,8 @@ TimeManagement.new = function ()
     local self = {}
     self.time_dilatation = 1
 
+    self.stepCounter = 0
+
     local isActive = false
 
     function self.setDilatation(fraction, forHowManySec)
@@ -22,6 +24,27 @@ TimeManagement.new = function ()
     function self.processTime(dt)
         return dt * self.time_dilatation
     end
+
+    function self.setCounter()
+        self.stepCounter =  self.stepCounter + 1
+        if self.stepCounter>30 then
+            self.stepCounter = 1
+        end
+    end
+
+    function self.runEveryNumFrame(number, callback)
+        if self.stepCounter % number == 0 then
+            callback()
+        end
+    end
+
+    function self.runAtFrameNum(num, callback)
+        if self.stepCounter==num then
+            callback()
+        end
+    end
+
+
 
     return self
     

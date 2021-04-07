@@ -5,6 +5,15 @@ local fight = {stateName = 'fight'}
 function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 
 function fight.OnUpdate(dt, bot)
+     -- check for the nearest enemy
+     handlers.timeManagement.runEveryNumFrame(10, function ()
+        local enemy = helpers.getNearestVisibleEnemy(bot).enemy
+        if enemy then
+            if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then
+                bot.target = enemy
+            end
+        end
+    end)
 
     local current_enemy = bot.target
     bot.best_powerup = helpers.getObjective(bot)
@@ -40,17 +49,17 @@ function fight.OnUpdate(dt, bot)
             if dist < 250 then
                 bot.velX = -dx / dist
                 bot.velY = -dy / dist
-            elseif dist >= 250 and dist < 375 then
+            elseif dist >= 250 and dist < 350 then
                 bot.velX = math.random() < 0.95 and bot.velX or helpers.randomDirection(bot)
                 bot.velY = math.random() < 0.95 and bot.velY or helpers.randomDirection(bot)
-            elseif dist >= 375 then
+            elseif dist >= 350 then
                 -- ci si avvicina solo in base al livello di aggressività e all'attitudine ad auto preserviarsi
                 if bot.parameters.aggression > bot.parameters.self_preservation then
                     bot.velX = dx / dist
                     bot.velY = dy / dist
-                else
+                --[[ else
                     bot.velX = -dx / dist
-                    bot.velY = -dy / dist
+                    bot.velY = -dy / dist ]]
                 end
             end
             -- update bot positions
@@ -71,7 +80,7 @@ function fight.OnUpdate(dt, bot)
         end
 
         -- if enemy is no more visible go to last enemy position
-    elseif bot.last_visible_position then
+    elseif bot.last_visible_position and not helpers.canBeSeen(bot, current_enemy) then
         bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
         fight.stateName = 'get_last_enemy_position'
         local dist, dx, dy = helpers.dist(bot, bot.last_visible_position)
@@ -86,7 +95,7 @@ function fight.OnUpdate(dt, bot)
     else
         bot.last_visible_position = nil
         bot.underAttack = false -- set default
-        bot.target = {}
+        bot.target = nil
         bot.reactionCounter = bot.parameters.reaction_time -- default
         bot.canFire = false
         bot.brain.pop()

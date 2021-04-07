@@ -19,13 +19,15 @@ function collect.getTargetOfMovement(bot)
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getObjective(bot)
     if  bot.best_powerup.item or bot.best_waypoint.item then
-        local best = bot.best_powerup.distance < bot.best_waypoint.distance and bot.best_powerup.item or bot.best_waypoint.item
+        bot.best = bot.best_powerup.distance < bot.best_waypoint.distance and bot.best_powerup.item or bot.best_waypoint.item
         -- if best then
-            bot.nodes = helpers.findPath(bot, best)
+            bot.nodes = helpers.findPath(bot, bot.best)
             local end_time = love.timer.getTime()
             local elapsed_time = end_time - start_time
             bot.info = tostring(elapsed_time)
         -- end
+    else
+        bot.best = nil
     end
 end
 
@@ -36,8 +38,12 @@ end
 
 function collect.OnUpdate(dt, bot)
     
+    local needStateChange = nil
+
     -- check if there is a visible enemy
-    local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
+    handlers.timeManagement.runEveryNumFrame(5, function ()
+        needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
+    end)
     
     if #bot.nodes== 0 then
         return
