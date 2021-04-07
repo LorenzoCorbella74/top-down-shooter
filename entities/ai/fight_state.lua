@@ -61,7 +61,15 @@ function fight.OnUpdate(dt, bot)
         -- check collision
         helpers.checkCollision(bot, futurex, futurey)
         -- fire - > according to a bot characteristics
-        handlers.bots.fire(bot, dt)
+        if bot.reactionCounter> 0 then
+            bot.reactionCounter = bot.reactionCounter - 1 * dt
+        else 
+            bot.canFire = true
+        end
+        if bot.canFire then
+            handlers.bots.fire(bot, dt)
+        end
+
         -- if enemy is no more visible go to last enemy position
     elseif bot.last_visible_position then
         bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
@@ -79,6 +87,8 @@ function fight.OnUpdate(dt, bot)
         bot.last_visible_position = nil
         bot.underAttack = false -- set default
         bot.target = {}
+        bot.reactionCounter = bot.parameters.reaction_time -- default
+        bot.canFire = false
         bot.brain.pop()
         return
     end

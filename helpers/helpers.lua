@@ -150,8 +150,7 @@ helpers.canBeSeen = function(point_sight, entity)
             return true
         end
     end
-    local items, len = world:querySegment(point_sight.x, point_sight.y,
-                                          entity.x, entity.y, movementfilter)
+    local items, len = world:querySegment(point_sight.x, point_sight.y, entity.x, entity.y, movementfilter)
     for i = 1, len, 1 do
         local what = items[i]
         if what.layer and what.layer.name == 'walls' then
@@ -219,7 +218,7 @@ helpers.checkCollision = function(p, futurex, futurey)
             local items2, len2 = world:queryPoint(x + p.w + t, y - t)
             local items3, len3 = world:queryPoint(x + p.w + t, y + p.h + t)
             local items4, len4 = world:queryPoint(x - t, y + p.h + t)
-            print(tostring(len1), tostring(len2), tostring(len3), tostring(len4))
+            -- print(tostring(len1), tostring(len2), tostring(len3), tostring(len4))
             -- 1  2
             -- 4  3
 
@@ -263,9 +262,7 @@ helpers.checkCollision = function(p, futurex, futurey)
                 p.x = p.x - t * 2
             end
         end
-        print(("col.type = %s, col.normal = %d,%d"):format(col.type,
-                                                           col.normal.x,
-                                                           col.normal.y))
+        -- print(("col.type = %s, col.normal = %d,%d"):format(col.type, col.normal.x, col.normal.y))
     end
 end
 
@@ -305,7 +302,7 @@ helpers.getRandomtWaypoint = function(bot)
     -- solo quelli non ancora attraversati dallo specifico bot ed ad una certa distanza
     local waypoints = filter(visible_waypoints, function(point)
         return point.players[bot.index].visible == true and
-                   helpers.dist(bot, point) < 800
+                   helpers.dist(bot, point) < 1200
     end)
     if waypoints then
         -- random choice...
@@ -370,7 +367,7 @@ helpers.getObjective = function(bot)
         for index, item in ipairs(visible_powerups) do
             -- local path, distance = helpers.findPath(bot, item);
             item.distance = helpers.dist(bot, item);
-            item.score = priorities[item.info.type] * (1 / item.distance) --[[ * helpers.calcDesiderability(item, bot) ]]
+            item.score = priorities[item.info.type] * (1 / item.distance) * helpers.calcDesiderability(item, bot)
         end
         table.sort(visible_powerups, function(a, b)
             return a.score > b.score

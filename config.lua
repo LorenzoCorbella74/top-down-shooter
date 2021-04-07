@@ -1,7 +1,7 @@
 local C = {}
 
 C.GAME = {
-    BOTS_NUMBERS = 1,
+    BOTS_NUMBERS = 3,
     MATCH_DURATION = 120,
     SCORE_TO_WIN = 15,
     RESPAWN_TIME = 10,

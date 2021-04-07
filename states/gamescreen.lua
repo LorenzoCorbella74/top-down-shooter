@@ -157,6 +157,18 @@ function state:keyreleased(key, code)
             p.weaponsInventory.selectedWeapon = w
         end
     end
+    -- in debug cycle among bots
+    if debug and key =='c' then
+        for index, actor in ipairs(handlers.actors) do
+            if actor == state.currentCameraTarget  and index < #handlers.actors then
+                handlers.camera.setCameraOnActor(handlers.actors[index + 1])
+                break
+            elseif actor == state.currentCameraTarget  and index == #handlers.actors then
+                handlers.camera.setCameraOnActor(handlers.actors[1])
+                break
+            end
+        end
+    end
 end
 
 function love.wheelmoved(x, y)

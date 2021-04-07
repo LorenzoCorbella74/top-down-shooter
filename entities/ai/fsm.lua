@@ -47,11 +47,11 @@ function FsmMachine.new(bot)
     -- switching state (use internally)
     function self.switch(stateName)
         if self.curState.stateName ~= stateName then
-            if self.curState.OnLeave then
+            if self.curState and self.curState.OnLeave then
                 self.curState.OnLeave(self.bot)
             end
             self.curState = self.states[stateName]
-            if self.curState.OnEnter then
+            if self.curState and self.curState.OnEnter then
                 self.curState.OnEnter(self.bot)
             end
         end

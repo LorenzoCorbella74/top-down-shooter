@@ -136,13 +136,15 @@ BulletsHandler.new = function()
                             end)
                         else
                             handlers.bots.die(item)
-                            handlers.ui.setMsg(
-                                'You fragged ' .. item.name .. ' - ' ..
-                                    self.calculateRanking() .. ' place with ' ..
-                                    bullet.firedBy.kills)
-                            Timer.after(6, function()
-                                handlers.ui.setMsg('')
-                            end)
+                            if bullet.firedBy.player then
+                                handlers.ui.setMsg(
+                                    'You fragged ' .. item.name .. ' - ' ..
+                                        self.calculateRanking() .. ' place with ' ..
+                                        bullet.firedBy.kills)
+                                Timer.after(6, function()
+                                    handlers.ui.setMsg('')
+                                end)
+                            end
                         end
                     end
                     break -- break after the first impact

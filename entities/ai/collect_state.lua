@@ -35,22 +35,16 @@ function collect.OnEnter(bot)
 end
 
 function collect.OnUpdate(dt, bot)
-
+    
     -- check if there is a visible enemy
     local needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
-
+    
     if #bot.nodes== 0 then
         return
     end
-
+    
     if needStateChange then
-        if bot.reactionCounter> 0 then
-            bot.reactionCounter = bot.reactionCounter - 1 * dt
-        else 
-            --sound "found enemy"
-            bot.brain.push('fight')
-            bot.reactionCounter = bot.parameters.reaction_time -- default
-        end
+        bot.brain.push('fight')
         return
     end
 

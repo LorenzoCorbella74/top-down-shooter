@@ -105,6 +105,14 @@ BotsHandler.new = function()
         bot.alive = true
         bot.weaponsInventory.resetWeapons()
         world:add(bot, bot.x, bot.y, bot.w, bot.h) -- player bb is in the phisycs world
+
+        -- ai
+        bot.nodes = {}             -- path to reach an item
+        bot.target = {}            -- target for fighting
+        bot.best_powerup = {}      -- target of movement
+        bot.best_waypoint = {}     -- target of movement
+        bot.underAttack = false    -- if underAttack turn to the bullet_collision_point
+        bot.last_visible_position = nil
     end
 
     function self.die(bot)
@@ -116,7 +124,7 @@ BotsHandler.new = function()
 
     function self.fire(p, dt)
         local w = p.weaponsInventory.selectedWeapon
-        if p.alive and w.shotNumber > 0 then
+        if p.alive and p.target and w.shotNumber > 0 then
             if p.attackCounter > 0 then
                 p.attackCounter = p.attackCounter - 1 * dt * p.parameters.fire_throttle
             else
