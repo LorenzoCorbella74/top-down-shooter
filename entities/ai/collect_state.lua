@@ -83,7 +83,7 @@ function collect.OnUpdate(dt, bot)
 
     -- if item is not visible and can be seen check another item
     if bot.best_powerup.item and bot.best_powerup.item.visible == false and helpers.canBeSeen(bot,bot.best_powerup.item) then
-        handlers.powerups.trackBot(bot.best_powerup.item.id, bot) -- powerup is tracked!
+        handlers.powerups.trackBot(bot.best_powerup.item.id, bot) -- powerup is tracked as it was touch!
         bot.nodes = {}
         collect.getTargetOfMovement(bot)
         return

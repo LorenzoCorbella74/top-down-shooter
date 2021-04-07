@@ -79,8 +79,8 @@ function fight.OnUpdate(dt, bot)
             handlers.bots.fire(bot, dt)
         end
 
-        -- if enemy is no more visible go to last enemy position
-    elseif bot.last_visible_position and not helpers.canBeSeen(bot, current_enemy) then
+    -- if enemy is no more visible go to last enemy position
+    elseif bot.last_visible_position and not helpers.canBeSeen(bot, current_enemy) and bot.parameters.aggression > bot.parameters.self_preservation then
         bot.underAttack = false -- bot is fighting and is no more surprised of a received bullet
         fight.stateName = 'get_last_enemy_position'
         local dist, dx, dy = helpers.dist(bot, bot.last_visible_position)
