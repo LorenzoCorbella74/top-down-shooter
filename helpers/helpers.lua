@@ -150,7 +150,7 @@ helpers.canBeSeen = function(point_sight, entity)
             return true
         end
     end
-    local items, len = world:querySegment(point_sight.x, point_sight.y, entity.x, entity.y, movementfilter)
+    local items, len = world:querySegment(point_sight.x + point_sight.w/2, point_sight.y + point_sight.h/2, entity.x + entity.w/2, entity.y+entity.h/2, movementfilter)
     for i = 1, len, 1 do
         local what = items[i]
         if what.layer and what.layer.name == 'walls' then
