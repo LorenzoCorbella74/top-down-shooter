@@ -119,10 +119,16 @@ BulletsHandler.new = function()
                     table.remove(self.bullets, _i)      -- bullet is no more in the list of bullets
                     self.calculatePoints(item, bullet.damage);
                     if item.hp <= 0 then
-                        bullet.firedBy.kills = bullet.firedBy.kills + 1 -- increase the score of who fired the bullet
+                        local origin = bullet.firedBy
+                        if config.GAME.MATCH_TYPE=='deathmatch' then
+                            origin.kills = origin.kills + 1 -- increase the score of who fired the bullet
+                        elseif config.GAME.MATCH_TYPE=='team_deathmatch' then
+                            origin.teamStatus[origin.team].score = origin.teamStatus[origin.team].score + 1
+                        end
+                        
                         -- sound death
                         if item.name == 'player' then
-                            handlers.camera.setCameraOnActor(bullet.firedBy)
+                            handlers.camera.setCameraOnActor(origin)
                             handlers.player.die()
                             local count = config.GAME.RESPAWN_TIME
                             -- countdown for player
@@ -136,20 +142,20 @@ BulletsHandler.new = function()
                             end)
                         else
                             handlers.bots.die(item)
-                            if bullet.firedBy.name =='player' then
+                            if origin.name =='player' then
                                 handlers.ui.setMsg(
                                     'You fragged ' .. item.name .. ' - ' ..
                                         self.calculateRanking() .. ' place with ' ..
-                                        bullet.firedBy.kills)
+                                        origin.kills)
                                 Timer.after(6, function()
                                     handlers.ui.setMsg('')
                                 end)
                             end
                         end
                         -- when dead the flag is left
-                        if item.hasEnemyFlag ~= nil then
-                            handlers.powerups.unFollowActor(item.hasEnemyFlag)
-                            item.hasEnemyFlag = nil
+                        if item.teamStatus[item.team].enemyFlag ~= nil and item.teamStatus[item.team].enemyFlagStatus=='taken' then
+                            handlers.powerups.unFollowActor(item.teamStatus[item.team].enemyFlag)
+                            item.teamStatus[item.team].enemyFlagStatus = 'dropped'
                         end
                     end
                     break -- break after the first impact

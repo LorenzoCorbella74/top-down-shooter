@@ -3,6 +3,7 @@ local FsmMachine = require "entities.ai.fsm"
 local config = require "config"
 
 local helpers = require "../helpers.helpers"
+local teams = require "../helpers.teams"        -- simple shared table
 
 local BotsHandler = {}
 
@@ -11,6 +12,18 @@ BotsHandler.new = function()
     local self = map:addCustomLayer("bots", 6)
 
     self.bots = {}
+
+    function self.defineTeams (index)
+        if config.GAME.MATCH_TYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
+            return 'team' .. index + 1 -- player is always "team1"
+        else -- per teamDeathMatch e CTF
+            if index < math.floor(config.GAME.BOTS_NUMBERS / 2)+1 then
+                return 'team1'
+            else
+                return 'team2'
+            end
+        end
+    end
 
     -- in futuro sarà una tabella con tutti i nomi dei bot e relative preferenze di armi
     function self.createWeaponPreferences()
@@ -24,13 +37,13 @@ BotsHandler.new = function()
     end
 
     --  per team play (una sola tra le prox tre): in futuro sarà impostato in fase di creazione in funz del game_type
-    function self.createRole()
+    function self.createRole(num)
         local role = {
             'attack',   -- attitudine ad attaccare un obiettivo (attaccante)
             'defend',   -- attitudice a difendere un obittivo   (difensore)
             'support'   -- attitudine al supporto compagni      (supporto)
         }
-        return role[math.random(1,3)]
+        return role[num]
     end
 
     function self.createPersonality(level) -- 0 to 5
@@ -49,14 +62,15 @@ BotsHandler.new = function()
         }
     end
 
-    function self.create(team, level)
-
+    function self.create(index, level)
+        local team = self.defineTeams(index)
         -- Create bot object
         local sprite = team=='team1' and Sprites.blue_bot or Sprites.red_bot
         local bot = {
             index = math.random(1000000), -- id
             name = 'bot' .. #self.bots + 1,
             team = team,
+            teamStatus = teams,
             type = 'actor',
             sprite = sprite,
             x = 0,
@@ -77,7 +91,7 @@ BotsHandler.new = function()
 
             weaponsInventory = WeaponsInventory.new(),
             parameters = self.createPersonality(level),
-            team_role = self.createRole(),
+            team_role = self.createRole(index), --  TODO per num di bot >3
             weapons_preferences = self.createWeaponPreferences(),
 
             attackCounter = 0,      -- frequenza di sparo

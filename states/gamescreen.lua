@@ -53,7 +53,7 @@ function state:enter()
     table.insert(handlers.actors, handlers.player.player)
     handlers.bots = BotsHandler.new()
     for i = 1, config.GAME.BOTS_NUMBERS, 1 do
-        handlers.bots.create(state.defineTeams(i), math.random(1, 5)) -- bot skill levels
+        handlers.bots.create(i, math.random(1, 5)) -- bot skill levels
         table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information
@@ -100,7 +100,7 @@ function state:update(dt)
     GameCountdown.update(dt)
 
     for index, actor in ipairs(handlers.actors) do
-        if actor.kills == config.GAME.SCORE_TO_WIN or actor.score == config.GAME.SCORE_TO_WIN then
+        if actor.kills == config.GAME.SCORE_TO_WIN or actor.teamStatus[actor.team].score == config.GAME.SCORE_TO_WIN then
             Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
             return
         end
@@ -195,18 +195,6 @@ function love.wheelmoved(x, y)
         -- weapon is set as current weapons if available
         if c.available and c.shotNumber > 0 then
             p.weaponsInventory.selectedWeapon = c
-        end
-    end
-end
-
-state.defineTeams = function(index)
-    if config.GAME.MATCH_TYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
-        return 'team' .. index + 1 -- player is always "team1"
-    else -- per teamDeathMatch e CTF
-        if index < math.floor(config.GAME.BOTS_NUMBERS / 2) + 1 then
-            return 'team2'
-        else
-            return 'team1'
         end
     end
 end

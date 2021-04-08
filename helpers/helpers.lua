@@ -38,6 +38,19 @@ local reduce = function(sequence, operator)
     return out
 end
 
+--[[ 
+    
+function table.contains(table, element)
+    for _, value in pairs(table) do
+      if value == element then
+        return true
+      end
+    end
+    return false
+  end 
+  
+  ]]
+
 -- source: https://stackoverflow.com/a/1283608
 function tableMerge(t1, t2)
     for k, v in pairs(t2) do
@@ -217,18 +230,36 @@ helpers.checkCollision = function(p, futurex, futurey)
         end
 
         -- getting enemy flag
-        if(item.name=='blue_flag' and p.team=='team2' and p.hasEnemyFlag == nil) 
-            or (item.name=='red_flag' and p.team=='team1' and p.hasEnemyFlag == nil) then
+        if(item.name=='blue_flag' and p.team=='team2' and p.teamStatus[p.team].enemyFlagStatus == 'base') 
+            or (item.name=='red_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus== 'base') then
             handlers.powerups.followActor(item, p)
-            p.hasEnemyFlag = item
+            p.teamStatus[p.team].enemyFlag = item
+            p.teamStatus[p.team].enemyFlagStatus = 'taken'
+        end
+
+        -- getting enemy flag when dropped
+        if(item.name=='blue_flag' and p.team=='team2' and p.teamStatus[p.team].enemyFlagStatus == 'dropped') 
+            or (item.name=='red_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus == 'dropped') then
+            handlers.powerups.followActor(p.teamStatus[p.team].enemyFlag, p)
+            p.teamStatus[p.team].enemyFlagStatus = 'taken'
+        end
+
+        -- getting enemy flag return to base
+        if(item.name=='blue_flag' and p.team=='team1' and p.teamStatus['team2'].enemyFlagStatus == 'dropped') 
+            or (item.name=='red_flag' and p.team=='team2' and p.teamStatus['team1'].enemyFlagStatus == 'dropped') then
+            local opposite_team = p.team=='team1' and 'team2' or 'team1'
+            handlers.powerups.backToBase(p.teamStatus[opposite_team].enemyFlag)
+            p.teamStatus[opposite_team].enemyFlagStatus = 'base'
+            p.teamStatus[opposite_team].enemyFlag = nil
         end
 
         -- score in ctf
-        if(item.name=='red_flag' and p.team=='team2' and p.hasEnemyFlag ~= nil) 
-            or (item.name=='blue_flag' and p.team=='team1' and p.hasEnemyFlag ~= nil) then
-            handlers.powerups.unFollowActor(p.hasEnemyFlag, true)
-            p.score = p.score + 1
-            p.hasEnemyFlag = nil
+        if(item.name=='red_flag' and p.team=='team2' and p.teamStatus[p.team].enemyFlagStatus == 'taken') 
+            or (item.name=='blue_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus == 'taken') then
+            p.teamStatus[p.team].score = p.teamStatus[p.team].score + 1
+            handlers.powerups.unFollowActor(p.teamStatus[p.team].enemyFlag, true)
+            p.teamStatus[p.team].enemyFlagStatus = 'base'
+            p.teamStatus[p.team].enemyFlag = nil
         end
 
         -- fix a probable error in bump library to make bots able to cut the corners of walls
@@ -409,14 +440,14 @@ helpers.findPath = function(bot, target)
     local startx, starty = handlers.pf.worldToTile(bot.x + bot.w / 2 + 32, bot.y + bot.h / 2 + 32)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
-    if path then
+    if path ~= nil then
         print(('Path found! Length: %.2f'):format(path:getLength()), bot.x, target.x, bot.y, target.y)
         for node, count in path:nodes() do
             -- print(('Step: %d - x: %d - y: %d'):format(count, node:getX(),node:getY()))
             table.insert(nodes, {x = node:getX() - 1, y = node:getY() - 1})
         end
     end
-    return nodes, path:getLength()
+    return nodes, path~= nil and path:getLength() or nil
 end
 
 return helpers

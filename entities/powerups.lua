@@ -234,6 +234,7 @@ PowerupsHandler.new = function()
             if powerup.id == item.id then
                 powerup.actorToBeFollowed = actor
                 world:remove(powerup) -- flag is no more in the phisycs world
+                break
             end
         end
     end
@@ -249,8 +250,16 @@ PowerupsHandler.new = function()
                     item.y = item.originy
                 end
                 world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
+                break
             end
         end
+    end
+
+    -- enemy flag position is restored after scoring or left when carrier is dead
+    function self.backToBase(item)
+        item.x = item.originx
+        item.y = item.originy    
+        world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
     end
 
     -- powerup visibility for each bot

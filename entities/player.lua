@@ -1,6 +1,8 @@
 -- require "..helpers.boundingbox"
 local WeaponsInventory = require "entities.weapons" -- loading weaponsInventory
 local helpers = require "..helpers.helpers"
+local teams = require "../helpers.teams"
+
 local config = require "config"
 
 local PlayerHandler = {}
@@ -16,6 +18,7 @@ PlayerHandler.new = function()
             index = math.random(1000000), -- id
             name = 'player',
             team = 'team1',
+            teamStatus = teams,
             type = 'actor',
             sprite = sprite,
             w = sprite:getWidth(),
