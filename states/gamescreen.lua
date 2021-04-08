@@ -201,7 +201,7 @@ end
 
 state.defineTeams = function(index)
     if config.GAME.MATCH_TYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
-        return 'team$' .. index + 2
+        return 'team' .. index + 1 -- player is always "team1"
     else -- per teamDeathMatch e CTF
         if index < math.floor(config.GAME.BOTS_NUMBERS / 2) + 1 then
             return 'team2'
@@ -216,14 +216,15 @@ function drawHUD()
     local p = map.layers["Sprites"].player
     local w = p.weaponsInventory.selectedWeapon
     -- Player data
-    love.graphics.print("HP:" .. tostring(p.hp), 32, 32)
-    love.graphics.print("AP:" .. tostring(p.ap), 32, 70)
-    love.graphics.print("Kills:" .. tostring(p.kills), 192, 32)
+    love.graphics.print("HP:" .. tostring(p.hp),  48, love.graphics.getHeight()-64)
+    love.graphics.print("AP:" .. tostring(p.ap),  48, love.graphics.getHeight()-32)
+    love.graphics.print("Score:" .. tostring(p.kills), 192, 32)
+    -- love.graphics.print("Score:" .. tostring(p.score), 192, 64)
     -- current weapon and available shoots
-    love.graphics.print(w.name .. ':' .. w.shotNumber, 288, 32)
+    love.graphics.print(w.name .. ':' .. w.shotNumber, love.graphics.getWidth()-120, love.graphics.getHeight()-64)
     -- FPS
     local fps = love.timer.getFPS()
-    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 96, 32)
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 100, 16)
     -- Time of the current match
     love.graphics.printf("Time: " .. tostring(GameCountdown.show()), (love.graphics.getWidth() / 2) - 64, 32, 200, "center")
     -- game message

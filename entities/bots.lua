@@ -52,7 +52,7 @@ BotsHandler.new = function()
     function self.create(team, level)
 
         -- Create bot object
-        local sprite = Sprites.red_bot
+        local sprite = team=='team1' and Sprites.blue_bot or Sprites.red_bot
         local bot = {
             index = math.random(1000000), -- id
             name = 'bot' .. #self.bots + 1,
@@ -183,6 +183,7 @@ BotsHandler.new = function()
                     -- love.graphics.print(math.floor(bot.x) .. ' ' ..  math.floor(bot.y), bot.x, bot.y + 32)
                     -- love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 48)
+                    love.graphics.print("Team: " .. bot.team, bot.x - 16, bot.y -24)
                     if bot.target then
                         love.graphics.print("Target: " .. bot.target.name, bot.x -16, bot.y + 64)
                     elseif bot.best then

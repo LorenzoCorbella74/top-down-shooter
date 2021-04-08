@@ -37,9 +37,9 @@ end
 function collect.OnUpdate(dt, bot)
     
     local needStateChange = nil
-
+    
     -- check if there is a visible enemy
-    handlers.timeManagement.runEveryNumFrame(5, function ()
+    handlers.timeManagement.runEveryNumFrame(30, function ()
         needStateChange = collect.checkIfAChangeStateIsNeeded(bot)
     end)
     

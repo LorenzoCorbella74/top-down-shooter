@@ -55,19 +55,26 @@ function tableMerge(t1, t2)
 end
 
 local gameTypes_priorities = {
-    deathmatch = {health = .5, special_powerup = 1, ammo = .5, weapon = .75},
+    deathmatch = {
+        health = .5, 
+        special_powerup = 1, 
+        ammo = .5, 
+        weapon = .75,
+        objective = 0
+    },
     team_deathmatch = {
         health = .5,
         special_powerup = 1,
         ammo = .5,
-        weapon = .75
+        weapon = .75,
+        objective = 0
     },
     ctf = {
         health = .5,
         special_powerup = 1,
         ammo = .5,
         weapon = .75,
-        objectives = 0.9 -- recupero enemy_flag e team_flag
+        objective = 0.9 -- recupero enemy_flag e team_flag
     } --[[ ,
     -- gare ad obiettivi
     missions = {
@@ -75,7 +82,7 @@ local gameTypes_priorities = {
         special_powerup = 1,
         ammo = .5,
         weapon = .75,
-        objectives = 0.9
+        objective = 0.9
     } ]]
 }
 
@@ -209,6 +216,21 @@ helpers.checkCollision = function(p, futurex, futurey)
             handlers.powerups.trackBot(item.id, p)
         end
 
+        -- getting enemy flag
+        if(item.name=='blue_flag' and p.team=='team2' and p.hasEnemyFlag == nil) 
+            or (item.name=='red_flag' and p.team=='team1' and p.hasEnemyFlag == nil) then
+            handlers.powerups.followActor(item, p)
+            p.hasEnemyFlag = item
+        end
+
+        -- score in ctf
+        if(item.name=='red_flag' and p.team=='team2' and p.hasEnemyFlag ~= nil) 
+            or (item.name=='blue_flag' and p.team=='team1' and p.hasEnemyFlag ~= nil) then
+            handlers.powerups.unFollowActor(p.hasEnemyFlag, true)
+            p.score = p.score + 1
+            p.hasEnemyFlag = nil
+        end
+
         -- fix a probable error in bump library to make bots able to cut the corners of walls
         if (p.name ~= 'player' and item.layer and item.layer.name == 'walls') then
             local t = 1
@@ -326,7 +348,7 @@ helpers.exponential = function(x, exponent)
 end
 
 helpers.calcDesiderability = function(item, bot)
-    local output
+    local output = 0
     local health = bot.hp + bot.ap
     local health_threshold = 40
     -- if health type
@@ -349,7 +371,8 @@ helpers.calcDesiderability = function(item, bot)
     -- if special powerups
     if item.info.type == 'special_powerup' then output = 1 end
 
-    -- if game is type team and bot role is appropiate -> go to item or tactical waypoint
+    -- if game is type ctf and bot role is appropiate -> go to item or tactical waypoint
+    -- if item.info.type == 'objective' and item.info.reference== bot.team and bot.hasEnemyFlag then output = 10 end
 
     return output
 end

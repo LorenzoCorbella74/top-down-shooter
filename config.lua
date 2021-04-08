@@ -1,11 +1,11 @@
 local C = {}
 
 C.GAME = {
-    BOTS_NUMBERS = 1,
+    BOTS_NUMBERS = 2,
     MATCH_DURATION = 240,
     SCORE_TO_WIN = 15,
     RESPAWN_TIME = 10,
-    MATCH_TYPE = 'deathmatch',     -- can be 'deathmatch', 'team_deathmatch', "ctf"
+    MATCH_TYPE = 'ctf',     -- can be 'deathmatch', 'team_deathmatch', "ctf"
 
     ACTORS_SPEED = 240,           -- pixels per second -> TODO: slider for game actor speed
 

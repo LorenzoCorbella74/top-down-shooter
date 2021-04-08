@@ -33,6 +33,9 @@ function love.load(arg)
 
         red_bot = love.graphics.newImage("myTiles/red_bot.png"),
         blue_bot = love.graphics.newImage("myTiles/blue_bot.png"),
+        --flags
+        red_flag = love.graphics.newImage("myTiles/red_flag.png"),
+        blue_flag = love.graphics.newImage("myTiles/blue_flag.png"),
         -- powerups
         powerup_health = love.graphics.newImage("myTiles/powerup_health.png"),
         powerup_megaHealth = love.graphics.newImage("myTiles/powerup_megaHealth.png"),

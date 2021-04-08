@@ -146,6 +146,11 @@ BulletsHandler.new = function()
                                 end)
                             end
                         end
+                        -- when dead the flag is left
+                        if item.hasEnemyFlag ~= nil then
+                            handlers.powerups.unFollowActor(item.hasEnemyFlag)
+                            item.hasEnemyFlag = nil
+                        end
                     end
                     break -- break after the first impact
                 end

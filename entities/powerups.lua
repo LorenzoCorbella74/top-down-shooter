@@ -7,6 +7,19 @@ PowerupsHandler.new = function()
     local self = map:addCustomLayer("Powerups", 5)
 
     local tipiPowerUp = {
+        --objective
+        blue_flag={
+            name = 'blue_flag',
+            type = 'objective',
+            reference= 'team1',
+            sprite = Sprites.blue_flag
+        },
+        red_flag={
+            name = 'red_flag',
+            reference= 'team2',
+            type = 'objective',
+            sprite = Sprites.red_flag
+        },
         -- powerups
         health = {
             name = 'health',
@@ -108,9 +121,11 @@ PowerupsHandler.new = function()
     function self.init()
         for k, object in pairs(map.objects) do
             if tipiPowerUp[object.name] ~= nil then
-                object.w = object.width
-                object.h = object.height
+                -- object.id is coming from map built with "tiled" software
                 object.info = tipiPowerUp[object.name]
+                local sprite = object.info.sprite
+                object.w = sprite:getWidth()
+                object.h = sprite:getHeight()
                 object.inCheck = false
                 -- if special collectable
                 if object.info.enterAfter ~= nil then
@@ -123,14 +138,17 @@ PowerupsHandler.new = function()
                     object.visible = true
                 end
                 -- if ammo or weapon
-                if object.info.of ~= nil and
-                    (object.info.type == 'ammo' or object.info.type == 'weapon') then
+                if object.info.of ~= nil and (object.info.type == 'ammo' or object.info.type == 'weapon') then
                     object.amount = object.info.amount
                     object.of = object.info.of
                     object.type = object.info.type
                 end
-                -- object.id is coming from tiled map
-                world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world
+                -- if flags
+                if object.info.type=='objective' then
+                    object.originx = object.x
+                    object.originy = object.y
+                end
+                world:add(object, object.x, object.y, object.w, object.h) -- powerups is in the phisycs world
                 table.insert(self.powerups, object)
             end
         end
@@ -147,6 +165,10 @@ PowerupsHandler.new = function()
                     object.inCheck = false
                     object.visible = true
                 end)
+            end
+            if object.actorToBeFollowed ~= nil then
+                object.x = object.actorToBeFollowed.x - 8
+                object.y = object.actorToBeFollowed.y - 16
             end
         end
     end
@@ -204,14 +226,29 @@ PowerupsHandler.new = function()
         powerup.visible = false
     end
 
-    function self.trackBot(id, bot)
+
+    -- enemy flag when taken follow the actor
+    function self.followActor(item, actor)
         for i = #self.powerups, 1, -1 do
             local powerup = self.powerups[i]
-            if powerup.id == id then
-                powerup.players[bot.index].visible = false
-                Timer.after(config.GAME.WAYPOINTS_TIMING, function()
-                    powerup.players[bot.index].visible = true
-                end)
+            if powerup.id == item.id then
+                powerup.actorToBeFollowed = actor
+                world:remove(powerup) -- flag is no more in the phisycs world
+            end
+        end
+    end
+
+    -- enemy flag position is restored after scoring or left when carrier is dead
+    function self.unFollowActor(item, backToOrigin)
+        for i = #self.powerups, 1, -1 do
+            local powerup = self.powerups[i]
+            if powerup.id == item.id then
+                powerup.actorToBeFollowed = nil
+                if backToOrigin then
+                    item.x = item.originx
+                    item.y = item.originy
+                end
+                world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
             end
         end
     end
@@ -225,7 +262,24 @@ PowerupsHandler.new = function()
             powerup.players = {}
             for y = #players, 1, -1 do
                 local player = players[y]
-                powerup.players[player.index] = {visible = true}  -- index o name ???
+                powerup.players[player.index] = {visible = true}
+            end
+        end
+    end
+
+    function self.trackBot(id, bot)
+        for i = #self.powerups, 1, -1 do
+            local powerup = self.powerups[i]
+            if powerup.id == id then
+                if powerup.info.type ~='objective' then
+                    powerup.players[bot.index].visible = false
+                    Timer.after(config.GAME.WAYPOINTS_TIMING, function()
+                        powerup.players[bot.index].visible = true
+                    end)
+                else
+                    -- flag is always visible
+                    powerup.players[bot.index].visible = true
+                end
             end
         end
     end

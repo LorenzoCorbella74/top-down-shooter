@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 8,
-  nextobjectid = 49,
+  nextobjectid = 52,
   properties = {},
   tilesets = {
     {
@@ -559,6 +559,32 @@ return {
           y = 1224,
           width = 16,
           height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 49,
+          name = "blue_flag",
+          type = "objective",
+          shape = "rectangle",
+          x = 1454.67,
+          y = 78.6667,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 51,
+          name = "red_flag",
+          type = "objective",
+          shape = "rectangle",
+          x = 688,
+          y = 1422.67,
+          width = 0,
+          height = 0,
           rotation = 0,
           visible = true,
           properties = {}
