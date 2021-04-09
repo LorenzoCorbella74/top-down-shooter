@@ -153,7 +153,7 @@ BulletsHandler.new = function()
                             end
                         end
                         -- when dead the flag is left
-                        if item.teamStatus[item.team].enemyFlag ~= nil and item.teamStatus[item.team].enemyFlagStatus=='taken' then
+                        if item.teamStatus[item.team].enemyFlagStatus=='taken' then
                             handlers.powerups.unFollowActor(item.teamStatus[item.team].enemyFlag)
                             item.teamStatus[item.team].enemyFlagStatus = 'dropped'
                         end

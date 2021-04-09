@@ -1,4 +1,5 @@
 local config = require "config"
+local teams = require "../helpers.teams"        -- simple shared table
 
 local PowerupsHandler = {}
 
@@ -144,9 +145,11 @@ PowerupsHandler.new = function()
                     object.type = object.info.type
                 end
                 -- if flags
-                if object.info.type=='objective' then
+                if object.info.name=='blue_flag' or object.info.name=='red_flag' then
                     object.originx = object.x
                     object.originy = object.y
+                    -- set flags in teams shared table
+                    teams[object.info.name=='blue_flag' and 'team2' or 'team1'].enemyFlag = object
                 end
                 world:add(object, object.x, object.y, object.w, object.h) -- powerups is in the phisycs world
                 table.insert(self.powerups, object)
@@ -259,7 +262,7 @@ PowerupsHandler.new = function()
     function self.backToBase(item)
         item.x = item.originx
         item.y = item.originy    
-        world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
+        world:update(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
     end
 
     -- powerup visibility for each bot
