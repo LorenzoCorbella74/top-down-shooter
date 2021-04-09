@@ -73,21 +73,21 @@ local gameTypes_priorities = {
         special_powerup = 1, 
         ammo = .5, 
         weapon = .75,
-        objective = 0
+        flag = 0
     },
     team_deathmatch = {
         health = .5,
         special_powerup = 1,
         ammo = .5,
         weapon = .75,
-        objective = 0
+        flag = 0
     },
     ctf = {
         health = .5,
         special_powerup = 1,
         ammo = .5,
         weapon = .75,
-        objective = 0.9 -- recupero enemy_flag e team_flag
+        flag = 0.9 -- recupero enemy_flag e team_flag
     } --[[ ,
     -- gare ad obiettivi
     missions = {
@@ -245,7 +245,7 @@ helpers.checkCollision = function(p, futurex, futurey)
             p.teamStatus[p.team].carrier = p
         end
 
-        -- getting team flag return to base
+        -- getting team flag, after been dropped, return to base
         if(item.name=='blue_flag' and p.team=='team1' and p.teamStatus['team2'].enemyFlagStatus == 'dropped' ) 
             or (item.name=='red_flag' and p.team=='team2' and p.teamStatus['team1'].enemyFlagStatus == 'dropped') then
             local opposite_team = p.team=='team1' and 'team2' or 'team1'
@@ -254,14 +254,19 @@ helpers.checkCollision = function(p, futurex, futurey)
             p.teamStatus[opposite_team].carrier = nil
         end
 
-        -- score in ctf
-        if(item.name=='red_flag' and p.team=='team2' and p.teamStatus[p.team].enemyFlagStatus == 'taken') 
-            or (item.name=='blue_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus == 'taken') then
+        -- score in ctf se bot rosso tocca la bandiera rossa e porta la bandiera nemica e la bandiera rossa è alla base
+        if(item.name=='red_flag' and p.team=='team2' and p.teamStatus[p.team].enemyFlagStatus == 'taken' and p.teamStatus['team1'].enemyFlagStatus == 'base' ) 
+            or (item.name=='blue_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus == 'taken' and p.teamStatus['team2'].enemyFlagStatus == 'base') then
             p.teamStatus[p.team].score = p.teamStatus[p.team].score + 1
             handlers.powerups.unFollowActor(p.teamStatus[p.team].enemyFlag, true)
             p.teamStatus[p.team].enemyFlagStatus = 'base'
             p.teamStatus[p.team].carrier = nil
         end
+
+
+        -- 1) se il bot rosso porta la bandiera nemica e recupera la propria bandiera 
+        -- AS IS -> segna il punto e rimette le bandiere alla pos iniziale
+        -- TO BE -> non segna il punto e rimette la propria bandiera a posto
 
         -- fix a probable error in bump library to make bots able to cut the corners of walls
         if (p.name ~= 'player' and item.layer and item.layer.name == 'walls') then

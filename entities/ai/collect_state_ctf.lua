@@ -71,10 +71,10 @@ function collectctf.getTargetOfMovementAndPath(bot)
         local origin = {x = bot.teamFlag.originx, y= bot.teamFlag.originy}
         bot.nodes = helpers.findPath(bot, origin)
     elseif bot.teamStatus[opposite_team].enemyFlagStatus == 'taken' and bot.teamStatus[bot.team].carrier == bot then
-        -- if team flag has been taken go to powerups
+        -- if team flag has been taken go to powerups and bot has enemyFlag
         bot.nodes = helpers.findPath(bot, bot.best)
     elseif bot.teamStatus[opposite_team].enemyFlagStatus == 'base' and bot.teamStatus[bot.team].carrier == bot then
-        -- if team flag has returned
+        -- if team flag has returned and bot has enemy flag
         bot.nodes = helpers.findPath(bot, bot.teamFlag)
     elseif bot.teamStatus[bot.team].enemyFlagStatus == 'dropped' and helpers.canBeSeen(bot, bot.enemyFlag) then
         -- if enemy flag was dropp take it

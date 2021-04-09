@@ -8,17 +8,17 @@ PowerupsHandler.new = function()
     local self = map:addCustomLayer("Powerups", 5)
 
     local tipiPowerUp = {
-        --objective
+        -- flags
         blue_flag={
             name = 'blue_flag',
-            type = 'objective',
+            type = 'flag',
             reference= 'team1',
             sprite = Sprites.blue_flag
         },
         red_flag={
             name = 'red_flag',
             reference= 'team2',
-            type = 'objective',
+            type = 'flag',
             sprite = Sprites.red_flag
         },
         -- powerups
@@ -283,7 +283,7 @@ PowerupsHandler.new = function()
         for i = #self.powerups, 1, -1 do
             local powerup = self.powerups[i]
             if powerup.id == id then
-                if powerup.info.type ~='objective' then
+                if powerup.info.type ~='flag' then
                     powerup.players[bot.index].visible = false
                     Timer.after(config.GAME.WAYPOINTS_TIMING, function()
                         powerup.players[bot.index].visible = true
