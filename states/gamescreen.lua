@@ -207,7 +207,7 @@ function drawHUD()
     love.graphics.print("HP:" .. tostring(p.hp),  48, love.graphics.getHeight()-64)
     love.graphics.print("AP:" .. tostring(p.ap),  48, love.graphics.getHeight()-32)
     love.graphics.print("Score:" .. tostring(p.kills), 192, 32)
-    love.graphics.print("Team Score:" .. tostring(p.score), 192, 64)
+    love.graphics.print("Team Score:" .. tostring(p.teamStatus[p.team].score), 192, 64)
     -- current weapon and available shoots
     love.graphics.print(w.name .. ':' .. w.shotNumber, love.graphics.getWidth()-120, love.graphics.getHeight()-64)
     -- FPS
