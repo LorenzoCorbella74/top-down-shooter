@@ -234,6 +234,7 @@ helpers.checkCollision = function(p, futurex, futurey)
             or (item.name=='red_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus== 'base') then
             handlers.powerups.followActor(item, p)
             p.teamStatus[p.team].enemyFlagStatus = 'taken'
+            p.teamStatus[p.team].carrier = p
         end
 
         -- getting enemy flag when dropped
@@ -241,14 +242,16 @@ helpers.checkCollision = function(p, futurex, futurey)
             or (item.name=='red_flag' and p.team=='team1' and p.teamStatus[p.team].enemyFlagStatus == 'dropped') then
             handlers.powerups.followActor(p.teamStatus[p.team].enemyFlag, p)
             p.teamStatus[p.team].enemyFlagStatus = 'taken'
+            p.teamStatus[p.team].carrier = p
         end
 
-        -- getting enemy flag return to base
+        -- getting team flag return to base
         if(item.name=='blue_flag' and p.team=='team1' and p.teamStatus['team2'].enemyFlagStatus == 'dropped') 
             or (item.name=='red_flag' and p.team=='team2' and p.teamStatus['team1'].enemyFlagStatus == 'dropped') then
             local opposite_team = p.team=='team1' and 'team2' or 'team1'
             handlers.powerups.backToBase(p.teamStatus[opposite_team].enemyFlag)
             p.teamStatus[opposite_team].enemyFlagStatus = 'base'
+            p.teamStatus[opposite_team].carrier = nil
         end
 
         -- score in ctf
@@ -257,6 +260,7 @@ helpers.checkCollision = function(p, futurex, futurey)
             p.teamStatus[p.team].score = p.teamStatus[p.team].score + 1
             handlers.powerups.unFollowActor(p.teamStatus[p.team].enemyFlag, true)
             p.teamStatus[p.team].enemyFlagStatus = 'base'
+            p.teamStatus[p.team].carrier = nil
         end
 
         -- fix a probable error in bump library to make bots able to cut the corners of walls

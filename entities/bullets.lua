@@ -156,6 +156,7 @@ BulletsHandler.new = function()
                         if item.teamStatus[item.team].enemyFlagStatus=='taken' then
                             handlers.powerups.unFollowActor(item.teamStatus[item.team].enemyFlag)
                             item.teamStatus[item.team].enemyFlagStatus = 'dropped'
+                            item.teamStatus[item.team].carrier = nil
                         end
                     end
                     break -- break after the first impact
