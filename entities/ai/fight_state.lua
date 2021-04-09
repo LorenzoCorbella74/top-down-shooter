@@ -6,7 +6,7 @@ function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 
 function fight.OnUpdate(dt, bot)
      -- check for the nearest enemy
-     handlers.timeManagement.runEveryNumFrame(10, function ()
+     handlers.timeManagement.runEveryNumFrame(15, function ()
         local enemy = helpers.getNearestVisibleEnemy(bot).enemy
         if enemy then
             if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then
@@ -26,7 +26,10 @@ function fight.OnUpdate(dt, bot)
 
     if current_enemy and current_enemy.alive and helpers.isInConeOfView(bot, current_enemy) and helpers.canBeSeen(bot, current_enemy) then
         -- setting last visible position
-        bot.last_visible_position = {x = current_enemy.x, y = current_enemy.y}
+        bot.last_visible_position = {
+            x = current_enemy.x + current_enemy.w/2, 
+            y = current_enemy.y + current_enemy.h/2
+        }
         -- face the target
         helpers.turnProgressivelyTo(bot, current_enemy)
 
@@ -52,14 +55,14 @@ function fight.OnUpdate(dt, bot)
             elseif dist >= 250 and dist < 350 then
                 bot.velX = math.random() < 0.95 and bot.velX or helpers.randomDirection(bot)
                 bot.velY = math.random() < 0.95 and bot.velY or helpers.randomDirection(bot)
-            elseif dist >= 350 then
+            elseif dist >= 350  and dist < bot.parameters.view_length then
                 -- ci si avvicina solo in base al livello di aggressività e all'attitudine ad auto preserviarsi
                 if bot.parameters.aggression > bot.parameters.self_preservation then
                     bot.velX = dx / dist
                     bot.velY = dy / dist
-                --[[ else
+                else
                     bot.velX = -dx / dist
-                    bot.velY = -dy / dist ]]
+                    bot.velY = -dy / dist
                 end
             end
             -- update bot positions
@@ -69,6 +72,7 @@ function fight.OnUpdate(dt, bot)
 
         -- check collision
         helpers.checkCollision(bot, futurex, futurey)
+
         -- fire - > according to a bot characteristics
         if bot.reactionCounter> 0 then
             bot.reactionCounter = bot.reactionCounter - 1 * dt
@@ -93,17 +97,19 @@ function fight.OnUpdate(dt, bot)
             bot.last_visible_position = nil
         end
     else
-        bot.last_visible_position = nil
-        bot.underAttack = false -- set default
-        bot.target = nil
-        bot.reactionCounter = bot.parameters.reaction_time -- default
-        bot.canFire = false
         bot.brain.pop()
         return
     end
 
 end
 
-function fight.OnLeave(bot) print("fight.OnLeave() " .. bot.name) end
+function fight.OnLeave(bot) 
+    print("fight.OnLeave() " .. bot.name)
+    bot.target = nil
+    bot.last_visible_position = nil
+    bot.underAttack = false -- set default
+    bot.reactionCounter = bot.parameters.reaction_time -- set default
+    bot.canFire = false
+end
 
 return fight

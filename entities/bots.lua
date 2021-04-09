@@ -53,7 +53,7 @@ BotsHandler.new = function()
             fire_throttle = 0.5,                        -- tendenza a non interrompere il firing   -> quanto sceglierà se continuare a sparare anche senza target (uso munizioni)
             -- camp = 1,                                -- attitudine a stare fermo
 
-            view_length = 300 + 40 * level,             -- capacità di visione
+            view_length = 400 + 40 * level,             -- capacità di visione
             view_angle = 40 + 4 * (level),              -- angolo di visione in gradi (sx <- direzione -> dx)
 
             reaction_time = 0.75 - 0.15 * level,        -- tempo di reazione (ms) a seguito di visione

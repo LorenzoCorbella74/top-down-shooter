@@ -1,5 +1,7 @@
 local collect = require "entities.ai.collect_state"
+local collectctf = require "entities.ai.collect_state_ctf"
 local fight = require "entities.ai.fight_state"
+local config = require "config"
 
 local FsmMachine = {}
 
@@ -13,10 +15,15 @@ function FsmMachine.new(bot)
     function self.init()
         -- register all states
         self.registerState(collect)
+        self.registerState(collectctf)
         self.registerState(fight)
 
         -- default initialization (collect)
-        self.push(collect.stateName)
+        if config.GAME.MATCH_TYPE == 'ctf' then
+            self.push(collectctf.stateName)
+        else
+            self.push(collect.stateName)
+        end
     end
 
     -- register state

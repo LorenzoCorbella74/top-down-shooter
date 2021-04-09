@@ -246,7 +246,7 @@ helpers.checkCollision = function(p, futurex, futurey)
         end
 
         -- getting team flag return to base
-        if(item.name=='blue_flag' and p.team=='team1' and p.teamStatus['team2'].enemyFlagStatus == 'dropped') 
+        if(item.name=='blue_flag' and p.team=='team1' and p.teamStatus['team2'].enemyFlagStatus == 'dropped' ) 
             or (item.name=='red_flag' and p.team=='team2' and p.teamStatus['team1'].enemyFlagStatus == 'dropped') then
             local opposite_team = p.team=='team1' and 'team2' or 'team1'
             handlers.powerups.backToBase(p.teamStatus[opposite_team].enemyFlag)
@@ -449,6 +449,48 @@ helpers.findPath = function(bot, target)
         end
     end
     return nodes, path~= nil and path:getLength() or nil
+end
+
+helpers.followPath = function(bot, dt, callback)
+    -- if there is a target item and a path to this target
+    local cell = bot.nodes[1]
+    bot.old_x = bot.x
+    bot.old_y = bot.y
+    -- update bot positions
+    local futurex = bot.x
+    local futurey = bot.y
+
+    local am = {x = 0, y = 0}
+    am.x, am.y = handlers.pf.tileToWorld(cell.x, cell.y)
+
+    -- get the distance
+    local dist, dx, dy = helpers.dist(bot, am)
+    if dist ~= 0 then
+        futurex = bot.x + (dx / dist) * bot.speed * dt
+        futurey = bot.y + (dy / dist) * bot.speed * dt
+    end
+    -- turn to current path node
+    helpers.turnProgressivelyTo(bot, am)
+    -- collisions
+    helpers.checkCollision(bot, futurex, futurey)
+
+    -- if finished move to the next path element
+    if dist < 10 then
+        table.remove(bot.nodes, 1);
+        if #bot.nodes == 0 then
+            print('dist '..dist)
+            bot.nodes = {}
+            bot.best_powerup = helpers.getObjective(bot)
+            -- block when distance is reduced fast (when speed powerup is staken) or no item are found
+            if dist > 2 then
+                callback()
+            else
+                print('Bot is blocked...')
+                -- if no powerup go with the waypoint
+                bot.nodes = helpers.findPath(bot, bot.best_waypoint.item)
+            end
+        end
+    end
 end
 
 return helpers
