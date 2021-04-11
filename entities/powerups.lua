@@ -12,12 +12,12 @@ PowerupsHandler.new = function()
         blue_flag={
             name = 'blue_flag',
             type = 'flag',
-            reference= 'team1',
+            reference= 'blue',
             sprite = Sprites.blue_flag
         },
         red_flag={
             name = 'red_flag',
-            reference= 'team2',
+            reference= 'red',
             type = 'flag',
             sprite = Sprites.red_flag
         },
@@ -118,6 +118,7 @@ PowerupsHandler.new = function()
     }
 
     self.powerups = {}
+    self.flags={}
 
     function self.init()
         for k, object in pairs(map.objects) do
@@ -148,8 +149,9 @@ PowerupsHandler.new = function()
                 if object.info.name=='blue_flag' or object.info.name=='red_flag' then
                     object.originx = object.x
                     object.originy = object.y
+                    object.status = 'base' -- 'base', 'taken', 'dropped'
                     -- set flags in teams shared table
-                    teams[object.info.name=='blue_flag' and 'team2' or 'team1'].enemyFlag = object
+                    self.flags[object.info.name=='blue_flag' and 'blue' or 'red'] = object
                 end
                 world:add(object, object.x, object.y, object.w, object.h) -- powerups is in the phisycs world
                 table.insert(self.powerups, object)
@@ -169,9 +171,9 @@ PowerupsHandler.new = function()
                     object.visible = true
                 end)
             end
-            if object.actorToBeFollowed ~= nil then
-                object.x = object.actorToBeFollowed.x - 8
-                object.y = object.actorToBeFollowed.y - 16
+            if object.attachedTo ~= nil then
+                object.x = object.attachedTo.x - 8
+                object.y = object.attachedTo.y - 16
             end
         end
     end
@@ -232,30 +234,30 @@ PowerupsHandler.new = function()
 
     -- enemy flag when taken follow the actor
     function self.followActor(item, actor)
-        for i = #self.powerups, 1, -1 do
+        --[[ for i = #self.powerups, 1, -1 do
             local powerup = self.powerups[i]
-            if powerup.id == item.id then
-                powerup.actorToBeFollowed = actor
-                world:remove(powerup) -- flag is no more in the phisycs world
-                break
+            if powerup.id == item.id then ]]
+                item.attachedTo = actor
+                world:remove(item) -- flag is no more in the phisycs world
+          --[[       break
             end
-        end
+        end ]]
     end
 
     -- enemy flag position is restored after scoring or left when carrier is dead
     function self.unFollowActor(item, backToOrigin)
-        for i = #self.powerups, 1, -1 do
+       --[[  for i = #self.powerups, 1, -1 do
             local powerup = self.powerups[i]
-            if powerup.id == item.id then
-                powerup.actorToBeFollowed = nil
+            if powerup.id == item.id then ]]
+                item.attachedTo = nil
                 if backToOrigin then
                     item.x = item.originx
                     item.y = item.originy
                 end
                 world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
-                break
+                --[[ break
             end
-        end
+        end ]]
     end
 
     -- enemy flag position is restored after scoring or left when carrier is dead

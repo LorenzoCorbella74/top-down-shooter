@@ -15,12 +15,12 @@ BotsHandler.new = function()
 
     function self.defineTeams (index)
         if config.GAME.MATCH_TYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
-            return 'team' .. index + 1 -- player is always "team1"
+            return 'team' .. index + 1 -- player is always "blue"
         else -- per teamDeathMatch e CTF
             if index < math.floor(config.GAME.BOTS_NUMBERS / 2)+1 then
-                return 'team1'
+                return 'blue'
             else
-                return 'team2'
+                return 'red'
             end
         end
     end
@@ -65,7 +65,7 @@ BotsHandler.new = function()
     function self.create(index, level)
         local team = self.defineTeams(index)
         -- Create bot object
-        local sprite = team=='team1' and Sprites.blue_bot or Sprites.red_bot
+        local sprite = team=='blue' and Sprites.blue_bot or Sprites.red_bot
         local bot = {
             index = math.random(1000000), -- id
             name = 'bot' .. #self.bots + 1,

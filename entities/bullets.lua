@@ -153,10 +153,9 @@ BulletsHandler.new = function()
                             end
                         end
                         -- when dead the flag is left
-                        if config.GAME.MATCH_TYPE=='ctf' and item.teamStatus[item.team].enemyFlagStatus=='taken' then
-                            handlers.powerups.unFollowActor(item.teamStatus[item.team].enemyFlag)
-                            item.teamStatus[item.team].enemyFlagStatus = 'dropped'
-                            item.teamStatus[item.team].carrier = nil
+                        if config.GAME.MATCH_TYPE=='ctf' and item.enemyFlag.status=='taken' then
+                            handlers.powerups.unFollowActor(item.enemyFlag)
+                            item.enemyFlag.status = 'dropped'
                         end
                     end
                     break -- break after the first impact
