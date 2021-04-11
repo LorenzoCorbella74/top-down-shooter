@@ -25,8 +25,12 @@ function collect.OnUpdate(dt, bot)
 
     -- if underAttack turn to the point of impact of the received bullet
     if bot.underAttack then
-        helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        return
+        local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
+        if bot.target == nil and angle <0.05 then -- circa 3°
+            bot.underAttack = false
+        else
+            return
+        end
     end
 
     -- if item is not visible and can be seen check another item

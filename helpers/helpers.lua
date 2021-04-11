@@ -129,7 +129,7 @@ helpers.pointTo = function(self, actor) self.r = helpers.angle(self, actor) end
 helpers.turnProgressivelyTo = function(self, actor)
     local angle = helpers.angle(self, actor)
     self.r = self.r + helpers.shortestArc(self.r, angle) * 0.2 -- percentage of rotation;
-    return self
+    return angle
 end
 
 -- check if target is in cone of view of self
@@ -402,8 +402,7 @@ helpers.calcDesiderability = function(item, bot)
     -- if special powerups
     if item.info.type == 'special_powerup' then output = 1 end
 
-    -- if game is type ctf and bot role is appropiate -> go to item or tactical waypoint
-    -- if item.info.type == 'objective' and item.info.reference== bot.team and bot.hasEnemyFlag then output = 10 end
+    -- if game is type ctf,  team_flag and enemy_flag are considered not as powerups but as separate objectives
 
     return output
 end
@@ -428,6 +427,36 @@ helpers.getObjective = function(bot)
         return {
             item = visible_powerups[1],
             distance = visible_powerups[1].distance
+        }
+    end
+    return nil
+end
+
+helpers.getShortTermObjective = function(bot, distance)
+    local priorities = gameTypes_priorities[config.GAME.MATCH_TYPE]
+
+    -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
+    local visible_powerups = filter(handlers.powerups.powerups, function(point)
+        return (point.players[bot.index].visible == true and point.visible == true) or
+                   (point.players[bot.index].visible == true --[[ and point.visible == false ]] and not helpers.canBeSeen(bot, point))
+    end)
+    if visible_powerups and #visible_powerups > 0 then
+        for index, item in ipairs(visible_powerups) do
+            -- local path, distance = helpers.findPath(bot, item);
+            item.distance = helpers.dist(bot, item);
+            if item.distance <distance then
+                item.score = priorities[item.info.type] * helpers.calcDesiderability(item, bot) * (1 / item.distance)
+            else
+                item.score = 0
+            end
+        end
+        table.sort(visible_powerups, function(a, b)
+            return a.score > b.score
+        end)
+        return {
+            item = visible_powerups[1],
+            distance = visible_powerups[1].distance,
+            score = visible_powerups[1].score
         }
     end
     return nil

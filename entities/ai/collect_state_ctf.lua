@@ -4,6 +4,10 @@ local collectctf = {stateName = 'collectctf'}
 
 function collectctf.OnEnter(bot)
     print("collectctf.OnEnter() " .. bot.name)
+    local opposite_team = bot.team == 'blue' and 'red' or 'blue'
+    -- flags
+    bot.teamFlag = handlers.powerups.flags[bot.team]
+    bot.enemyFlag = handlers.powerups.flags[opposite_team]
     collectctf.getTargetOfMovementAndPath(bot)
 end
 
@@ -19,12 +23,33 @@ function collectctf.OnUpdate(dt, bot)
         return
     end
 
-    if #bot.nodes == 0 then return end
+    -- check if there is a visible enemy 3 times/sec
+    handlers.timeManagement.runEveryNumFrame(20, function()
+         -- if bot.team_role == 'attach' then
+            bot.best_powerup = helpers.getShortTermObjective(bot, 350)
+            print('Score: '..tostring(bot.best_powerup.score))
+            if bot.best_powerup and bot.best_powerup.score > 0.00001 then
+                bot.nodes = helpers.findPath(bot, bot.best_powerup.item)
+                bot.hasShortTermObjective = true
+                return
+            else
+                bot.hasShortTermObjective = false
+            end
+        -- end
+    end)
 
-    -- if underAttack turn to the point of impact of the received bullet
+    if #bot.nodes == 0 then 
+        return 
+    end
+
+     -- if underAttack turn to the point of impact of the received bullet
     if bot.underAttack then
-        helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        return
+        local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
+        if bot.target == nil and angle <0.05 then -- circa 3°
+            bot.underAttack = false
+        else
+            return
+        end
     end
 
     -- if item is not visible and can be seen check another item
@@ -37,7 +62,7 @@ function collectctf.OnUpdate(dt, bot)
 
     -- follow the path and when finished run the callback
     helpers.followPath(bot, dt, function()
-        collectctf.getTargetOfMovementAndPath(bot)
+            collectctf.getTargetOfMovementAndPath(bot)
     end)
 end
 
@@ -54,26 +79,27 @@ end
 -- return the best item and the path to reach it
 function collectctf.getTargetOfMovementAndPath(bot)
     local start_time = love.timer.getTime()
-    local opposite_team = bot.team == 'blue' and 'red' or 'blue'
-    bot.teamFlag = handlers.powerups.flags[bot.team]
-    bot.enemyFlag = handlers.powerups.flags[opposite_team]
+
+    -- powerups and waypoints
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getObjective(bot)
     bot.best = bot.best_powerup.distance < bot.best_waypoint.distance and bot.best_powerup.item or bot.best_waypoint.item
 
-    -- choose objective according to team role
+    -- choose objective according to team role --
 
-    -- enemy flag
-    if bot.enemyFlag.status == 'base' and bot.team_role == 'attack' then 
-        -- get the enemy flag if you have the role
-        bot.nodes = helpers.findPath(bot, bot.enemyFlag)
-    elseif  bot.enemyFlag.status == 'taken' and bot.enemyFlag.attachedTo == bot then
-        -- after taking the enemy flag come back to the teamFlag position
-        local origin = {x = bot.teamFlag.originx, y= bot.teamFlag.originy}
-        bot.nodes = helpers.findPath(bot, origin)
-    elseif bot.enemyFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.enemyFlag) then
-        -- if enemy flag was dropped and is visible take it
-        bot.nodes = helpers.findPath(bot, bot.enemyFlag)
+    if bot.team_role == 'attack' then
+        -- enemy flag
+        if bot.enemyFlag.status == 'base' then 
+            -- get the enemy flag if you have the role
+            bot.nodes = helpers.findPath(bot, bot.enemyFlag)
+        elseif  bot.enemyFlag.status == 'taken' and bot.enemyFlag.attachedTo == bot then
+            -- after taking the enemy flag come back to the teamFlag position
+            local origin = {x = bot.teamFlag.originx, y= bot.teamFlag.originy}
+            bot.nodes = helpers.findPath(bot, origin)
+        elseif bot.enemyFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.enemyFlag) then
+            -- if enemy flag was dropped and is visible take it
+            bot.nodes = helpers.findPath(bot, bot.enemyFlag)
+        end
     end
     
     --team flag
