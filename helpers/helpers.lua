@@ -191,6 +191,8 @@ helpers.checkCollision = function(p, futurex, futurey)
             return 'cross'
         elseif other.type == 'weapons' then
             return 'cross'
+        elseif other.name == 'blue_flag' or other.name=='red_flag' then
+            return 'cross'
         else
             return 'slide'
         end
@@ -464,6 +466,7 @@ helpers.getShortTermObjective = function(bot, distance)
 end
 
 helpers.findPath = function(bot, target)
+    bot.nodes = { }
     -- non si capisce come mai si debba aumentare di 1 le coordinate di inizio e fine
     -- e poi si deve togliere 1 dai nodi calcolati
     local nodes = {}

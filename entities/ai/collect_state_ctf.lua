@@ -23,8 +23,8 @@ function collectctf.OnUpdate(dt, bot)
         return
     end
 
-    -- check if there is a visible enemy 3 times/sec
-    handlers.timeManagement.runEveryNumFrame(10, function()
+    -- check if there is a visible short term goal 3 times/sec on the path for long term goal
+    handlers.timeManagement.runEveryNumFrame(15, function()
          if bot.team_role == 'attack' and not bot.hasShortTermObjective then
             bot.best_powerup = helpers.getShortTermObjective(bot, 350)
             if bot.best_powerup then
@@ -64,8 +64,8 @@ function collectctf.OnUpdate(dt, bot)
 
     -- follow the path and when finished run the callback
     helpers.followPath(bot, dt, function()
-        bot.hasShortTermObjective = false
-        collectctf.getTargetOfMovementAndPath(bot)
+            bot.hasShortTermObjective = false
+            collectctf.getTargetOfMovementAndPath(bot)
     end)
 end
 
