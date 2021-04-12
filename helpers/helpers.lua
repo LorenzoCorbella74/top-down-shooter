@@ -69,34 +69,26 @@ end
 
 local gameTypes_priorities = {
     deathmatch = {
-        health = .5, 
-        special_powerup = 1, 
-        ammo = .5, 
-        weapon = .75,
+        health = 5, 
+        special_powerup = 10, 
+        ammo = 5, 
+        weapon = 7.5,
         flag = 0
     },
     team_deathmatch = {
-        health = .5,
-        special_powerup = 1,
-        ammo = .5,
-        weapon = .75,
+        health = 5,
+        special_powerup = 10,
+        ammo = 5,
+        weapon = 7.5,
         flag = 0
     },
     ctf = {
-        health = .5,
-        special_powerup = 1,
-        ammo = .5,
-        weapon = .75,
-        flag = 0.9 -- recupero enemy_flag e team_flag
-    } --[[ ,
-    -- gare ad obiettivi
-    missions = {
-        health = .5,
-        special_powerup = 1,
-        ammo = .5,
-        weapon = .75,
-        objective = 0.9
-    } ]]
+        health = 5,
+        special_powerup = 10,
+        ammo = 5,
+        weapon = 7.5,
+        flag = 9    -- recupero enemy_flag e team_flag
+    }
 }
 
 local helpers = {}
@@ -371,11 +363,11 @@ helpers.weaponIsNotYetOwn = function(weapon, actor)
     return not actor.weaponsInventory.checkAvailability(weapon)
 end
 
-helpers.logistic = function(x, threshold)
-    return 1 / (1 + (2.718 * 0.45) ^ (x + threshold))
+helpers.logistic = function(x)
+    return 1 / (1 + 2.718^(4*x))
 end
-helpers.exponential = function(x, exponent)
-    return (100 - x ^ exponent) / (100 ^ exponent)
+helpers.exponential = function(x)
+    return 0.01^x
 end
 
 helpers.calcDesiderability = function(item, bot)
@@ -386,7 +378,7 @@ helpers.calcDesiderability = function(item, bot)
     if item.info.type == 'health' and health < health_threshold then
         output = 1
     else
-        output = helpers.logistic(health, health_threshold)
+        output = helpers.logistic(health/100)
     end
     -- if weapon type desiderability is calculated according to bot weapons preferences
     if item.info.type == 'weapon' and helpers.weaponIsNotYetOwn(item, bot) then
@@ -397,7 +389,7 @@ helpers.calcDesiderability = function(item, bot)
     -- if ammo type
     if item.info.type == 'ammo' then
         local ratio = bot.weaponsInventory.selectedWeapon.shotNumber / bot.weaponsInventory.selectedWeapon.complete
-        output = helpers.exponential(ratio, 4)
+        output = helpers.exponential(ratio)
     end
     -- if special powerups
     if item.info.type == 'special_powerup' then output = 1 end
@@ -412,21 +404,24 @@ helpers.getObjective = function(bot)
 
     -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
-        return (point.players[bot.index].visible == true and point.visible == true) or
-                   (point.players[bot.index].visible == true --[[ and point.visible == false ]] and not helpers.canBeSeen(bot, point))
+        return (point.info.name ~='blue_flag' and point.info.name~='red_flag' and point.players[bot.index].visible == true and point.visible == true) or
+                   (point.players[bot.index].visible == true and not helpers.canBeSeen(bot, point))
     end)
     if visible_powerups and #visible_powerups > 0 then
         for index, item in ipairs(visible_powerups) do
             -- local path, distance = helpers.findPath(bot, item);
             item.distance = helpers.dist(bot, item);
-            item.score = priorities[item.info.type] * (1 / item.distance) * helpers.calcDesiderability(item, bot)
+            item.desiderability = helpers.calcDesiderability(item, bot)
+            item.score = priorities[item.info.type] * (1 / item.distance) * item.desiderability
         end
         table.sort(visible_powerups, function(a, b)
             return a.score > b.score
         end)
         return {
             item = visible_powerups[1],
-            distance = visible_powerups[1].distance
+            distance = visible_powerups[1].distance,
+            score = visible_powerups[1].score,
+            desiderability = visible_powerups[1].desiderability
         }
     end
     return nil
@@ -437,28 +432,34 @@ helpers.getShortTermObjective = function(bot, distance)
 
     -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
-        return (point.players[bot.index].visible == true and point.visible == true) or
-                   (point.players[bot.index].visible == true --[[ and point.visible == false ]] and not helpers.canBeSeen(bot, point))
+        return (point.info.name ~='blue_flag' and point.info.name~='red_flag' and point.players[bot.index].visible == true and point.visible == true) or (not point.info.name =='blue_flag' and not point.info.name=='red_flag' and point.players[bot.index].visible == true and helpers.canBeSeen(bot, point))
     end)
     if visible_powerups and #visible_powerups > 0 then
         for index, item in ipairs(visible_powerups) do
             -- local path, distance = helpers.findPath(bot, item);
             item.distance = helpers.dist(bot, item);
             if item.distance <distance then
-                item.score = priorities[item.info.type] * helpers.calcDesiderability(item, bot) * (1 / item.distance)
+                item.desiderability = helpers.calcDesiderability(item, bot)
+                item.score = priorities[item.info.type] * item.desiderability * (1 / item.distance)
             else
+                item.desiderability = 0
                 item.score = 0
             end
         end
         table.sort(visible_powerups, function(a, b)
             return a.score > b.score
         end)
+        for index, item in ipairs(visible_powerups) do
+            print(item.id ..' - '.. item.score)
+        end
         return {
             item = visible_powerups[1],
             distance = visible_powerups[1].distance,
-            score = visible_powerups[1].score
+            score = visible_powerups[1].score,
+            desiderability = visible_powerups[1].desiderability
         }
     end
+    print('NO Short term objective')
     return nil
 end
 
@@ -470,7 +471,7 @@ helpers.findPath = function(bot, target)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path ~= nil then
-        print(('Path found! Length: %.2f'):format(path:getLength()), bot.x, target.x, bot.y, target.y)
+        print(('Path found! Length: %.2f'):format(path:getLength()), target.id, bot.x, target.x, bot.y, target.y)
         for node, count in path:nodes() do
             -- print(('Step: %d - x: %d - y: %d'):format(count, node:getX(),node:getY()))
             table.insert(nodes, {x = node:getX() - 1, y = node:getY() - 1})

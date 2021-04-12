@@ -24,21 +24,23 @@ function collectctf.OnUpdate(dt, bot)
     end
 
     -- check if there is a visible enemy 3 times/sec
-    handlers.timeManagement.runEveryNumFrame(20, function()
-         -- if bot.team_role == 'attach' then
+    handlers.timeManagement.runEveryNumFrame(10, function()
+         if bot.team_role == 'attack' and not bot.hasShortTermObjective then
             bot.best_powerup = helpers.getShortTermObjective(bot, 350)
-            print('Score: '..tostring(bot.best_powerup.score))
-            if bot.best_powerup and bot.best_powerup.score > 0.00001 then
-                bot.nodes = helpers.findPath(bot, bot.best_powerup.item)
-                bot.hasShortTermObjective = true
-                return
-            else
-                bot.hasShortTermObjective = false
+            if bot.best_powerup then
+                print('Score: '..tostring(bot.best_powerup.item.id)..' - '..tostring(bot.best_powerup.score)..' - '..tostring(bot.best_powerup.desiderability))
+                if bot.best_powerup and bot.best_powerup.score > 0.0001 then
+                    bot.nodes = helpers.findPath(bot, bot.best_powerup.item)
+                    bot.hasShortTermObjective = true
+                    return
+                else
+                    bot.hasShortTermObjective = false
+                end
             end
-        -- end
+        end
     end)
 
-    if #bot.nodes == 0 then 
+    if #bot.nodes == 0 then
         return 
     end
 
@@ -53,7 +55,7 @@ function collectctf.OnUpdate(dt, bot)
     end
 
     -- if item is not visible and can be seen check another item
-    if bot.best_powerup.item and bot.best_powerup.item.visible == false and helpers.canBeSeen(bot, bot.best_powerup.item) then
+    if bot.best_powerup and bot.best_powerup.item and bot.best_powerup.item.visible == false and helpers.canBeSeen(bot, bot.best_powerup.item) then
         handlers.powerups.trackBot(bot.best_powerup.item.id, bot) -- powerup is tracked as it was touch!
         bot.nodes = {}
         collectctf.getTargetOfMovementAndPath(bot)
@@ -62,7 +64,8 @@ function collectctf.OnUpdate(dt, bot)
 
     -- follow the path and when finished run the callback
     helpers.followPath(bot, dt, function()
-            collectctf.getTargetOfMovementAndPath(bot)
+        bot.hasShortTermObjective = false
+        collectctf.getTargetOfMovementAndPath(bot)
     end)
 end
 
