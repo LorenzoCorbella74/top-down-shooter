@@ -24,7 +24,7 @@ function collectctf.OnUpdate(dt, bot)
     end
 
     -- check if there is a visible short term goal 3 times/sec on the path for long term goal
-    handlers.timeManagement.runEveryNumFrame(15, function()
+    handlers.timeManagement.runEveryNumFrame(10, function()
          if bot.team_role == 'attack' and not bot.hasShortTermObjective then
             bot.best_powerup = helpers.getShortTermObjective(bot, 350)
             if bot.best_powerup then
@@ -118,12 +118,15 @@ function collectctf.getTargetOfMovementAndPath(bot)
     end
     
     if bot.team_role == 'defend' then
-        -- TODO: waypoint di tipo "defense"
+        -- TODO: waypoint di tipo "defense" con relativi waypoint di tipo target
+        -- il bot deciderà se andare a difendere quando la bandiera è alla base (e a seconda di dove nasce cercherà
+        -- dei short term goal sul percorso del long term goal)- altrimenti avrà un comportamento libero
         bot.nodes = helpers.findPath(bot, bot.best)
     end
     
     if bot.team_role == 'support' then
-        -- TODO: support team mates
+        -- se vede un compagno sotto attacco lo seguirà o se ha la bandiera nemica o se la bandiera del team non è più alla base
+        -- altrimenti avrà un comportamento libero
         bot.nodes = helpers.findPath(bot, bot.best)
     end
 

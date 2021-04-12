@@ -316,11 +316,10 @@ end
 helpers.getNearestVisibleEnemy = function(bot)
     local output = {distance = 10000}
     local opponents = filter(handlers.actors, function(actor)
-        return actor.index ~= bot.index and actor.alive and actor.team ~=
-                   bot.team
+        return actor.index ~= bot.index and actor.alive and actor.team ~= bot.team
     end)
     local visible_opponents = filter(opponents, function(actor)
-        return helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor) and not actor.invisible
+        return helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor) and not actor.invisible -- debug
     end)
     if visible_opponents then
         for index, enemy in ipairs(visible_opponents) do
@@ -396,7 +395,7 @@ helpers.calcDesiderability = function(item, bot)
     -- if special powerups
     if item.info.type == 'special_powerup' then output = 1 end
 
-    -- if game is type ctf,  team_flag and enemy_flag are considered not as powerups but as separate objectives
+    -- if game is type ctf,  team_flag and enemy_flag are considered not as powerups but as global objectives
 
     return output
 end
