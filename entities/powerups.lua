@@ -150,7 +150,7 @@ PowerupsHandler.new = function()
                     object.originx = object.x
                     object.originy = object.y
                     object.status = 'base' -- 'base', 'taken', 'dropped'
-                    -- set flags in teams shared table
+                    -- set flags in shared table
                     self.flags[object.info.name=='blue_flag' and 'blue' or 'red'] = object
                 end
                 world:add(object, object.x, object.y, object.w, object.h) -- powerups is in the phisycs world
@@ -231,33 +231,20 @@ PowerupsHandler.new = function()
         powerup.visible = false
     end
 
-
     -- enemy flag when taken follow the actor
     function self.followActor(item, actor)
-        --[[ for i = #self.powerups, 1, -1 do
-            local powerup = self.powerups[i]
-            if powerup.id == item.id then ]]
-                item.attachedTo = actor
-                world:remove(item) -- flag is no more in the phisycs world
-          --[[       break
-            end
-        end ]]
+        item.attachedTo = actor
+        world:remove(item) -- flag is no more in the phisycs world
     end
 
     -- enemy flag position is restored after scoring or left when carrier is dead
     function self.unFollowActor(item, backToOrigin)
-       --[[  for i = #self.powerups, 1, -1 do
-            local powerup = self.powerups[i]
-            if powerup.id == item.id then ]]
-                item.attachedTo = nil
-                if backToOrigin then
-                    item.x = item.originx
-                    item.y = item.originy
-                end
-                world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
-                --[[ break
-            end
-        end ]]
+        item.attachedTo = nil
+        if backToOrigin then
+            item.x = item.originx
+            item.y = item.originy
+        end
+        world:add(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
     end
 
     -- enemy flag position is restored after scoring or left when carrier is dead

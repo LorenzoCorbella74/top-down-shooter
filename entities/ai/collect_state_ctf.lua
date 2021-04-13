@@ -116,18 +116,22 @@ function collectctf.getTargetOfMovementAndPath(bot)
             -- if enemy flag was dropped and is visible take it
             bot.nodes = helpers.findPath(bot, bot.enemyFlag)
         end
+        return
     end
     
     --team flag (tutti i ruoli)
     if bot.teamFlag.status == 'taken' and bot.enemyFlag.attachedTo == bot then
         -- if team flag has been taken and bot has enemyFlag go to powerups 
         bot.nodes = helpers.findPath(bot, bot.best)
+        return
     elseif bot.teamFlag.status == 'base' and bot.enemyFlag.attachedTo == bot then
         -- if team flag has returned and bot has enemy flag
         bot.nodes = helpers.findPath(bot, bot.teamFlag)
+        return
     elseif bot.teamFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.teamFlag) then
         -- if team flag was dropped take it to return it
         bot.nodes = helpers.findPath(bot, bot.teamFlag)
+        return
     end
     
     if bot.team_role == 'defend' and bot.objective == nil then

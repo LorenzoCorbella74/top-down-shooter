@@ -8,7 +8,7 @@ function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 
 function fight.OnUpdate(dt, bot)
 
-     -- check if blocked
+     -- check if blocked (during get_last_enemy_position)
      handlers.timeManagement.runEveryNumFrame(10, function ()
         if bot.x == bot.old_x and bot.y == bot.old_y then
             fight.counter = fight.counter + 1
