@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 8,
-  nextobjectid = 60,
+  nextobjectid = 61,
   properties = {},
   tilesets = {
     {
@@ -374,6 +374,22 @@ return {
           visible = true,
           properties = {
             ["orientation"] = 180
+          }
+        },
+        {
+          id = 60,
+          name = "spawn",
+          type = "",
+          shape = "rectangle",
+          x = 134,
+          y = 1502,
+          width = 32,
+          height = 32,
+          rotation = 0,
+          gid = 54,
+          visible = true,
+          properties = {
+            ["orientation"] = -90
           }
         }
       }

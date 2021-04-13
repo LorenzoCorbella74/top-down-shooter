@@ -106,13 +106,39 @@ WeaponsInventory.new = function()
         end
     end
 
-    -- TODO = si prende in base a probabilità pesata delle preferenze del bot e alla disponibilità
-    function self.getBest()
-        for i = #self.weapons, 1, -1 do
-            local weapon = self.weapons[i]
-            if weapon.available and weapon.shotNumber > 0 then
-                self.selectedWeapon = weapon
-                break
+    -- https://stackoverflow.com/a/15706820
+    function self.order(t, order)
+        -- collect the keys
+        local keys = {}
+        for k in pairs(t) do keys[#keys+1] = k end
+    
+        -- if order function given, sort by it by passing the table and keys a, b,
+        -- otherwise just sort the keys 
+        if order then
+            table.sort(keys, function(a,b) return order(t, a, b) end)
+        else
+            table.sort(keys)
+        end
+    
+        -- return the iterator function
+        local i = 0
+        return function()
+            i = i + 1
+            if keys[i] then
+                return keys[i], t[keys[i]]
+            end
+        end
+    end
+
+    -- si prende in base alle preferenze del bot e alla disponibilità dell'arma e dei colpi rimasti
+    function self.getBest(bot)
+        for key,v in self.order(bot.weapons_preferences, function(t,a,b) return t[b] < t[a] end) do
+            for i = #self.weapons, 1, -1 do
+                local weapon = self.weapons[i]
+                if key == weapon.name and weapon.available and weapon.shotNumber > 0 then
+                    self.selectedWeapon = weapon
+                    break
+                end
             end
         end
     end

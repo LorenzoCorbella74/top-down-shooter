@@ -5,6 +5,7 @@ local config = require "config"
 local helpers = require "../helpers.helpers"
 local teams = require "../helpers.teams"        -- simple shared table
 
+
 local BotsHandler = {}
 
 BotsHandler.new = function()
@@ -12,6 +13,17 @@ BotsHandler.new = function()
     local self = map:addCustomLayer("bots", 6)
 
     self.bots = {}
+
+    function self.defineName()
+        local bots = {
+            'Ranger','Phobos','Mynx',
+            'Orbb','Sarge','Grunt',
+            'Hunter','Klesk','Slash',
+            'Anarki','Razor','Visor',
+            'Bones','Doom','Major','Xaero'
+        }
+        return bots[math.random(#bots)]
+    end
 
     function self.defineTeams (index)
         if config.GAME.MATCH_TYPE == 'deathmatch' then -- tutti i bot hanno un team diverso...
@@ -25,19 +37,22 @@ BotsHandler.new = function()
         end
     end
 
-    -- in futuro sarà una tabella con tutti i nomi dei bot e relative preferenze di armi
+    -- FUTURE: table with bots' names and weapons preferences
     function self.createWeaponPreferences()
         return {
-                Rifle= 0.5,
-                Shotgun= 0.9,
-                Rocket= 0.6,
-                Plasma= 0.7,
-                Railgun= 1
+                Rifle= math.random(0.5, 1),
+                Shotgun=math.random(0.5, 1),
+                Rocket= math.random(0.5, 1),
+                Plasma= math.random(0.5, 1),
+                Railgun= math.random(0.5, 1)
             }
     end
 
-    --  per team play (una sola tra le prox tre): in futuro sarà impostato in fase di creazione in funz del game_type
+    -- only for team play as "team_deathmatch" and "ctf"
     function self.createRole(num)
+        if num >3 then
+           num = (num % 3 ==0) and 3 or num % 3
+        end
         local role = {
             'defend',   -- attitudice a difendere un obittivo   (difensore)
             'attack',   -- attitudine ad attaccare un obiettivo (attaccante)
@@ -68,7 +83,7 @@ BotsHandler.new = function()
         local sprite = team=='blue' and Sprites.blue_bot or Sprites.red_bot
         local bot = {
             index = math.random(1000000), -- id
-            name = 'bot' .. #self.bots + 1,
+            name = self.defineName(),
             team = team,
             teamStatus = teams,
             type = 'actor',
@@ -230,7 +245,6 @@ BotsHandler.new = function()
     end
 
     return self
-
 end
 
 return BotsHandler

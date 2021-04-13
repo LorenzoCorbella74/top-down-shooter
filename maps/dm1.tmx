@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="60">
+<map version="1.4" tiledversion="2021.01.13" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="61">
  <editorsettings>
   <export target="dm1.lua" format="lua"/>
  </editorsettings>
@@ -200,6 +200,11 @@
    </properties>
   </object>
   <object id="11" name="spawn" gid="54" x="1438.08" y="228.753" width="32" height="32">
+   <properties>
+    <property name="orientation" type="int" value="180"/>
+   </properties>
+  </object>
+  <object id="60" name="spawn" gid="54" x="134" y="1502" width="32" height="32">
    <properties>
     <property name="orientation" type="int" value="180"/>
    </properties>

@@ -2,11 +2,22 @@ local helpers = require "../../helpers.helpers"
 
 local config = require "config"
 
-local fight = {stateName = 'fight'}
+local fight = {stateName = 'fight', counter = 0}
 
 function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
 
 function fight.OnUpdate(dt, bot)
+
+     -- check if blocked
+     handlers.timeManagement.runEveryNumFrame(10, function ()
+        if bot.x == bot.old_x and bot.y == bot.old_y then
+            fight.counter = fight.counter + 1
+        end
+        if fight.counter == 3 then
+            bot.brain.pop()
+        end
+    end)
+
      -- check for the nearest enemy
      handlers.timeManagement.runEveryNumFrame(15, function ()
         local enemy = helpers.getNearestVisibleEnemy(bot).enemy
@@ -132,6 +143,7 @@ function fight.OnLeave(bot)
     bot.underAttack = false -- set default
     bot.reactionCounter = bot.parameters.reaction_time -- set default
     bot.canFire = false
+    fight.counter = 0
 end
 
 return fight
