@@ -27,7 +27,7 @@ TimeManagement.new = function ()
 
     function self.setCounter()
         self.stepCounter =  self.stepCounter + 1
-        if self.stepCounter>30 then
+        if self.stepCounter>60 then
             self.stepCounter = 1
         end
     end
@@ -43,8 +43,6 @@ TimeManagement.new = function ()
             callback()
         end
     end
-
-
 
     return self
     

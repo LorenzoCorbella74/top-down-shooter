@@ -39,8 +39,8 @@ BotsHandler.new = function()
     --  per team play (una sola tra le prox tre): in futuro sarà impostato in fase di creazione in funz del game_type
     function self.createRole(num)
         local role = {
-            'attack',   -- attitudine ad attaccare un obiettivo (attaccante)
             'defend',   -- attitudice a difendere un obittivo   (difensore)
+            'attack',   -- attitudine ad attaccare un obiettivo (attaccante)
             'support'   -- attitudine al supporto compagni      (supporto)
         }
         return role[num]
@@ -197,7 +197,7 @@ BotsHandler.new = function()
                     -- love.graphics.print(math.floor(bot.x) .. ' ' ..  math.floor(bot.y), bot.x, bot.y + 32)
                     -- love.graphics.print("Angle: " .. tostring(bot.r), bot.x - 16, bot.y + 48)
                     love.graphics.print("State: " .. tostring(bot.brain.curState.stateName), bot.x - 16, bot.y + 48)
-                    love.graphics.print("Team: " .. bot.team ..'-'..bot.team_role, bot.x - 16, bot.y -24)
+                    love.graphics.print("Team: " .. bot.team ..' - '..bot.team_role, bot.x - 16, bot.y -24)
                     if bot.target then
                         love.graphics.print("Target: " .. bot.target.name, bot.x -16, bot.y + 64)
                     elseif bot.best then

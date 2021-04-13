@@ -62,17 +62,11 @@ function collect.getTargetOfMovementAndPath(bot)
     local start_time = love.timer.getTime()
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getObjective(bot)
-    if  bot.best_powerup.item or bot.best_waypoint.item then
-        bot.best = bot.best_powerup.distance < bot.best_waypoint.distance and bot.best_powerup.item or bot.best_waypoint.item
-        -- if best then
-            bot.nodes = helpers.findPath(bot, bot.best)
-            local end_time = love.timer.getTime()
-            local elapsed_time = end_time - start_time
-            bot.info = tostring(elapsed_time)
-        -- end
-    else
-        bot.best = nil
-    end
+    bot.best = --[[ bot.best_powerup.distance < bot.best_waypoint.distance and ]] bot.best_powerup.item or bot.best_waypoint.item
+    bot.nodes = helpers.findPath(bot, bot.best)
+    local end_time = love.timer.getTime()
+    local elapsed_time = end_time - start_time
+    bot.info = tostring(elapsed_time)
 end
 
 function collect.OnLeave(bot)

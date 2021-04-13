@@ -117,9 +117,9 @@ end
 -- point an entity toward an actor
 helpers.pointTo = function(self, actor) self.r = helpers.angle(self, actor) end
 
--- turn progressively an entity to an actor
-helpers.turnProgressivelyTo = function(self, actor)
-    local angle = helpers.angle(self, actor)
+-- turn progressively an entity to an actor (or specify a target angle)
+helpers.turnProgressivelyTo = function(self, actor, angle)
+    local angle = angle or helpers.angle(self, actor)
     self.r = self.r + helpers.shortestArc(self.r, angle) * 0.2 -- percentage of rotation;
     return angle
 end
@@ -323,14 +323,14 @@ helpers.getNearestVisibleEnemy = function(bot)
     end)
     if visible_opponents then
         for index, enemy in ipairs(visible_opponents) do
-            local distance = helpers.dist(bot, enemy);
+            local distance = helpers.dist(bot, enemy)
             if output.distance > distance and distance < 600 then
-                output = {distance = distance, enemy = enemy};
+                output = {distance = distance, enemy = enemy}
             end
         end
-        return output;
+        return output
     else
-        return nil;
+        return nil
     end
 end
 
@@ -357,7 +357,7 @@ helpers.getRandomtWaypoint = function(bot)
             output = {distance = distance, item = random_waypoint};
         end
     end
-    return output;
+    return output
 end
 
 helpers.weaponIsNotYetOwn = function(weapon, actor)
@@ -426,6 +426,20 @@ helpers.getObjective = function(bot)
         }
     end
     return nil
+end
+
+-- get the available defend points close to the relevant flag
+-- if all are taken return nil
+helpers.getDefendPoint = function(bot, flag)
+    local defend_point = nil
+    for index, waypoint in ipairs(handlers.points.waypoints) do
+        if waypoint.type== 'defence' and helpers.dist(waypoint, flag) < 600 and not waypoint.taken then
+            waypoint.taken = bot -- reference to point out if the point is taken
+            defend_point = waypoint
+            break
+        end
+    end
+    return defend_point
 end
 
 helpers.getShortTermObjective = function(bot, distance)

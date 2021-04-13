@@ -1,5 +1,7 @@
 local helpers = require "../../helpers.helpers"
 
+local config = require "config"
+
 local fight = {stateName = 'fight'}
 
 function fight.OnEnter(bot) print("fight.OnEnter() " .. bot.name) end
@@ -33,8 +35,28 @@ function fight.OnUpdate(dt, bot)
         -- face the target
         helpers.turnProgressivelyTo(bot, current_enemy)
 
+        -- get the team flag if dropped, close and visible
+        if config.GAME.MATCH_TYPE=='ctf' and bot.teamFlag and bot.teamFlag.status=='dropped' and helpers.dist(bot, bot.teamFlag) < 250 and helpers.canBeSeen(bot,bot.teamFlag) then
+            fight.stateName = 'conquer team flag'
+            bot.info = tostring(bot.best_powerup.distance)
+            -- get the distance
+            local dist, dx, dy = helpers.dist(bot, bot.teamFlag)
+            if dist >= 10 then
+                futurex = bot.x + (dx / dist) * bot.speed * dt
+                futurey = bot.y + (dy / dist) * bot.speed * dt
+            end
+        -- get the enemy flag if dropped, close and visible
+        elseif config.GAME.MATCH_TYPE=='ctf' and bot.enemyFlag and bot.enemyFlag.status=='dropped' and helpers.dist(bot, bot.enemyFlag) < 250 and helpers.canBeSeen(bot,bot.enemyFlag) then
+            fight.stateName = 'conquer team flag'
+            bot.info = tostring(bot.best_powerup.distance)
+            -- get the distance
+            local dist, dx, dy = helpers.dist(bot, bot.enemyFlag)
+            if dist >= 10 then
+                futurex = bot.x + (dx / dist) * bot.speed * dt
+                futurey = bot.y + (dy / dist) * bot.speed * dt
+            end
         -- collect close powerup while fighting!!!!!
-        if bot.best_powerup.item and bot.best_powerup.distance < 250 then
+        elseif bot.best_powerup.item and bot.best_powerup.distance < 250 and helpers.canBeSeen(bot,bot.best_powerup.item) then
             fight.stateName = 'fight_&_collect'
             bot.info = tostring(bot.best_powerup.distance)
             -- get the distance

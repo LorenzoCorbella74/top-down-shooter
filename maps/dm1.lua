@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 8,
-  nextobjectid = 53,
+  nextobjectid = 60,
   properties = {},
   tilesets = {
     {
@@ -594,8 +594,8 @@ return {
           name = "health",
           type = "powerups",
           shape = "rectangle",
-          x = 1320,
-          y = 394.667,
+          x = 1318.67,
+          y = 453.334,
           width = 16,
           height = 16,
           rotation = 0,
@@ -704,8 +704,8 @@ return {
           name = "waypoint",
           type = "",
           shape = "rectangle",
-          x = 1025.33,
-          y = 673.333,
+          x = 990.663,
+          y = 485.333,
           width = 32,
           height = 32,
           rotation = 0,
@@ -766,17 +766,49 @@ return {
         {
           id = 46,
           name = "waypoint",
-          type = "",
+          type = "defence",
           shape = "rectangle",
-          x = 320,
-          y = 1474.67,
+          x = 512,
+          y = 1534.67,
           width = 32,
           height = 32,
           rotation = 0,
-          gid = 13,
+          gid = 43,
           visible = true,
           properties = {
-            ["objective"] = "navigation"
+            ["angle"] = -135
+          }
+        },
+        {
+          id = 56,
+          name = "waypoint",
+          type = "defence",
+          shape = "rectangle",
+          x = 1025.33,
+          y = 96,
+          width = 32,
+          height = 32,
+          rotation = 0,
+          gid = 43,
+          visible = true,
+          properties = {
+            ["angle"] = 90
+          }
+        },
+        {
+          id = 59,
+          name = "waypoint",
+          type = "defence",
+          shape = "rectangle",
+          x = 834.667,
+          y = 1534.67,
+          width = 32,
+          height = 32,
+          rotation = 0,
+          gid = 43,
+          visible = true,
+          properties = {
+            ["angle"] = -15
           }
         }
       }

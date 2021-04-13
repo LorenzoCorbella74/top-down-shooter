@@ -105,7 +105,11 @@ function state:update(dt)
     GameCountdown.update(dt)
 
     for index, actor in ipairs(handlers.actors) do
-        if actor.kills == config.GAME.SCORE_TO_WIN or actor.teamStatus[actor.team].score == config.GAME.SCORE_TO_WIN then
+        if config.GAME.MATCH_TYPE=='deathmatch' and actor.kills == config.GAME.SCORE_TO_WIN then
+            Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
+            return
+        end
+        if config.GAME.MATCH_TYPE~='deathmatch' and actor.teamStatus[actor.team].score == config.GAME.SCORE_TO_WIN then
             Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
             return
         end

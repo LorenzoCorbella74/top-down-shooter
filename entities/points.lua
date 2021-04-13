@@ -23,6 +23,7 @@ PointsHandler.new = function()
                 object.h = object.height
                 object.inCheck = false
                 object.objective = object.properties.objective
+                object.angle = object.properties.angle
                 world:add(object, object.x, object.y, object.width, object.height)
                 table.insert(self.waypoints, object)
             end
@@ -38,7 +39,7 @@ PointsHandler.new = function()
         local randomIndex = math.random(1, #indices)
         local choosen = self.spawnPoints[randomIndex]
         choosen.used = true
-        Timer.after(3, function() choosen.used = false end)
+        Timer.after(0.1, function() choosen.used = false end)
         return choosen.x, choosen.y, choosen.orientation
     end
 
@@ -47,11 +48,13 @@ PointsHandler.new = function()
     -- after x sec the waypoint is once again visible
     function self.seedBotsInWaypoints(players)
         for i = #self.waypoints, 1, -1 do
-            local waypoints = self.waypoints[i]
-            waypoints.players = {}
-            for y = #players, 1, -1 do
-                local player = players[y]
-                waypoints.players[player.index] = {visible = true}  -- index o name ???
+            local waypoint = self.waypoints[i]
+            if waypoint.type ~='defence' or waypoint.type~='target'  then
+                waypoint.players = {}
+                for y = #players, 1, -1 do
+                    local player = players[y]
+                    waypoint.players[player.index] = {visible = true}
+                end
             end
         end
     end
