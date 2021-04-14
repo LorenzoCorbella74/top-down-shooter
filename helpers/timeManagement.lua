@@ -32,8 +32,10 @@ TimeManagement.new = function ()
         end
     end
 
-    function self.runEveryNumFrame(number, callback)
-        if self.stepCounter % number == 0 then
+    -- thanks to bot.number the calculation for 
+    -- bots are spread to different frames
+    function self.runEveryNumFrame(number, bot, callback)
+        if self.stepCounter % (number + bot.number) == 0 then
             callback()
         end
     end

@@ -11,7 +11,7 @@ function collect.OnUpdate(dt, bot)
 
     local needStateChange = nil
     -- check if there is a visible enemy 4 times/sec
-    handlers.timeManagement.runEveryNumFrame(15, function ()
+    handlers.timeManagement.runEveryNumFrame(15, bot, function ()
         needStateChange = collect.checkIfThereIsEnemy(bot)
     end)
     if needStateChange then

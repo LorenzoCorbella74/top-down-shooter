@@ -82,6 +82,7 @@ BotsHandler.new = function()
         -- Create bot object
         local sprite = team=='blue' and Sprites.blue_bot or Sprites.red_bot
         local bot = {
+            number = index, -- is used to use specific frames in FSM!
             index = math.random(1000000), -- id
             name = self.defineName(),
             team = team,

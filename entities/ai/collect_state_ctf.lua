@@ -23,7 +23,7 @@ function collectctf.OnUpdate(dt, bot)
 
     local needStateChange = nil
     -- check if there is a visible enemy 4 times/sec
-    handlers.timeManagement.runEveryNumFrame(15, function()
+    handlers.timeManagement.runEveryNumFrame(15, bot, function()
         needStateChange = collectctf.checkIfThereIsEnemy(bot)
     end)
     if needStateChange then
@@ -32,7 +32,7 @@ function collectctf.OnUpdate(dt, bot)
     end
 
     -- check if there is a visible short term goal 3 times/sec on the path for long term goal
-    handlers.timeManagement.runEveryNumFrame(15, function()
+    handlers.timeManagement.runEveryNumFrame(15, bot, function()
          if bot.team_role == 'attack' and not bot.hasShortTermObjective then
             bot.best_powerup = helpers.getShortTermObjective(bot, 350)
             if bot.best_powerup then
@@ -115,20 +115,18 @@ function collectctf.getTargetOfMovementAndPath(bot)
         elseif bot.enemyFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.enemyFlag) then
             -- if enemy flag was dropped and is visible take it
             bot.nodes = helpers.findPath(bot, bot.enemyFlag)
+        elseif bot.teamFlag.status == 'taken' and bot.enemyFlag.attachedTo == bot then
+            -- if team flag has been taken and bot has enemyFlag go to powerups 
+            bot.nodes = helpers.findPath(bot, bot.best)
+            return
+        elseif bot.teamFlag.status == 'base' and bot.enemyFlag.attachedTo == bot then
+            -- if team flag has returned and bot has enemy flag
+            bot.nodes = helpers.findPath(bot, bot.teamFlag)
         end
         return
     end
     
-    --team flag (tutti i ruoli)
-    if bot.teamFlag.status == 'taken' and bot.enemyFlag.attachedTo == bot then
-        -- if team flag has been taken and bot has enemyFlag go to powerups 
-        bot.nodes = helpers.findPath(bot, bot.best)
-        return
-    elseif bot.teamFlag.status == 'base' and bot.enemyFlag.attachedTo == bot then
-        -- if team flag has returned and bot has enemy flag
-        bot.nodes = helpers.findPath(bot, bot.teamFlag)
-        return
-    elseif bot.teamFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.teamFlag) then
+    if bot.teamFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.teamFlag) then
         -- if team flag was dropped take it to return it
         bot.nodes = helpers.findPath(bot, bot.teamFlag)
         return
