@@ -206,7 +206,7 @@
   </object>
   <object id="60" name="spawn" gid="54" x="134" y="1502" width="32" height="32">
    <properties>
-    <property name="orientation" type="int" value="180"/>
+    <property name="orientation" type="int" value="-90"/>
    </properties>
   </object>
  </objectgroup>

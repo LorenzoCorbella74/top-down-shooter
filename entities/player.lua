@@ -182,7 +182,7 @@ PlayerHandler.new = function()
                 p.attackCounter = w.frequency
             end
         else
-            p.weaponsInventory.getBest()
+            p.weaponsInventory.getBest4Player()
         end
     end
 

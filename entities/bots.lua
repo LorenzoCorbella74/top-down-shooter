@@ -182,7 +182,7 @@ BotsHandler.new = function()
                 p.attackCounter = w.frequency
             end
         else
-            p.weaponsInventory.getBest()
+            p.weaponsInventory.getBest(p)
         end
     end
 

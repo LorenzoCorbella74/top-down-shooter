@@ -142,6 +142,16 @@ WeaponsInventory.new = function()
             end
         end
     end
+    -- the higher, the better
+    function self.getBest4Player()
+        for i = #self.weapons, 1, -1 do
+            local weapon = self.weapons[i]
+            if weapon.available and weapon.shotNumber > 0 then
+                self.selectedWeapon = weapon
+                break
+            end
+        end
+    end
 
     -- dopo un respawn le munizioni vengono azzerate
     -- e rimossa la disponibilità delle armi

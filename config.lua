@@ -5,7 +5,7 @@ config.GAME = {
     MATCH_DURATION = 240,
     SCORE_TO_WIN = 15,
     RESPAWN_TIME = 10,
-    MATCH_TYPE = 'ctf',     -- can be 'deathmatch', 'team_deathmatch', "ctf"
+    MATCH_TYPE = 'ctf',           -- can be 'deathmatch', 'team_deathmatch', "ctf"
 
     ACTORS_SPEED = 240,           -- pixels per second -> TODO: slider for game actor speed (game speed)
 
@@ -13,3 +13,5 @@ config.GAME = {
 }
 
 return config
+
+-- maps info; https://quake.fandom.com/wiki/Quake_III_Arena
