@@ -193,6 +193,8 @@ helpers.checkCollision = function(p, futurex, futurey)
             return 'cross'
         elseif other.name == 'blue_flag' or other.name=='red_flag' then
             return 'cross'
+        elseif other.type == 'actor' then
+            return 'slide' -- bounce
         else
             return 'slide'
         end

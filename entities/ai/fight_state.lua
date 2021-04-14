@@ -65,6 +65,8 @@ function fight.OnUpdate(dt, bot)
             if dist >= 10 then
                 futurex = bot.x + (dx / dist) * bot.speed * dt
                 futurey = bot.y + (dy / dist) * bot.speed * dt
+            else
+                bot.team_role='attack' -- si diventa attaccanti se si prende l'enemy flag
             end
         -- collect close powerup while fighting!!!!!
         elseif bot.best_powerup.item and bot.best_powerup.distance < 250 and helpers.canBeSeen(bot,bot.best_powerup.item) then
@@ -90,13 +92,9 @@ function fight.OnUpdate(dt, bot)
                 bot.velY = math.random() < 0.95 and bot.velY or helpers.randomDirection(bot)
             elseif dist >= 350  and dist < bot.parameters.view_length then
                 -- ci si avvicina solo in base al livello di aggressività e all'attitudine ad auto preserviarsi
-                if bot.parameters.aggression > bot.parameters.self_preservation then
+                -- if bot.parameters.aggression > bot.parameters.self_preservation then
                     bot.velX = dx / dist
                     bot.velY = dy / dist
-                else
-                    bot.velX = -dx / dist
-                    bot.velY = -dy / dist
-                end
             end
             -- update bot positions
             futurex = bot.x + bot.velX * bot.speed * dt;
