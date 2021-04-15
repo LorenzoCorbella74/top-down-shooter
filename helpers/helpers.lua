@@ -379,16 +379,13 @@ end
 -- for team deathmatch
 helpers.getNearestFightingMate = function(bot)
     local output = {distance = 10000}
-    local opponents = filter(handlers.actors, function(actor)
-        return actor.index ~= bot.index and actor.alive and actor.team == bot.team
-    end)
-    local visible_actors = filter(opponents, function(actor)
-        return helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor) and not actor.invisible -- debug
+    local visible_actors = filter(handlers.actors, function(actor)
+        return actor.index ~= bot.index and actor.alive and actor.team == bot.team and helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor) 
     end)
     if visible_actors then
         for index, mate in ipairs(visible_actors) do
             local distance = helpers.dist(bot, mate)
-            if output.distance > distance and distance < 600 and mate.curState=='fighting' then
+            if output.distance > distance and mate.brain.curState.stateName=='fight' then
                 output = {distance = distance, mate = mate}
             end
         end
@@ -560,7 +557,7 @@ helpers.findPath = function(bot, target)
     local finalx, finaly = handlers.pf.worldToTile(target.x + 32, target.y + 32)
     local path = handlers.pf.calculatePath(startx, starty, finalx, finaly)
     if path ~= nil then
-        print(('Path found! Length: %.2f'):format(path:getLength()), target.id, bot.x, target.x, bot.y, target.y)
+        print((bot.name ..' Path found! Length: %.2f'):format(path:getLength()), target.id, bot.x, target.x, bot.y, target.y)
         for node, count in path:nodes() do
             -- print(('Step: %d - x: %d - y: %d'):format(count, node:getX(),node:getY()))
             table.insert(nodes, {x = node:getX() - 1, y = node:getY() - 1})
@@ -596,7 +593,7 @@ helpers.followPath = function(bot, dt, callback)
     if dist < 10 then
         table.remove(bot.nodes, 1);
         if #bot.nodes == 0 then
-            print('dist '..dist)
+            print('dist to target '..dist)
             bot.nodes = {}
             bot.best_powerup = helpers.getObjective(bot)
             -- block when distance is reduced fast (when speed powerup is staken) or no item are found
