@@ -143,6 +143,8 @@ BotsHandler.new = function()
         bot.best_waypoint = {}     -- target of movement
         bot.underAttack = false    -- if underAttack turn to the bullet_collision_point
         bot.last_visible_position = nil
+        bot.objective = nil
+        bot.hasShortTermObjective = false
     end
 
     function self.die(bot)

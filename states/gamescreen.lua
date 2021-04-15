@@ -148,7 +148,7 @@ function state:keyreleased(key, code)
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
     if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
-    if key == 'f' then camera:flash(0.15, {1, 0, 0, 0.25}) end -- working
+    -- if key == 'f' then camera:flash(0.15, {1, 0, 0, 0.25}) end -- working
     if key == 'l' then
         local filename = string.format("screenshot-%d.png", os.time())
         love.graphics.captureScreenshot(filename)

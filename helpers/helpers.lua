@@ -245,18 +245,19 @@ helpers.checkCollision = function(p, futurex, futurey)
             handlers.powerups.backToBase(p.teamFlag)
             p.teamFlag.status = 'base'
             -- score in ctf se bot rosso tocca la bandiera rossa e porta la bandiera nemica e la bandiera rossa è alla base
-        elseif
-            (item.name=='red_flag' and p.team=='red' and p.enemyFlag.status == 'taken' and p.teamFlag.status == 'base' ) 
+        end
+        
+        if (item.name=='red_flag' and p.team=='red' and p.enemyFlag.status == 'taken' and p.teamFlag.status == 'base' ) 
             or (item.name=='blue_flag' and p.team=='blue' and p.enemyFlag.status == 'taken' and p.teamFlag.status == 'base') then
             p.teamStatus[p.team].score = p.teamStatus[p.team].score + 1
             handlers.powerups.unFollowActor(p.enemyFlag, true)
             p.enemyFlag.status = 'base'
         end
 
-
-        -- 1) se il bot rosso porta la bandiera nemica e recupera la propria bandiera 
-        -- AS IS -> segna il punto e rimette le bandiere alla pos iniziale
-        -- TO BE -> non segna il punto e rimette la propria bandiera a posto
+        -- once bot has reached the defend point aim to target angle
+        if item.name=='waypoint' and item.type=='defence' and p.team_role=='defend' and p.objective =='goto-defence-position'then
+            p.objective ='look-at-target'
+        end
 
         -- fix a probable error in bump library to make bots able to cut the corners of walls
         if (p.name ~= 'player' and item.layer and item.layer.name == 'walls') then

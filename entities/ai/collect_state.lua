@@ -9,6 +9,16 @@ end
 
 function collect.OnUpdate(dt, bot)
 
+     -- if underAttack turn to the point of impact of the received bullet
+     if bot.underAttack then
+        local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
+        if bot.target == nil and angle <0.05 then -- circa 3°
+            bot.underAttack = false
+        else
+            return
+        end
+    end
+
     local holyShit = nil
     -- check if there is a visible enemy 4 times/sec
     handlers.timeManagement.runEveryNumFrame(20, bot, function ()
@@ -21,16 +31,6 @@ function collect.OnUpdate(dt, bot)
 
     if #bot.nodes== 0 then
         return
-    end
-
-    -- if underAttack turn to the point of impact of the received bullet
-    if bot.underAttack then
-        local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        if bot.target == nil and angle <0.05 then -- circa 3°
-            bot.underAttack = false
-        else
-            return
-        end
     end
 
     -- if item is not visible and can be seen check another item
@@ -56,7 +56,7 @@ function collect.getTargetOfMovementAndPath(bot)
     bot.nodes = helpers.findPath(bot, bot.best)
     local end_time = love.timer.getTime()
     local elapsed_time = end_time - start_time
-    bot.info = tostring(elapsed_time)
+    bot.info = tostring(math.floor(elapsed_time))
 end
 
 function collect.OnLeave(bot)

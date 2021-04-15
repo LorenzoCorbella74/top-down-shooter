@@ -13,34 +13,48 @@ end
 
 function collectctf.OnUpdate(dt, bot)
 
-    -- bot doesnot have a path
-    if bot.team_role == 'defend' and bot.objective =='look-at-target' then
-        local angle = helpers.turnProgressivelyTo(bot,nil, math.rad(bot.defend_point.angle))
-        if math.abs(angle) <0.05 then -- circa 3°
-            bot.objective ='in-position'
-            print('in-position')
-        end
-    end
-
-    local needStateChange = nil
+    local holyShit = false
     -- check if there is a visible enemy 4 times/sec
     handlers.timeManagement.runEveryNumFrame(20, bot, function()
-        needStateChange = helpers.checkIfThereIsEnemy(bot)
+        holyShit = helpers.checkIfThereIsEnemy(bot)
     end)
-    if needStateChange then
+    if holyShit then
         bot.brain.push('fight')
         return
     end
 
+    -- if underAttack stop following path and turn to the point of impact of the received bullet
+    if bot.underAttack then
+        local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
+        if bot.target == nil and angle <0.05 then -- circa 3°
+            bot.underAttack = false
+        else
+            return
+        end
+    end
+
+    -- bot doesn't have a path
+    if bot.team_role == 'defend' and bot.objective =='look-at-target' then
+        local angle = helpers.turnProgressivelyTo(bot,nil, math.rad(bot.defend_point.angle))
+        if math.abs(angle) <0.05 then -- circa 3°
+            bot.objective ='in-position'
+            collectctf.stateName = 'in-position'
+            print('in-position')
+            return
+        end
+    end
+
     -- check if there is a visible short term goal 3 times/sec on the path for long term goal
     handlers.timeManagement.runEveryNumFrame(20, bot, function()
-         if (bot.team_role == 'attack' or bot.team_role == 'defend') and not bot.hasShortTermObjective then
+         if (bot.team_role == 'attack' and not bot.hasShortTermObjective) or 
+         (bot.team_role == 'defend' and not bot.hasShortTermObjective and not bot.objective=='look-at-target') then
             bot.best_powerup = helpers.getShortTermObjective(bot, 350)
             if bot.best_powerup then
                 print('Score: '..tostring(bot.best_powerup.item.id)..' - '..tostring(bot.best_powerup.score)..' - '..tostring(bot.best_powerup.desiderability))
                 if bot.best_powerup and bot.best_powerup.score > 0.0001 then
                     bot.nodes = helpers.findPath(bot, bot.best_powerup.item)
                     bot.hasShortTermObjective = true
+                    collectctf.stateName = 'go_to_short_term_goal'
                     return
                 else
                     bot.hasShortTermObjective = false
@@ -49,36 +63,8 @@ function collectctf.OnUpdate(dt, bot)
         end
     end)
 
-    -- if the team flag is dropped and visible take it
-    handlers.timeManagement.runAtFrameNum(function()
-        if bot.teamFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.teamFlag) then
-            -- if team flag was dropped take it to return it
-            bot.nodes = helpers.findPath(bot, bot.teamFlag)
-            return
-        end
-    end, bot, 30)
-
-    -- if the team flag is dropped and visible take it
-    handlers.timeManagement.runAtFrameNum(function()
-        if bot.enemyFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.enemyFlag) then
-            -- if enemy flag was dropped and is visible take it
-            bot.nodes = helpers.findPath(bot, bot.enemyFlag)
-            return
-        end
-    end, bot, 40)
-
     if #bot.nodes == 0 then
-        return 
-    end
-
-     -- if underAttack stop following path and turn to the point of impact of the received bullet
-    if bot.underAttack then
-        local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        if bot.target == nil and angle <0.05 then -- circa 3°
-            bot.underAttack = false
-        else
-            return
-        end
+        return
     end
 
     -- if item is not visible and can be seen check another item
@@ -91,12 +77,11 @@ function collectctf.OnUpdate(dt, bot)
 
     -- follow the path and when finished run the callback
     helpers.followPath(bot, dt, function()
+        -- reset the short term objective (if present or not)
         if bot.hasShortTermObjective then
             bot.hasShortTermObjective = false
         end
-        if bot.team_role=='defend' and bot.objective =='defence-position'then
-                bot.objective ='look-at-target'
-        end
+        collectctf.stateName = 'collectctf'
         collectctf.getTargetOfMovementAndPath(bot)
     end)
 end
@@ -109,6 +94,20 @@ function collectctf.getTargetOfMovementAndPath(bot)
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getObjective(bot)
     bot.best = bot.best_powerup.distance < bot.best_waypoint.distance and bot.best_powerup.item or bot.best_waypoint.item
+
+    if bot.teamFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.teamFlag) then
+        print('Team flag was dropped and should be taken!!')
+        -- if team flag was dropped take it to return it
+        bot.nodes = helpers.findPath(bot, bot.teamFlag)
+        return
+    end
+
+    if bot.enemyFlag.status == 'dropped' and helpers.canBeSeen(bot, bot.enemyFlag) then
+        print('Enemy flag was dropped and should be taken!!')
+        -- if enemy flag was dropped and is visible take it
+        bot.nodes = helpers.findPath(bot, bot.enemyFlag)
+        return
+    end
 
     -- choose objective according to team role --
 
@@ -132,22 +131,27 @@ function collectctf.getTargetOfMovementAndPath(bot)
         return
     end
     
-    if bot.team_role == 'defend' and bot.objective == nil then
+    if bot.team_role == 'defend'  then
         -- il bot deciderà se andare a difendere quando la bandiera è alla base (e a seconda di dove nasce cercherà
         -- dei short term goal sul percorso del long term goal)- altrimenti avrà un comportamento libero
-        if bot.teamFlag.status == 'base' then
+        if bot.teamFlag.status == 'base' and bot.objective == nil then
             -- waypoint di tipo "defence"
             bot.defend_point = helpers.getDefendPoint(bot, bot.teamFlag)
             if bot.defend_point ~= nil then
                 bot.nodes = helpers.findPath(bot, bot.defend_point)
-                bot.objective ='defence-position'
-                print('defence-position')
+                bot.objective ='goto-defence-position'
+                collectctf.stateName = 'goto-defence-position'
+                print('goto-defence-position')
             else
                 bot.nodes = helpers.findPath(bot, bot.best)
             end
+        elseif  bot.objective == 'goto-defence-position' and not bot.hasShortTermObjective then
+            bot.nodes = helpers.findPath(bot, bot.defend_point)
         else
             bot.nodes = helpers.findPath(bot, bot.best)
         end
+    else
+        bot.nodes = helpers.findPath(bot, bot.best)
     end
     
     if bot.team_role == 'support' then
@@ -165,6 +169,7 @@ end
 function collectctf.OnLeave(bot)
     print("collectctf.OnLeave() " .. bot.name)
     bot.objective = nil
+    bot.hasShortTermObjective = false
 end
 
 return collectctf

@@ -1,7 +1,7 @@
 local config = {}
 
 config.GAME = {
-    BOTS_NUMBERS = 4,
+    BOTS_NUMBERS = 1,
     MATCH_DURATION = 240,
     SCORE_TO_WIN = 15,
     RESPAWN_TIME = 10,
