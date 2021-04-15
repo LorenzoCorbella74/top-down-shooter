@@ -18,8 +18,8 @@ function fight.OnUpdate(dt, bot)
         end
     end) ]]
 
-     -- check for the nearest enemy
-     handlers.timeManagement.runEveryNumFrame(15, bot, function ()
+     -- update target with the nearest enemy
+     handlers.timeManagement.runEveryNumFrame(20, bot, function ()
         local enemy = helpers.getNearestVisibleEnemy(bot).enemy
         if enemy then
             if enemy and helpers.isInConeOfView(bot, enemy) and helpers.canBeSeen(bot, enemy) then

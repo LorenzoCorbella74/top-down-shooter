@@ -9,12 +9,12 @@ end
 
 function collect.OnUpdate(dt, bot)
 
-    local needStateChange = nil
+    local holyShit = nil
     -- check if there is a visible enemy 4 times/sec
-    handlers.timeManagement.runEveryNumFrame(15, bot, function ()
-        needStateChange = collect.checkIfThereIsEnemy(bot)
+    handlers.timeManagement.runEveryNumFrame(20, bot, function ()
+        holyShit = helpers.checkIfThereIsEnemy(bot)
     end)
-    if needStateChange then
+    if holyShit then
         bot.brain.push('fight')
         return
     end
@@ -47,22 +47,12 @@ function collect.OnUpdate(dt, bot)
     end)
 end
 
-function collect.checkIfThereIsEnemy(bot)
-    local enemy = helpers.getNearestVisibleEnemy(bot).enemy
-    if enemy then
-        print(bot.name .. ' has ' .. enemy.name .. ' as target')
-        bot.target = enemy
-        return true
-    end
-    return false
-end
-
 -- return the best item and the path to reach it
 function collect.getTargetOfMovementAndPath(bot)
     local start_time = love.timer.getTime()
     bot.best_waypoint = helpers.getRandomtWaypoint(bot)
     bot.best_powerup = helpers.getObjective(bot)
-    bot.best = --[[ bot.best_powerup.distance < bot.best_waypoint.distance and ]] bot.best_powerup.item or bot.best_waypoint.item
+    bot.best = bot.best_powerup.distance < bot.best_waypoint.distance and bot.best_powerup.item or bot.best_waypoint.item
     bot.nodes = helpers.findPath(bot, bot.best)
     local end_time = love.timer.getTime()
     local elapsed_time = end_time - start_time

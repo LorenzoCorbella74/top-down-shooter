@@ -336,6 +336,16 @@ helpers.getNearestVisibleEnemy = function(bot)
     end
 end
 
+helpers.checkIfThereIsEnemy = function (bot)
+    local enemy = helpers.getNearestVisibleEnemy(bot).enemy
+    if enemy then
+        print(bot.name .. ' has ' .. enemy.name .. ' as target')
+        bot.target = enemy
+        return true
+    end
+    return false
+end
+
 helpers.randomDirection = function(bot)
     local directions = {bot.velX, -bot.velX, -bot.velY, bot.velY}
     return directions[math.random(#directions)]
@@ -408,7 +418,7 @@ helpers.getObjective = function(bot)
     -- get only the visible one or the ones that cannot be seen (and the ones not crossed recently)
     local visible_powerups = filter(handlers.powerups.powerups, function(point)
         return (point.info.name ~='blue_flag' and point.info.name~='red_flag' and point.players[bot.index].visible == true and point.visible == true) or
-                   (point.players[bot.index].visible == true and not helpers.canBeSeen(bot, point))
+            (point.info.name ~='blue_flag' and point.info.name~='red_flag' and point.players[bot.index].visible == true and not helpers.canBeSeen(bot, point))
     end)
     if visible_powerups and #visible_powerups > 0 then
         for index, item in ipairs(visible_powerups) do
