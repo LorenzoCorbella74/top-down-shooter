@@ -1,3 +1,5 @@
+local config = require "config"
+
 local PointsHandler = {}
 
 PointsHandler.new = function()
@@ -34,9 +36,9 @@ PointsHandler.new = function()
         -- indices used
         local indices = {}
         for index, item in ipairs(self.spawnPoints) do
-            if item.used == false then table.insert(indices, item) end
+            if item.used == false then table.insert(indices, index) end
         end
-        local randomIndex = math.random(1, #indices)
+        local randomIndex = indices[math.random(1, #indices)]
         local choosen = self.spawnPoints[randomIndex]
         choosen.used = true
         Timer.after(0.1, function() choosen.used = false end)
@@ -44,17 +46,27 @@ PointsHandler.new = function()
     end
 
     -- waypoint visibility for each bot
-    -- when it's taken it's no more visible and a timer is called
-    -- after x sec the waypoint is once again visible
+    -- when it's taken it's no more crossable and a timer is called
+    -- after x sec the waypoint is once again crossable
     function self.seedBotsInWaypoints(players)
         for i = #self.waypoints, 1, -1 do
             local waypoint = self.waypoints[i]
-            if waypoint.type ~='defence' or waypoint.type~='target'  then
-                waypoint.players = {}
-                for y = #players, 1, -1 do
-                    local player = players[y]
-                    waypoint.players[player.index] = {visible = true}
-                end
+            waypoint.players = {}
+            for y = #players, 1, -1 do
+                local player = players[y]
+                waypoint.players[player.index] = {visible = true}
+            end
+        end
+    end
+
+    function self.trackBot(id, bot)
+        for i = #self.waypoints, 1, -1 do
+            local waypoint = self.waypoints[i]
+            if waypoint.id == id then
+                waypoint.players[bot.index].visible = false
+                Timer.after(config.GAME.WAYPOINTS_TIMING, function()
+                    waypoint.players[bot.index].visible = true
+                end)
             end
         end
     end

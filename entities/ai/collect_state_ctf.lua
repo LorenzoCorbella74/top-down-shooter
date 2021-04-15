@@ -152,8 +152,7 @@ function collectctf.getTargetOfMovementAndPath(bot)
             collectctf.stateName = 'look-at-target'
             bot.nodes = {}
         else
-            local random_target = math.random(1)>0.5 and bot.defend_point or bot.best
-            bot.nodes = helpers.findPath(bot, random_target)
+            bot.nodes = helpers.findPath(bot, bot.best)
             collectctf.stateName = 'collectctf'
         end
         return

@@ -222,7 +222,7 @@ helpers.checkCollision = function(p, futurex, futurey)
             handlers.powerups.applyWeapon(item, p)
         end
         if (item.name == 'waypoint') then
-            handlers.powerups.trackBot(item.id, p)
+            handlers.points.trackBot(item.id, p)
         end
 
         -- getting enemy flag
@@ -503,12 +503,11 @@ helpers.getObjective = function(bot)
 end
 
 -- get the available defend points close to the relevant flag
--- if all are taken return nil
+-- if all are taken return nil (waypoint of type "defence" have a timer of 20)
 helpers.getDefendPoint = function(bot, flag)
     local defend_point = nil
     for index, waypoint in ipairs(handlers.points.waypoints) do
-        if waypoint.type== 'defence' and helpers.dist(waypoint, flag) < 600 and not waypoint.taken then
-            waypoint.taken = bot -- reference to point out if the point is taken
+        if waypoint.type== 'defence' and helpers.dist(waypoint, flag) < 600 and waypoint.players[bot.index].visible then
             defend_point = waypoint
             break
         end
