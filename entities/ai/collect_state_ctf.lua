@@ -34,7 +34,7 @@ function collectctf.OnUpdate(dt, bot)
     end
 
     -- bot doesn't have a path
-    if bot.team_role == 'defend' and bot.objective =='look-at-target' then
+    if not bot.underAttack and bot.team_role == 'defend' and bot.objective =='look-at-target' then
         local angle = helpers.turnProgressivelyTo(bot,nil, math.rad(bot.defend_point.angle))
         if math.abs(angle) <0.05 then -- circa 3°
             bot.objective ='in-position'
@@ -147,11 +147,12 @@ function collectctf.getTargetOfMovementAndPath(bot)
             end
         elseif  bot.objective == 'goto-defence-position' and not bot.hasShortTermObjective then
             bot.nodes = helpers.findPath(bot, bot.defend_point)
+        elseif bot.objective=='look-at-target' then
+            bot.nodes = {}
         else
             bot.nodes = helpers.findPath(bot, bot.best)
         end
-    else
-        bot.nodes = helpers.findPath(bot, bot.best)
+        return
     end
     
     if bot.team_role == 'support' then

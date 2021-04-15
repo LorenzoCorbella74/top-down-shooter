@@ -255,6 +255,7 @@ helpers.checkCollision = function(p, futurex, futurey)
         end
 
         -- once bot has reached the defend point aim to target angle
+        -- removing the previous path
         if item.name=='waypoint' and item.type=='defence' and p.team_role=='defend' and p.objective =='goto-defence-position'then
             p.objective ='look-at-target'
         end
