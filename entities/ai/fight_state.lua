@@ -58,7 +58,7 @@ function fight.OnUpdate(dt, bot)
             end
         -- get the enemy flag if dropped, close and visible
         elseif config.GAME.MATCH_TYPE=='ctf' and bot.enemyFlag and bot.enemyFlag.status=='dropped' and helpers.dist(bot, bot.enemyFlag) < 250 and helpers.canBeSeen(bot,bot.enemyFlag) then
-            fight.stateName = 'conquer team flag'
+            fight.stateName = 'conquer enemy flag'
             bot.info = tostring(bot.best_powerup.distance)
             -- get the distance
             local dist, dx, dy = helpers.dist(bot, bot.enemyFlag)

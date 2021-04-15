@@ -7,6 +7,8 @@ function collect.OnEnter(bot)
     collect.getTargetOfMovementAndPath(bot)
 end
 
+local globalFn = helpers.followPath 
+
 function collect.OnUpdate(dt, bot)
 
      -- if underAttack turn to the point of impact of the received bullet
@@ -42,7 +44,7 @@ function collect.OnUpdate(dt, bot)
     end
 
     -- follow the path and when finished run the callback
-    helpers.followPath(bot, dt, function ()
+    globalFn(bot, dt, function ()
         collect.getTargetOfMovementAndPath(bot)
     end)
 end

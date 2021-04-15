@@ -174,11 +174,11 @@ helpers.canBeSeen = function(point_sight, entity)
 end
 
 -- move an entity according to an angle and a passed velocity
-helpers.move = function(self, velocity)
+--[[ helpers.moveTo = function(self, velocity)
     self.x = self.x + math.cos(self.r) * velocity;
     self.y = self.y + math.sin(self.r) * velocity;
     return self;
-end
+end ]]
 
 helpers.checkCollision = function(p, futurex, futurey)
     local cols, cols_len
@@ -330,6 +330,66 @@ helpers.getNearestVisibleEnemy = function(bot)
             local distance = helpers.dist(bot, enemy)
             if output.distance > distance and distance < 600 then
                 output = {distance = distance, enemy = enemy}
+            end
+        end
+        return output
+    else
+        return nil
+    end
+end
+
+-- for ctf
+helpers.checkTeamFlagCarrier = function(bot)
+    local output = {distance = 10000}
+    local opponents = filter(handlers.actors, function(actor)
+        return actor.index ~= bot.index and actor.alive and actor.team == bot.team and helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor)
+    end)
+    if opponents then
+        for index, mate in ipairs(opponents) do
+            local distance = helpers.dist(bot, mate)
+            if output.distance > distance and distance < 600 and mate.enemyFlag.attachedTo == mate then
+                output = {distance = distance, mate = mate}
+            end
+        end
+        return output
+    else
+        return nil
+    end
+end
+
+-- for ctf
+helpers.checkEnemyFlagCarrier = function(bot)
+    local output = {distance = 10000}
+    local opponents = filter(handlers.actors, function(actor)
+        return actor.index ~= bot.index and actor.alive and actor.team ~= bot.team and helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor)
+    end)
+    if opponents then
+        for index, enemy in ipairs(opponents) do
+            local distance = helpers.dist(bot, enemy)
+            if output.distance > distance and distance < 600 and enemy.enemyFlag.attachedTo == enemy then
+                output = {distance = distance, enemy = enemy}
+            end
+        end
+        return output
+    else
+        return nil
+    end
+end
+
+-- for team deathmatch
+helpers.getNearestFightingMate = function(bot)
+    local output = {distance = 10000}
+    local opponents = filter(handlers.actors, function(actor)
+        return actor.index ~= bot.index and actor.alive and actor.team == bot.team
+    end)
+    local visible_actors = filter(opponents, function(actor)
+        return helpers.canBeSeen(bot, actor) and helpers.isInConeOfView(bot, actor) and not actor.invisible -- debug
+    end)
+    if visible_actors then
+        for index, mate in ipairs(visible_actors) do
+            local distance = helpers.dist(bot, mate)
+            if output.distance > distance and distance < 600 and mate.curState=='fighting' then
+                output = {distance = distance, mate = mate}
             end
         end
         return output
@@ -549,6 +609,29 @@ helpers.followPath = function(bot, dt, callback)
                 bot.nodes = helpers.findPath(bot, bot.best_waypoint.item)
             end
         end
+    end
+end
+
+helpers.moveTo = function(bot, dt, target, distance, callback)
+    distance = distance or 10
+    bot.old_x = bot.x
+    bot.old_y = bot.y
+    -- update bot positions
+    local futurex = bot.x
+    local futurey = bot.y
+    -- get the distance
+    local dist, dx, dy = helpers.dist(bot, target)
+    if dist ~= 0 then
+        futurex = bot.x + (dx / dist) * bot.speed * dt
+        futurey = bot.y + (dy / dist) * bot.speed * dt
+    end
+    -- turn to current path node
+    helpers.turnProgressivelyTo(bot, target)
+    -- collisions
+    helpers.checkCollision(bot, futurex, futurey)
+    -- if finished move to the next path element
+    if dist < distance then
+        callback()
     end
 end
 

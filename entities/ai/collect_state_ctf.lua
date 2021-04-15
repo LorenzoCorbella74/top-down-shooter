@@ -81,7 +81,6 @@ function collectctf.OnUpdate(dt, bot)
         if bot.hasShortTermObjective then
             bot.hasShortTermObjective = false
         end
-        collectctf.stateName = 'collectctf'
         collectctf.getTargetOfMovementAndPath(bot)
     end)
 end
@@ -146,11 +145,16 @@ function collectctf.getTargetOfMovementAndPath(bot)
                 bot.nodes = helpers.findPath(bot, bot.best)
             end
         elseif  bot.objective == 'goto-defence-position' and not bot.hasShortTermObjective then
+            -- after getting a short term goal
             bot.nodes = helpers.findPath(bot, bot.defend_point)
+            collectctf.stateName = 'goto-defence-position'
         elseif bot.objective=='look-at-target' then
+            collectctf.stateName = 'look-at-target'
             bot.nodes = {}
         else
-            bot.nodes = helpers.findPath(bot, bot.best)
+            local random_target = math.random(1)>0.5 and bot.defend_point or bot.best
+            bot.nodes = helpers.findPath(bot, random_target)
+            collectctf.stateName = 'collectctf'
         end
         return
     end
@@ -171,6 +175,7 @@ function collectctf.OnLeave(bot)
     print("collectctf.OnLeave() " .. bot.name)
     bot.objective = nil
     bot.hasShortTermObjective = false
+    collectctf.stateName = 'collectctf'
 end
 
 return collectctf
