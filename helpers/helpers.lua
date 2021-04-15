@@ -218,7 +218,7 @@ helpers.checkCollision = function(p, futurex, futurey)
         if (item.type == 'ammo' and item.visible) then
             handlers.powerups.applyAmmo(item, p)
         end
-        if (item.type == 'weapons' and item.visible) then
+        if (item.type == 'weapon' and item.visible) then
             handlers.powerups.applyWeapon(item, p)
         end
         if (item.name == 'waypoint') then

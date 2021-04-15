@@ -113,7 +113,8 @@ PowerupsHandler.new = function()
             of = 'Railgun',
             spawnTime = 30,
             amount = 5,
-            type = 'weapon'
+            type = 'weapon',
+            sprite = Sprites.weaponRailgun
         }
     }
 
@@ -139,8 +140,8 @@ PowerupsHandler.new = function()
                 else
                     object.visible = true
                 end
-                -- if ammo or weapon
-                if object.info.of ~= nil and (object.info.type == 'ammo' or object.info.type == 'weapon') then
+                 -- if ammo or weapon
+                 if object.info.of ~= nil and (object.info.type == 'ammo' or object.info.type == 'weapon') then
                     object.amount = object.info.amount
                     object.of = object.info.of
                     object.type = object.info.type
@@ -166,7 +167,7 @@ PowerupsHandler.new = function()
                 object.inCheck = true
                 -- back to game
                 Timer.after(object.info.spawnTime, function()
-                    world:add(object, object.x, object.y, object.width, object.height) -- powerups is in the phisycs world again
+                    world:add(object, object.x, object.y, object.w, object.h) -- powerups is in the phisycs world again
                     object.inCheck = false
                     object.visible = true
                 end)
@@ -221,13 +222,13 @@ PowerupsHandler.new = function()
 
     function self.applyAmmo(powerup, who)
         world:remove(powerup) -- powerup is no more in the phisycs world
-        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of,powerup.amount);
+        who.weaponsInventory.setNumOfBullets(powerup.of,powerup.amount);
         powerup.visible = false
     end
 
     function self.applyWeapon(powerup, who)
         world:remove(powerup) -- powerup is no more in the phisycs world
-        who.weaponsInventory.setNumOfBullets(powerup.of, powerup.amount);
+        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of, powerup.amount); 
         powerup.visible = false
     end
 

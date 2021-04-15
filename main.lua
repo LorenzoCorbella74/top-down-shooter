@@ -54,6 +54,7 @@ function love.load(arg)
         -- weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
         -- weaponRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
         -- weaponRailgun = {of = 'Railgun', spawnTime = 30, amount = 5}
+        weaponRailgun = love.graphics.newImage("myTiles/weapon_railgun.png"),
 
         -- Bullets
         bullet_Rifle = love.graphics.newImage("myTiles/bullet_Rifle.png"),

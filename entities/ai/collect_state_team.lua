@@ -19,7 +19,6 @@ function collectTeam.OnUpdate(dt, bot)
         return
     end
 
-
      -- if underAttack turn to the point of impact of the received bullet
      if bot.underAttack then
         local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
@@ -29,7 +28,6 @@ function collectTeam.OnUpdate(dt, bot)
             return
         end
     end
-
 
     -- check if there is a visible mate (which is fighting) and support him!
      handlers.timeManagement.runEveryNumFrame(30, bot, function ()

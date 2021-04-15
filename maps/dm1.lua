@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 8,
-  nextobjectid = 61,
+  nextobjectid = 64,
   properties = {},
   tilesets = {
     {
@@ -619,6 +619,19 @@ return {
           properties = {
             ["points"] = 10
           }
+        },
+        {
+          id = 61,
+          name = "weaponRailgun",
+          type = "",
+          shape = "rectangle",
+          x = 1168,
+          y = 752,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
         }
       }
     },
