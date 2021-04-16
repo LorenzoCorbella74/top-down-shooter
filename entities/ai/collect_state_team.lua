@@ -32,7 +32,7 @@ function collectTeam.OnUpdate(dt, bot)
     -- check if there is a visible mate (which is fighting) and support him!
      handlers.timeManagement.runEveryNumFrame(30, bot, function ()
         local actor = helpers.getNearestFightingMate(bot)
-        if actor and actor.mate then
+        if actor and actor.mate and not bot.isSupporting then
             bot.nodes = helpers.findPath(bot, actor.mate)
             collectTeam.stateName = 'support'
             bot.isSupporting = true

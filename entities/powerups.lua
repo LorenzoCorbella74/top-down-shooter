@@ -193,12 +193,14 @@ PowerupsHandler.new = function()
         elseif powerup.info.name == 'megaArmour' then
             who.ap = who.ap + powerup.info.ap;
         elseif powerup.info.name == 'quad' then
-            who.damage = who.damage * powerup.info.multiplier;
             -- apply effect
+            who.damage = who.damage * powerup.info.multiplier;
+            -- remove effect
             Timer.after(powerup.info.duration, function()
                 who.damage = who.damage / powerup.info.multiplier;
             end)
         elseif powerup.info.name == 'speed' then
+            -- apply effect
             who.speed = who.speed * powerup.info.multiplier;
             -- remove effect
             Timer.after(powerup.info.duration, function()

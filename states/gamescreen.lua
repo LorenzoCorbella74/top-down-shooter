@@ -120,8 +120,7 @@ function state:draw()
     camera:attach()
 
     -- Draw your game here
-    local scale = 1
-    -- Scale world with camera.scale
+    local scale = 1 -- Scale world with camera.scale ? not working
 
     if debug then
         camera.draw_deadzone = true

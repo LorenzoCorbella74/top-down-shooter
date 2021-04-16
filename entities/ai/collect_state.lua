@@ -61,6 +61,7 @@ end
 
 function collect.OnLeave(bot)
     print("collect.OnLeave() " .. bot.name)
+    bot.underAttack = false
     -- remove something
 end
 
