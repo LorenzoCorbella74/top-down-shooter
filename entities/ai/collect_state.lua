@@ -7,8 +7,6 @@ function collect.OnEnter(bot)
     collect.getTargetOfMovementAndPath(bot)
 end
 
-local globalFn = helpers.followPath 
-
 function collect.OnUpdate(dt, bot)
 
     local holyShit = nil
@@ -21,17 +19,15 @@ function collect.OnUpdate(dt, bot)
         return
     end
 
-
      -- if underAttack turn to the point of impact of the received bullet
      if bot.underAttack then
         local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        if bot.target == nil and collectTeam <0.05 then -- circa 3°
+        if bot.target == nil and angle <0.05 then -- circa 3°
             bot.underAttack = false
         else
             return
         end
     end
-
 
     if #bot.nodes== 0 then
         return
@@ -46,7 +42,7 @@ function collect.OnUpdate(dt, bot)
     end
 
     -- follow the path and when finished run the callback
-    globalFn(bot, dt, function ()
+    helpers.followPath (bot, dt, function ()
         collect.getTargetOfMovementAndPath(bot)
     end)
 end

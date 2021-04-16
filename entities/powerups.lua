@@ -68,46 +68,34 @@ PowerupsHandler.new = function()
             duration = 10,
             sprite = Sprites.powerup_speed
         },
-        -- ammo packs
-        ammoRifle = {
-            of = 'Rifle',
-            spawnTime = 30,
-            amount = 30,
-            sprite = Sprites.ammo_Rifle,
-            type = 'ammo'
-        },
-        ammoShotgun = {
-            of = 'Shotgun',
-            spawnTime = 30,
-            amount = 24,
-            type = 'ammo'
-        },
-        ammoPlasma = {of = 'Plasma', spawnTime = 30, amount = 25, type = 'ammo'},
-        ammoRocket = {of = 'Rocket', spawnTime = 30, amount = 5, type = 'ammo'},
-        ammoRailgun = {
-            of = 'Railgun',
-            spawnTime = 30,
-            amount = 5,
-            type = 'ammo'
+        -- ammo packs (sprites are in weapons too)
+        ammoRifle = {of = 'Rifle',spawnTime = 30,amount = 30, sprite = Sprites.ammo_Rifle, type = 'ammo'},
+        ammoShotgun = { of = 'Shotgun', spawnTime = 30, amount = 24, sprite = Sprites.ammo_Shotgun, type = 'ammo'},
+        ammoPlasma = {of = 'Plasma', spawnTime = 30, amount = 25, sprite = Sprites.ammo_Plasma, type = 'ammo'},
+        ammoRocket = {of = 'Rocket', spawnTime = 30, amount = 5, sprite = Sprites.ammo_Rocket, type = 'ammo'},
+        ammoRailgun = { of = 'Railgun', spawnTime = 30, amount = 5, sprite = Sprites.ammo_Railgun, type = 'ammo'
         },
         -- weapons
         weaponShotgun = {
             of = 'Shotgun',
             spawnTime = 30,
             amount = 24,
-            type = 'weapon'
+            type = 'weapon',
+            sprite=Sprites.weaponShotgun
         },
         weaponPlasma = {
             of = 'Plasma',
             spawnTime = 30,
             amount = 25,
-            type = 'weapon'
+            type = 'weapon',
+            sprite = Sprites.weaponPlasma
         },
         weaponRocket = {
             of = 'Rocket',
             spawnTime = 30,
             amount = 5,
-            type = 'weapon'
+            type = 'weapon',
+            sprite = Sprites.weaponRocket
         },
         weaponRailgun = {
             of = 'Railgun',
@@ -222,13 +210,18 @@ PowerupsHandler.new = function()
 
     function self.applyAmmo(powerup, who)
         world:remove(powerup) -- powerup is no more in the phisycs world
-        who.weaponsInventory.setNumOfBullets(powerup.of,powerup.amount);
+        who.weaponsInventory.setNumOfBullets(powerup.of,powerup.amount)
         powerup.visible = false
     end
 
     function self.applyWeapon(powerup, who)
         world:remove(powerup) -- powerup is no more in the phisycs world
-        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of, powerup.amount); 
+        who.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.of, powerup.amount)
+        if who.name=='player' then
+            who.weaponsInventory.getBest4Player(who)
+        else
+            who.weaponsInventory.getBest(who)
+        end
         powerup.visible = false
     end
 

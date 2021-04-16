@@ -262,7 +262,7 @@
     <property name="points" type="int" value="10"/>
    </properties>
   </object>
-  <object id="61" name="weaponRailgun" x="1168" y="752"/>
+  <object id="61" name="weaponRailgun" type="weapon" x="1168" y="752"/>
  </objectgroup>
  <objectgroup id="7" name="waypoints">
   <object id="34" name="waypoint" gid="13" x="709.334" y="1117.33" width="32" height="32">

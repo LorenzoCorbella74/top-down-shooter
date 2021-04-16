@@ -23,7 +23,7 @@ function state:enter()
     camera:setFollowLerp(0.2)
     camera:setFollowLead(10)
 
-    map = sti("maps/dm1.lua", {'bump'}) -- Load map file
+    map = sti("maps/dm2.lua", {'bump'}) -- Load map file
     world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world)
 
@@ -34,7 +34,7 @@ function state:enter()
     handlers.points.getPointsFromMap()
 
     -- path finding helpers for jumper
-    local map_for_jumper = require('maps/dm' .. tostring(1))
+    local map_for_jumper = require('maps/dm' .. tostring(2))
     handlers.pf = PathfindHandler.new(map_for_jumper, 'walls', 0, 'JPS')
 
     -- player

@@ -40,8 +40,8 @@ BotsHandler.new = function()
     -- FUTURE: table with bots' names and weapons preferences
     function self.createWeaponPreferences()
         return {
-                Rifle= math.random(0.5, 1),
-                Shotgun=math.random(0.5, 1),
+                Rifle= 0.5,
+                Shotgun=1,
                 Rocket= math.random(0.5, 1),
                 Plasma= math.random(0.5, 1),
                 Railgun= math.random(0.5, 1)

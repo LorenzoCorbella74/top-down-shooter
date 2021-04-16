@@ -454,9 +454,9 @@ helpers.calcDesiderability = function(item, bot)
     end
     -- if weapon type desiderability is calculated according to bot weapons preferences
     if item.info.type == 'weapon' and helpers.weaponIsNotYetOwn(item, bot) then
-        output = 1 * bot.weapons_preferences[item.info.name]
+        output = 1 * bot.weapons_preferences[item.info.of]
     elseif item.info.type == 'weapon' then
-        output = 0.5 * bot.weapons_preferences[item.info.name] --  half of desiderability if already owned
+        output = 0.5 * bot.weapons_preferences[item.info.of] --  half of desiderability if already owned
     end
     -- if ammo type
     if item.info.type == 'ammo' then

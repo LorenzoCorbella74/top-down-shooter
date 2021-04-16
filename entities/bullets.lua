@@ -72,8 +72,8 @@ BulletsHandler.new = function()
         b.y = origin.y
         b.r = angle
         b.speed = w.speed
-        b.dx = b.speed * math.cos(angle)
-        b.dy = b.speed * math.sin(angle)
+        b.dx = b.speed * math.cos(angle) + math.random() * w.spread * 2 - w.spread
+        b.dy = b.speed * math.sin(angle)  + math.random() * w.spread * 2 - w.spread
         -- state
         b.ttl = w.ttl -- how many seconds before despawning
         b.damage = w.damage -- how much damange it deals

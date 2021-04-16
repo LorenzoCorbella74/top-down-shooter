@@ -3,63 +3,57 @@ local WeaponsInventory = {}
 WeaponsInventory.new = function()
     local self = {}
 
-    -- weapon DB
+    -- weapon DB:  https://quake.fandom.com/wiki/Weapons_(Q3)
     self.weapons = {
         {
             name = 'Rifle',
             sprite = Sprites.bullet_Rifle, -- image for bullet
-            frequency = 0.20, --  è la frequenza di sparo = one shot 
-            count = 1, --  NUMERO DI PARTICELLE PER OGNI COLPO
-            speed = 900, --  VELOCITA'
+            frequency = 0.20,    --  è la frequenza di sparo = one shot in n sec
+            count = 1,           --  NUMERO DI PARTICELLE PER OGNI COLPO
+            speed = 900,         --  VELOCITA'
 
-            ttl = 0.5, --  VITA (DURATA DEL COLPO)
-            explode = 0, --  SE CREA UNA ESPLOSIONE
-            spread = 0.1, --  QUANTO SI ALLARGA
-            damage = 5, --  DANNO INFLITTO
-            --  destroy = false,            --  SE DISTRUGGE
-            available = true, --  SE L'ARMA E' DISPONIBILE
-            shotNumber = 100, --  numero di colpi iniziale,
+            ttl = 0.5,           --  VITA (DURATA DEL COLPO)
+            explode = 0,         --  SE CREA UNA ESPLOSIONE
+            spread = 0.1,        --  QUANTO SI ALLARGA
+            damage = 5,          --  DANNO INFLITTO
+            --  destroy = false, --  SE DISTRUGGE
+            available = true,    --  SE L'ARMA E' DISPONIBILE
+            shotNumber = 100,    --  numero di colpi iniziale,
             complete = 100
         }, {
             name = 'Shotgun',
             sprite = Sprites.bullet_Shotgun, -- image for bullet
-            frequency = 0.4,
+            frequency = 1,
             count = 6,
             speed = 900,
-            r = 2,
-            color = '#800000',
             ttl = 0.35,
             explode = 0,
             spread = 0.5,
             damage = 15,
             --  destroy = false,
             available = false,
-            shotNumber = 10, --  60
-            complete = 10
+            shotNumber = 20, --  60
+            complete = 20
         }, {
             name = 'Plasma',
             sprite = Sprites.bullet_Plasma, -- image for bullet
             frequency = 0.15,
             count = 1,
             speed = 1200,
-            r = 3,
-            color = 'blue',
-            ttl = 0.5,
+            ttl = 0.75,
             explode = 0,
             spread = 0.01,
             damage = 4,
             --  destroy = false,
             available = false,
-            shotNumber = 80, --  80
-            complete = 80
+            shotNumber = 100, --  100
+            complete = 100
         }, {
             name = 'Rocket',
             sprite = Sprites.bullet_Rocket, -- image for bullet
-            frequency = 0.5,
+            frequency = 1.2,
             count = 1,
             speed = 800,
-            r = 4,
-            color = 'red',
             ttl = 1,
             explode = 1,
             spread = 0.01,
@@ -74,8 +68,6 @@ WeaponsInventory.new = function()
             frequency = 1,
             count = 1,
             speed = 1600,
-            r = 3,
-            color = 'green',
             ttl = 1.5,
             explode = 0,
             spread = 0.01,

@@ -28,9 +28,9 @@ function love.load(arg)
     
     love.graphics.setDefaultFilter("nearest", "nearest")
     Sprites = {
-
+        
         player = love.graphics.newImage("myTiles/player.png"),
-
+        -- bots
         red_bot = love.graphics.newImage("myTiles/red_bot.png"),
         blue_bot = love.graphics.newImage("myTiles/blue_bot.png"),
         --flags
@@ -50,12 +50,11 @@ function love.load(arg)
         ammo_Rocket = love.graphics.newImage("myTiles/ammo_Rocket.png"),
         ammo_Railgun = love.graphics.newImage("myTiles/ammo_Railgun.png"),
         -- -- weapons
-        -- weaponShotgun = {of = 'Shotgun', spawnTime = 30, amount = 24},
-        -- weaponPlasma = {of = 'Plasma', spawnTime = 30, amount = 25},
-        -- weaponRocket = {of = 'Rocket', spawnTime = 30, amount = 5},
-        -- weaponRailgun = {of = 'Railgun', spawnTime = 30, amount = 5}
+        weaponRifle = love.graphics.newImage("myTiles/weapon_rifle.png"),
+        weaponShotgun = love.graphics.newImage("myTiles/weapon_shotgun.png"),
+        weaponPlasma = love.graphics.newImage("myTiles/weapon_plasma.png"),
+        weaponRocket = love.graphics.newImage("myTiles/weapon_rocket.png"),
         weaponRailgun = love.graphics.newImage("myTiles/weapon_railgun.png"),
-
         -- Bullets
         bullet_Rifle = love.graphics.newImage("myTiles/bullet_Rifle.png"),
         bullet_Shotgun = love.graphics.newImage("myTiles/bullet_Shotgun.png"),
