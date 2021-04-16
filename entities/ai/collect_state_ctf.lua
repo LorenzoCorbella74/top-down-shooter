@@ -26,7 +26,7 @@ function collectctf.OnUpdate(dt, bot)
     -- if underAttack stop following path and turn to the point of impact of the received bullet
     if bot.underAttack then
         local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        if bot.target == nil and angle <0.05 then -- circa 3°
+        if --[[ bot.target == nil and ]] angle <0.05 then -- circa 3°
             bot.underAttack = false
         else
             return

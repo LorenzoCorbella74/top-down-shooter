@@ -9,6 +9,7 @@ end
 
 function collect.OnUpdate(dt, bot)
 
+
     local holyShit = nil
     -- check if there is a visible enemy 4 times/sec
     handlers.timeManagement.runEveryNumFrame(20, bot, function ()
@@ -19,10 +20,10 @@ function collect.OnUpdate(dt, bot)
         return
     end
 
-     -- if underAttack turn to the point of impact of the received bullet
-     if bot.underAttack then
+    -- if underAttack turn to the point of impact of the received bullet
+    if bot.underAttack then
         local angle = helpers.turnProgressivelyTo(bot, bot.underAttackPoint)
-        if bot.target == nil and angle <0.05 then -- circa 3°
+        if --[[ bot.target == nil and ]] angle <0.05 then -- circa 3°
             bot.underAttack = false
         else
             return

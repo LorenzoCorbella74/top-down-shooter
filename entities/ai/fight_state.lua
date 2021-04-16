@@ -126,6 +126,9 @@ function fight.OnUpdate(dt, bot)
             helpers.checkCollision(bot, futurex, futurey)
 
             --check if bot is blocked...
+            if bot.x== bot.old_x and bot.y == bot.old_y then
+                bot.last_visible_position = nil
+            end
         else
             bot.last_visible_position = nil
         end
