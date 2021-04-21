@@ -76,6 +76,27 @@ function love.load(arg)
     Sound:init("Rocket", "Sounds/rocket.mp3", "static")
     Sound:init("Railgun", "Sounds/railgun.mp3", "static")
     Sound:init("Plasma", "Sounds/plasma.mp3", "static")
+    
+    --hits and deathmatch
+    --https://opengameart.org/content/5-hit-sounds-dying
+    Sound:init("death", "Sounds/die1.mp3", "static")
+    Sound:init("hits", {"Sounds/hit1.mp3", "Sounds/hit2.mp3", "Sounds/hit3.mp3", "Sounds/hit4.mp3", "Sounds/hit5.mp3" }, "static")
+    
+    -- announcer voice
+    -- https://opengameart.org/content/fps-announcer-voice
+    -- https://freesound.org/people/qubodup/sounds/221871/
+    Sound:init("Fight", "Sounds/Fight.wav", "static")
+    Sound:init("BaseCaptured", "Sounds/Base Captured.wav", "static")
+    Sound:init("BaseLost", "Sounds/Base Lost.wav", "static")
+    -- Sound:init("EnemyFlagReturn", "Sounds/xxxxxx.wav", "static")
+    -- Sound:init("EnemyFlagDropped", "Sounds/xxxxxx.wav", "static")
+    -- Sound:init("TeamFlagReturn", "Sounds/xxxxxxx.wav", "static")
+    -- Sound:init("TeamFlagDropped", "Sounds/xxxxxxx.wav", "static")
+    Sound:init("Quad", "Sounds/Quad Damage.wav", "static")
+    Sound:init("YouLost", "Sounds/you_lose.ogg", "static")
+    Sound:init("YouWin", "Sounds/you_win.ogg", "static")
+
+
 
     Gamestate.registerEvents()
     -- set first state
@@ -87,4 +108,35 @@ function love.update()
 end
 
 function love.draw() end
+
+--[[ 
+CTF
+Enemy flag taken
+Enemy flag dropped
+Enemy flag return
+Team flag taken
+Team flag dropped
+Team flag return
+
+
+Multi kill
+Assist
+Attack
+Defend
+
+You win
+You lose
+Score
+Fight
+3,2,1, fight
+one minute warning
+two minute warning
+
+Speed
+Quad Damage
+
+
+Tutorial for audacity:
+
+pitch shifter + chorus + stereo expander + dinamic processing ]]
 

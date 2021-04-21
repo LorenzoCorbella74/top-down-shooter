@@ -248,6 +248,7 @@ PowerupsHandler.new = function()
         item.x = item.originx
         item.y = item.originy    
         world:update(item, item.x, item.y, item.w, item.h) -- flag is in the phisycs world
+        -- Sound:play("BaseLost", 'announcer')
     end
 
     -- powerup visibility for each bot

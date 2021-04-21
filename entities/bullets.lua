@@ -107,7 +107,7 @@ BulletsHandler.new = function()
                 end
                 -- impact with bots or player
                 if (item.type and item.type == 'actor') then
-
+                    Sound:play('hits', 'hits')
                     item.underAttack = true
                     item.underAttackPoint = col.touch
                     -- create blood
@@ -119,6 +119,7 @@ BulletsHandler.new = function()
                     table.remove(self.bullets, _i)      -- bullet is no more in the list of bullets
                     self.calculatePoints(item, bullet.damage);
                     if item.hp <= 0 then
+                        Sound:play('death', 'hits')
                         local origin = bullet.firedBy
                         if config.GAME.MATCH_TYPE=='deathmatch' then
                             origin.kills = origin.kills + 1 -- increase the score of who fired the bullet

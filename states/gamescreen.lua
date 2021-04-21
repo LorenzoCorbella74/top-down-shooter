@@ -94,6 +94,8 @@ function state:enter()
     GameCountdown = countdown.new(config.GAME.MATCH_DURATION)
     -- bullet time management
     handlers.timeManagement = TimeManagement.new()
+
+    Sound:play("Fight", 'announcer')
 end
 
 function state:update(dt)
@@ -104,18 +106,31 @@ function state:update(dt)
 
     -- player firing !!!
     if love.mouse.isDown(1) then handlers.player.fire(dt) end
+
     camera:update(dt)
     camera:follow(state.currentCameraTarget.x, state.currentCameraTarget.y)
     Timer.update(dt)
     GameCountdown.update(dt)
 
     for index, actor in ipairs(handlers.actors) do
+        -- go to gamGameoverScreen state if player won
         if config.GAME.MATCH_TYPE=='deathmatch' and actor.kills == config.GAME.SCORE_TO_WIN then
-            Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
+            if actor.name=='player' then
+                Sound:play("YouWin", 'announcer')
+            else
+                Sound:play("YouLost", 'announcer')
+            end
+            Gamestate.push(GameoverScreen) 
             return
         end
+        -- go to gamGameoverScreen state if team won
         if config.GAME.MATCH_TYPE~='deathmatch' and actor.teamStatus[actor.team].score == config.GAME.SCORE_TO_WIN then
-            Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
+            if actor.name=='player' then
+                Sound:play("YouWin", 'announcer')
+            else
+                Sound:play("YouLost", 'announcer')
+            end
+            Gamestate.push(GameoverScreen) 
             return
         end
     end
@@ -133,8 +148,6 @@ function state:draw()
         camera.draw_deadzone = false
     end
 
-    camera.scale = scale
-
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
@@ -142,7 +155,7 @@ function state:draw()
     local x = math.min(math.max(0, camera.x - windowWidth / 2), mapMaxWidth - windowWidth)
     local y = math.min(math.max(0, camera.y - windowHeight / 2), mapMaxHeight - windowHeight)
 
-    map:draw(-x, -y, scale, camera.scale)
+    map:draw(-x, -y, scale, scale)
 
     camera:detach()
     camera:draw()
@@ -221,15 +234,19 @@ function drawHUD()
     -- Player data
     love.graphics.print("HP:" .. tostring(p.hp),  48, love.graphics.getHeight()-64)
     love.graphics.print("AP:" .. tostring(p.ap),  48, love.graphics.getHeight()-32)
-    love.graphics.print("Score: " .. tostring(p.kills), 192, 32)
-    love.graphics.print("Team: " .. tostring(p.teamStatus['blue'].score) ..'-'..tostring(p.teamStatus['red'].score), 192, 64)
+    -- match score
+    if config.GAME.MATCH_TYPE=='deathmatch'  then
+        love.graphics.print("Score: " .. tostring(p.kills), 192, 32)
+    else
+        love.graphics.print("Score: " .. tostring(p.teamStatus['blue'].score) ..'-'..tostring(p.teamStatus['red'].score), 192, 32)
+    end
     -- current weapon and available shoots
-    love.graphics.print(w.name .. ':' .. w.shotNumber, love.graphics.getWidth()-120, love.graphics.getHeight()-64)
+    love.graphics.print(w.name .. ':' .. w.shotNumber, love.graphics.getWidth()-128, love.graphics.getHeight()-64)
     -- FPS
     local fps = love.timer.getFPS()
-    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 100, 16)
+    love.graphics.print("FPS:" .. tostring(fps), love.graphics.getWidth() - 100, 32)
     -- Time of the current match
-    love.graphics.printf("Time: " .. tostring(GameCountdown.show()), (love.graphics.getWidth() / 2) - 64, 32, 200, "center")
+    love.graphics.printf("Time: " .. tostring(GameCountdown.show()), (love.graphics.getWidth() / 2) - 80, 32, 200, "center")
     -- game message
     love.graphics.printf(state.message, (love.graphics.getWidth() / 2) - 128, 64, 220, "center")
 end

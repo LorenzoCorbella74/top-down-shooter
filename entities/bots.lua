@@ -54,8 +54,8 @@ BotsHandler.new = function()
            num = (num % 3 ==0) and 3 or num % 3
         end
         local role = {
-            'defend',   -- attitudice a difendere un obittivo   (difensore)
             'attack',   -- attitudine ad attaccare un obiettivo (attaccante)
+            'defend',   -- attitudice a difendere un obittivo   (difensore)
             'support'   -- attitudine al supporto compagni      (supporto)
         }
         return role[num]
