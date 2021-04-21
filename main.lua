@@ -9,6 +9,7 @@ sti = require "libs.sti"                -- https://github.com/karai17/Simple-Til
 bump = require 'libs.bump'              -- https://github.com/kikito/bump.lua
 Camera = require 'libs.camera'          -- https://github.com/a327ex/STALKER-X
 Timer = require "libs.timer"            -- https://hump.readthedocs.io/en/latest/timer.html
+Sound = require("libs/sounds")
 
 -- GAME STATES / SCREENS
 TitleScreen = require 'states.titlescreen'
@@ -68,9 +69,21 @@ function love.load(arg)
         lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 72)
     }
 
+    Sound:init("backgroundTitle", "Sounds/Dark Intro.ogg", "static")
+    -- firing
+    Sound:init("Rifle", "Sounds/rifle.mp3", "static")
+    Sound:init("Shotgun", "Sounds/shotgun.mp3", "static")
+    Sound:init("Rocket", "Sounds/rocket.mp3", "static")
+    Sound:init("Railgun", "Sounds/railgun.mp3", "static")
+    Sound:init("Plasma", "Sounds/plasma.mp3", "static")
+
     Gamestate.registerEvents()
     -- set first state
     Gamestate.switch(TitleScreen)
+end
+
+function love.update()
+    Sound:update() 
 end
 
 function love.draw() end

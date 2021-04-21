@@ -54,6 +54,7 @@ end
 function GS.push(to, ...)
 	assert(to, "Missing argument: Gamestate to switch to")
 	assert(to ~= GS, "Can't call push with colon operator")
+	;(stack[#stack].leave or __NULL__)(stack[#stack]) -- modificato per permettere al push di avere l'hook leave !!!!!
 	return change_state(1, to, ...)
 end
 

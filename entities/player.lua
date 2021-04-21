@@ -172,6 +172,7 @@ PlayerHandler.new = function()
                 local mx, my = camera:getMousePosition()
                 local angle = math.atan2(my - (p.y + p.h / 2), mx - (p.x + p.w / 2))
 
+                Sound:play(w.name, 'shots')
                 for _i = w.count, 1, -1 do
                     handlers.bullets.create(
                         {

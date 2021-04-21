@@ -175,6 +175,10 @@ BotsHandler.new = function()
                 -- angle with target
                 local angle = math.atan2(velY, velX)
 
+                -- sounds only if bot is in camera focus
+                if  helpers.dist(p, camera)<750 then
+                    Sound:play(w.name, 'shots')
+                end
                 for _i = w.count, 1, -1 do
                     handlers.bullets.create(
                         {

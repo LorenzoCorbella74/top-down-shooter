@@ -11,30 +11,22 @@ local TimeManagement = require "..helpers.timeManagement" -- handle time effect 
 
 local state = {lastChangeWeaponTime = 0, currentCameraTarget = {}, message = ''}
 
+handlers = {}
 -- init is called only once
 -- enter is called when push
 -- restore is called when pop
-function state:enter()
 
-    camera = Camera()
-    camera:setFollowStyle('TOPDOWN')
-
-    love.mouse.setVisible(false)
-    camera:setFollowLerp(0.2)
-    camera:setFollowLead(10)
-
-    map = sti("maps/dm2.lua", {'bump'}) -- Load map file
+function state:loadMapAndHandlers(num)
+    map = sti("maps/dm" .. tostring(num)..".lua", {'bump'}) -- Load map file
     world = bump.newWorld(32) -- defining the world for collisions
     map:bump_init(world)
-
-    handlers = {}
 
     -- spawn_points and bots waypoints
     handlers.points = PointsHandler.new()
     handlers.points.getPointsFromMap()
 
     -- path finding helpers for jumper
-    local map_for_jumper = require('maps/dm' .. tostring(2))
+    local map_for_jumper = require('maps/dm' .. tostring(num))
     handlers.pf = PathfindHandler.new(map_for_jumper, 'walls', 0, 'JPS')
 
     -- player
@@ -84,6 +76,19 @@ function state:enter()
     -- set game message
     handlers.ui = {}
     handlers.ui.setMsg = function(msg) state.message = msg end
+end
+
+
+function state:enter()
+
+    camera = Camera()
+    camera:setFollowStyle('TOPDOWN')
+
+    love.mouse.setVisible(false)
+    camera:setFollowLerp(0.2)
+    camera:setFollowLead(10)
+
+    state:loadMapAndHandlers(1)
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(config.GAME.MATCH_DURATION)
@@ -128,6 +133,8 @@ function state:draw()
         camera.draw_deadzone = false
     end
 
+    camera.scale = scale
+
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()
     local mapMaxWidth = map.width * map.tilewidth
@@ -135,7 +142,7 @@ function state:draw()
     local x = math.min(math.max(0, camera.x - windowWidth / 2), mapMaxWidth - windowWidth)
     local y = math.min(math.max(0, camera.y - windowHeight / 2), mapMaxHeight - windowHeight)
 
-    map:draw(-x, -y, scale, scale)
+    map:draw(-x, -y, scale, camera.scale)
 
     camera:detach()
     camera:draw()
