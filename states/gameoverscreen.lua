@@ -4,6 +4,8 @@ local state = {winner= nil}
 
 function state:enter() 
 
+    Timer.clear() -- Remove all timed and periodic functions. Functions that have not yet been executed will discarded
+
     for index, actor in ipairs(handlers.actors) do
         -- go to gamGameoverScreen state if player won
         if config.GAME.MATCH_TYPE=='deathmatch' and actor.kills == config.GAME.SCORE_TO_WIN then

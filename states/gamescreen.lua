@@ -115,21 +115,11 @@ function state:update(dt)
     for index, actor in ipairs(handlers.actors) do
         -- go to gamGameoverScreen state if player won
         if config.GAME.MATCH_TYPE=='deathmatch' and actor.kills == config.GAME.SCORE_TO_WIN then
-           --[[  if actor.name=='player' then
-                Sound:play("YouWin", 'announcer')
-            else
-                Sound:play("YouLost", 'announcer')
-            end ]]
             Gamestate.push(GameoverScreen) 
             break
         end
         -- go to gamGameoverScreen state if team won
         if config.GAME.MATCH_TYPE~='deathmatch' and actor.teamStatus[actor.team].score == config.GAME.SCORE_TO_WIN then
-           --[[  if actor.name=='player' then
-                Sound:play("YouWin", 'announcer')
-            else
-                Sound:play("YouLost", 'announcer')
-            end ]]
             Gamestate.push(GameoverScreen) 
             break
         end
@@ -166,13 +156,11 @@ function state:keyreleased(key, code)
     local p = map.layers["Sprites"].player
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
-    --if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
-    -- if key == 'f' then camera:flash(0.15, {1, 0, 0, 0.25}) end -- working
-    if key == 'l' then
+    if key == 'l' then -- not working (at least not if not compilated)
         local filename = string.format("screenshot-%d.png", os.time())
         love.graphics.captureScreenshot(filename)
         print(string.format("written %s", filename))
-    end -- not working
+    end
     if key == 'i' then
         debug = not debug
         p.invisible = not p.invisible
