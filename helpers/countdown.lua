@@ -1,7 +1,5 @@
 -- source: https://stackoverflow.com/a/36817464
 
-local config = require "config"
-
 local countdown = {}
 
 countdown.new = function(time)
@@ -15,8 +13,8 @@ countdown.new = function(time)
 
     -- public
     local stopIn = time or (60 * 5) -- how long the timer should run
-    self.timeTillStop = 0 --  holds the display time
-    self.status = nil
+    self.timeTillStop = 0           --  holds the display time
+    self.status = nil               -- holds the status msg if the countdown
 
     -- public fn
     function self.update(dt)
@@ -47,25 +45,6 @@ countdown.new = function(time)
         end
 
         if stop == true then
-            if config.GAME.MATCH_TYPE=='deathmatch' then
-                table.sort(handlers.actors, function(a, b)
-                    return a.kills > b.kills
-                end)
-                if handlers.actors[1].name=='player' then
-                    Sound:play("YouWin", 'announcer')
-                else
-                    Sound:play("YouLost", 'announcer')
-                end
-            else
-                table.sort(handlers.actors, function(a, b)
-                    return a.teamStatus[a.team].score > b.teamStatus[a.team].score
-                end)
-                if handlers.actors[1].team=='blue' then
-                    Sound:play("YouWin", 'announcer')
-                else
-                    Sound:play("YouLost", 'announcer')
-                end
-            end
             Gamestate.push(GameoverScreen) -- go to gamGameoverScreen state
         end
     end

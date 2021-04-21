@@ -87,19 +87,25 @@ function love.load(arg)
     -- announcer voice
     -- https://opengameart.org/content/fps-announcer-voice
     -- https://freesound.org/people/qubodup/sounds/221871/
-    Sound:init("Fight", "Sounds/Fight.wav", "static")
-    Sound:init("BaseCaptured", "Sounds/Base Captured.wav", "static")
-    Sound:init("BaseLost", "Sounds/Base Lost.wav", "static")
-    -- Sound:init("EnemyFlagReturn", "Sounds/xxxxxx.wav", "static")
-    -- Sound:init("EnemyFlagDropped", "Sounds/xxxxxx.wav", "static")
-    -- Sound:init("TeamFlagReturn", "Sounds/xxxxxxx.wav", "static")
-    -- Sound:init("TeamFlagDropped", "Sounds/xxxxxxx.wav", "static")
-    Sound:init("Quad", "Sounds/Quad Damage.wav", "static")
-    Sound:init("YouLost", "Sounds/you_lose.ogg", "static")
-    Sound:init("YouWin", "Sounds/you_win.ogg", "static")
-    
+    Sound:init("Fight", "Sounds/Fight.mp3", "static")
     Sound:init("OneMinuteWarning", "Sounds/OneMinuteWarning.mp3", "static")
     Sound:init("TwoMinuteWarning", "Sounds/TwoMinuteWarning.mp3", "static")
+    Sound:init("YouLost", "Sounds/YouLost.mp3", "static")
+    Sound:init("YouWin", "Sounds/YouWin.mp3", "static")
+    -- ctf
+    Sound:init("RedFlagTaken", "Sounds/RedFlagTaken.mp3", "static")
+    Sound:init("RedFlagReturn", "Sounds/RedFlagReturn.mp3", "static")
+    Sound:init("RedFlagDropped", "Sounds/RedFlagDropped.mp3", "static")
+    Sound:init("RedScored", "Sounds/RedScored.mp3", "static")
+    
+    Sound:init("BlueFlagTaken", "Sounds/BlueFlagTaken.mp3", "static")
+    Sound:init("BlueFlagReturn", "Sounds/BlueFlagReturn.mp3", "static")
+    Sound:init("BlueFlagDropped", "Sounds/BlueFlagDropped.mp3", "static")
+    Sound:init("BlueScored", "Sounds/BlueScored.mp3", "static")
+    
+    Sound:init("QuadDamage", "Sounds/QuadDamage.mp3", "static")
+    Sound:init("Speed", "Sounds/Speed.mp3", "static")
+    
 
 
     Gamestate.registerEvents()

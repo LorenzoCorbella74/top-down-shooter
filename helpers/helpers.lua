@@ -226,22 +226,29 @@ helpers.checkCollision = function(p, futurex, futurey)
         end
 
         -- getting enemy flag
-        if(item.name=='blue_flag' and p.team=='red' and p.enemyFlag.status == 'base') 
-            or (item.name=='red_flag' and p.team=='blue' and p.enemyFlag.status== 'base') then
+        if(item.name=='blue_flag' and p.team=='red' and p.enemyFlag.status == 'base') then
             handlers.powerups.followActor(item, p)
             p.enemyFlag.status = 'taken'
-            Sound:play("BaseCaptured", 'announcer')
+            Sound:play("BlueFlagTaken", 'announcer')
+        end
+
+        if (item.name=='red_flag' and p.team=='blue' and p.enemyFlag.status== 'base') then
+            handlers.powerups.followActor(item, p)
+            p.enemyFlag.status = 'taken'
+            Sound:play("RedFlagTaken", 'announcer')
         end
         
         -- getting enemy flag when dropped
         if(item.name=='blue_flag' and p.team=='red' and p.enemyFlag.status == 'dropped') then
             handlers.powerups.followActor(p.enemyFlag, p)
             p.enemyFlag.status = 'taken'
+            Sound:play("BlueFlagTaken", 'announcer')
         end
-
+        
         if (item.name=='red_flag' and p.team=='blue' and p.enemyFlag.status == 'dropped') then
             handlers.powerups.followActor(p.enemyFlag, p)
             p.enemyFlag.status = 'taken'
+            Sound:play("RedFlagTaken", 'announcer')
         end
 
         -- score in ctf se bot rosso tocca la bandiera rossa e porta la bandiera nemica e la bandiera rossa è alla base
@@ -249,26 +256,26 @@ helpers.checkCollision = function(p, futurex, futurey)
             p.teamStatus[p.team].score = p.teamStatus[p.team].score + 1
             handlers.powerups.unFollowActor(p.enemyFlag, true)
             p.enemyFlag.status = 'base'
-            -- Sound:play("Blue scored", 'announcer')
+            Sound:play("BlueScored", 'announcer')
         end
 
         if (item.name=='red_flag' and p.team=='red' and p.enemyFlag.status == 'taken' and p.teamFlag.status == 'base' ) then
             p.teamStatus[p.team].score = p.teamStatus[p.team].score + 1
             handlers.powerups.unFollowActor(p.enemyFlag, true)
             p.enemyFlag.status = 'base'
-            -- Sound:play("Red scored", 'announcer')
+            Sound:play("RedScored", 'announcer')
         end
 
         -- getting team flag, after been dropped, return to base
         if(item.name=='blue_flag' and p.team=='blue' and p.teamFlag.status == 'dropped' ) then
             handlers.powerups.backToBase(p.teamFlag)
             p.teamFlag.status = 'base'
-            -- Sound:play("TeamFlagReturn", 'announcer')
+            Sound:play("BlueFlagReturn", 'announcer')
         end
         if (item.name=='red_flag' and p.team=='red' and p.teamFlag.status == 'dropped') then
             handlers.powerups.backToBase(p.teamFlag)
             p.teamFlag.status = 'base'
-            -- Sound:play("TeamFlagReturn", 'announcer')
+            Sound:play("RedFlagReturn", 'announcer')
         end
 
         -- once bot has reached the defend point aim to target angle

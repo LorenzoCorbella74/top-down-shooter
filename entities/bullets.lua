@@ -127,7 +127,7 @@ BulletsHandler.new = function()
                         elseif config.GAME.MATCH_TYPE=='team_deathmatch' then
                             origin.teamStatus[origin.team].score = origin.teamStatus[origin.team].score + 1
                         end
-                                          
+
                         -- sound death
                         if item.name == 'player' then
                             handlers.camera.setCameraOnActor(origin)
@@ -158,6 +158,11 @@ BulletsHandler.new = function()
                         if config.GAME.MATCH_TYPE=='ctf' and item.enemyFlag.status=='taken' then
                             handlers.powerups.unFollowActor(item.enemyFlag)
                             item.enemyFlag.status = 'dropped'
+                            if item.team=='blue' then
+                                Sound:play("BlueFlagDropped", 'announcer')
+                            else
+                                Sound:play("RedFlagDropped", 'announcer')
+                            end
                         end
                     end
                     break -- break after the first impact

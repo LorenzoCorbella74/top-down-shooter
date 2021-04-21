@@ -115,23 +115,23 @@ function state:update(dt)
     for index, actor in ipairs(handlers.actors) do
         -- go to gamGameoverScreen state if player won
         if config.GAME.MATCH_TYPE=='deathmatch' and actor.kills == config.GAME.SCORE_TO_WIN then
-            if actor.name=='player' then
+           --[[  if actor.name=='player' then
                 Sound:play("YouWin", 'announcer')
             else
                 Sound:play("YouLost", 'announcer')
-            end
+            end ]]
             Gamestate.push(GameoverScreen) 
-            return
+            break
         end
         -- go to gamGameoverScreen state if team won
         if config.GAME.MATCH_TYPE~='deathmatch' and actor.teamStatus[actor.team].score == config.GAME.SCORE_TO_WIN then
-            if actor.name=='player' then
+           --[[  if actor.name=='player' then
                 Sound:play("YouWin", 'announcer')
             else
                 Sound:play("YouLost", 'announcer')
-            end
+            end ]]
             Gamestate.push(GameoverScreen) 
-            return
+            break
         end
     end
 end

@@ -193,6 +193,7 @@ PowerupsHandler.new = function()
         elseif powerup.info.name == 'megaArmour' then
             who.ap = who.ap + powerup.info.ap;
         elseif powerup.info.name == 'quad' then
+            Sound:play('QuadDamage', 'powerups')
             -- apply effect
             who.damage = who.damage * powerup.info.multiplier;
             -- remove effect
@@ -200,6 +201,7 @@ PowerupsHandler.new = function()
                 who.damage = who.damage / powerup.info.multiplier;
             end)
         elseif powerup.info.name == 'speed' then
+            Sound:play('Speed', 'powerups')
             -- apply effect
             who.speed = who.speed * powerup.info.multiplier;
             -- remove effect
