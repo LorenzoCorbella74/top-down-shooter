@@ -101,6 +101,7 @@ BulletsHandler.new = function()
                 local item = cols[i].other
                 -- impact with walls
                 if (item.layer and item.layer.name == 'walls') then
+                    -- Sound:play('Collisions', 'hits')
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
                     break -- break after the first impact
@@ -126,7 +127,7 @@ BulletsHandler.new = function()
                         elseif config.GAME.MATCH_TYPE=='team_deathmatch' then
                             origin.teamStatus[origin.team].score = origin.teamStatus[origin.team].score + 1
                         end
-                        
+                                          
                         -- sound death
                         if item.name == 'player' then
                             handlers.camera.setCameraOnActor(origin)

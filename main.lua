@@ -82,6 +82,8 @@ function love.load(arg)
     Sound:init("death", "Sounds/die1.mp3", "static")
     Sound:init("hits", {"Sounds/hit1.mp3", "Sounds/hit2.mp3", "Sounds/hit3.mp3", "Sounds/hit4.mp3", "Sounds/hit5.mp3" }, "static")
     
+    -- Sound:init("Collisions", {"Sounds/collision1.mp3", "Sounds/collision2.mp3", "Sounds/collision3.mp3" }, "static")
+    
     -- announcer voice
     -- https://opengameart.org/content/fps-announcer-voice
     -- https://freesound.org/people/qubodup/sounds/221871/
@@ -95,7 +97,9 @@ function love.load(arg)
     Sound:init("Quad", "Sounds/Quad Damage.wav", "static")
     Sound:init("YouLost", "Sounds/you_lose.ogg", "static")
     Sound:init("YouWin", "Sounds/you_win.ogg", "static")
-
+    
+    Sound:init("OneMinuteWarning", "Sounds/OneMinuteWarning.mp3", "static")
+    Sound:init("TwoMinuteWarning", "Sounds/TwoMinuteWarning.mp3", "static")
 
 
     Gamestate.registerEvents()

@@ -166,7 +166,7 @@ function state:keyreleased(key, code)
     local p = map.layers["Sprites"].player
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
     if key == 'escape' then Gamestate.pop(1) end
-    if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
+    --if key == 'e' then camera:shake(8, 1, 60) end --  working BUT NOT PERFECT !!!
     -- if key == 'f' then camera:flash(0.15, {1, 0, 0, 0.25}) end -- working
     if key == 'l' then
         local filename = string.format("screenshot-%d.png", os.time())
