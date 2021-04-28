@@ -18,6 +18,16 @@ BulletsHandler.new = function()
         end
     end
 
+    function self.createSmokeTrail()
+        local impact = love.graphics.newParticleSystem(Sprites.particle_debris, 32)
+        impact:setParticleLifetime(1, 2)
+        impact:setLinearAcceleration(10, 10, 20, 20)
+        impact:setEmissionRate(30)
+        impact:setSpeed(10, 50)
+        impact:setSizes(1)
+        return impact
+    end
+
     function self.createBulletImpactWith(mode, source)
         local img = mode=='wall' and Sprites.particle_debris or Sprites.particle_blood
         local size = mode=='wall' and 18 or 12
@@ -94,9 +104,13 @@ BulletsHandler.new = function()
         b.dx = b.speed * math.cos(angle + math.random() * w.spread - w.spread)
         b.dy = b.speed * math.sin(angle + math.random() * w.spread - w.spread)
         -- state
-        b.ttl = w.ttl -- how many seconds before despawning
+        b.ttl = w.ttl       -- how many seconds before despawning
         b.damage = w.damage -- how much damange it deals
+        b.of = w.name       -- reference of the weapon
 
+        if b.of=='Rocket' then
+            b.pSystem = self.createSmokeTrail()
+        end
         world:add(b, b.x, b.y, b.w, b.h) -- bullet is in the phisycs world
         table.insert(self.bullets, b)
         w.shotNumber = w.shotNumber - 1
@@ -110,11 +124,16 @@ BulletsHandler.new = function()
             -- update bullet positions
             local futurex = bullet.x + bullet.dx * dt
             local futurey = bullet.y + bullet.dy * dt
-
+            
             local cols, cols_len
-
+            
             bullet.x, bullet.y, cols, cols_len = world:move(bullet, futurex, futurey, bulletFilter)
-
+            -- smoke trail for rocket
+            if bullet.of=='Rocket' then
+                bullet.pSystem:setPosition(futurex + bullet.w/2,futurey + bullet.h/2)
+                bullet.pSystem:setDirection(bullet.r-math.rad(180))
+                bullet.pSystem:update(dt)
+            end
             -- collisions
             for i = 1, cols_len do
                 local col = cols[i]
@@ -122,20 +141,17 @@ BulletsHandler.new = function()
                 -- impact with walls
                 if (item.layer and item.layer.name == 'walls') then
                     -- Sound:play('Collisions', 'hits')
-                    -- debris particles
-                    local impact = self.createBulletImpactWith('wall', bullet)
+                    local impact = self.createBulletImpactWith('wall', bullet)  -- debris particles
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
-
                     break -- break after the first impact
                 end
                 -- impact with bots or player
                 if (item.type and item.type == 'actor') then
                     Sound:play('hits', 'hits')
-                    local impact = self.createBulletImpactWith('enemy', bullet)
+                    local impact = self.createBulletImpactWith('enemy', bullet) -- blood particles
                     item.underAttack = true
                     item.underAttackPoint = col.touch
-                    -- create blood
                     -- red flash if player
                     if item.name == 'player' then
                         camera:flash(0.15, {1, 0, 0, 0.25})
@@ -145,6 +161,7 @@ BulletsHandler.new = function()
                     self.calculatePoints(item, bullet.damage);
                     if item.hp <= 0 then
                         Sound:play('death', 'hits')
+                        -- create blood pool
                         local origin = bullet.firedBy
                         if config.GAME.MATCH_TYPE=='deathmatch' then
                             origin.kills = origin.kills + 1 -- increase the score of who fired the bullet
@@ -221,6 +238,10 @@ BulletsHandler.new = function()
         for _i = #self.bullets, 1, -1 do
             local bullet = self.bullets[_i]
             love.graphics.draw(bullet.sprite, math.floor(bullet.x + bullet.w / 2), math.floor(bullet.y + bullet.h / 2), bullet.r, 1, 1, bullet.w / 2, bullet.h / 2)
+            -- smoke trails for rockets
+            if bullet.of=='Rocket' then
+                love.graphics.draw(bullet.pSystem, 0, 0)
+            end
         end
         -- drawing particles
         for _i = #self.impacts, 1, -1 do

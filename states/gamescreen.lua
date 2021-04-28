@@ -88,7 +88,7 @@ function state:enter()
     camera:setFollowLerp(0.2)
     camera:setFollowLead(10)
 
-    state:loadMapAndHandlers(1)
+    state:loadMapAndHandlers(2)
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(config.GAME.MATCH_DURATION)

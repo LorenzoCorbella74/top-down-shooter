@@ -38,8 +38,14 @@ PlayerHandler.new = function()
             weaponsInventory = WeaponsInventory.new(),
 
             attackCounter = 0,      -- frequenza di sparo
-            invisible = false        -- debug
+            invisible = false,        -- debug
+            -- pSystem = love.graphics.newParticleSystem(Sprites.particle_debris, 32)
         }
+        -- self.player.pSystem:setParticleLifetime(0.01, 0.5)
+        -- self.player.pSystem:setLinearAcceleration(100, 100, 200, 200)
+        -- self.player.pSystem:setSpeed(100,200)
+        -- self.player.pSystem:setSizes(1,3)
+
         self.spawn()
     end
 
@@ -91,8 +97,13 @@ PlayerHandler.new = function()
 
             p.old_x = p.x
             p.old_y = p.y
-
+            
             helpers.checkCollision(p, futurex, futurey)
+
+            -- p.pSystem:setPosition(futurex + p.w/2,futurey + p.h/2)
+            -- p.pSystem:setEmissionRate(20)
+            -- p.pSystem:setDirection(p.r-math.rad(180))
+            -- p.pSystem:update(dt)
 
             -- player rotation
             local mx, my = camera:getMousePosition()
@@ -110,6 +121,9 @@ PlayerHandler.new = function()
             -- cursor
             love.graphics.line(mx, my - 16, mx, my + 16)
             love.graphics.line(mx - 16, my, mx + 16, my)
+
+            --trails
+            -- love.graphics.draw(p.pSystem, 0, 0)
         end
         -- debug
         if debug then

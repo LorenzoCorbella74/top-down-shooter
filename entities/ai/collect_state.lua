@@ -10,7 +10,7 @@ end
 function collect.OnUpdate(dt, bot)
 
     local holyShit = nil
-    -- check if there is a visible enemy 4 times/sec
+    -- check if there is a visible enemy 3 times/sec
     handlers.timeManagement.runEveryNumFrame(20, bot, function ()
         holyShit = helpers.checkIfThereIsEnemy(bot)
     end)
