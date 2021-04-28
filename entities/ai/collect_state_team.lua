@@ -40,6 +40,7 @@ function collectTeam.OnUpdate(dt, bot)
     end)
 
     if #bot.nodes== 0 then
+        collectTeam.getTargetOfMovementAndPath(bot)
         return
     end
 

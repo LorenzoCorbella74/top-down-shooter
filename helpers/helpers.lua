@@ -614,20 +614,20 @@ helpers.followPath = function(bot, dt, callback)
     helpers.checkCollision(bot, futurex, futurey)
 
     -- if finished move to the next path element
-    if dist < 10 then
+    if dist < 6 then
         table.remove(bot.nodes, 1);
         if #bot.nodes == 0 then
             print('dist to target '..dist)
             bot.nodes = {}
-            bot.best_powerup = helpers.getObjective(bot)
+            -- bot.best_powerup = helpers.getObjective(bot)
             -- block when distance is reduced fast (when speed powerup is staken) or no item are found
-            if dist > 2 then
+            -- if dist > 2 then
                 callback()
-            else
+            --[[ else
                 print('Bot is blocked...')
                 -- if no powerup go with the waypoint
                 bot.nodes = helpers.findPath(bot, bot.best_waypoint.item)
-            end
+            end ]]
         end
     end
 end

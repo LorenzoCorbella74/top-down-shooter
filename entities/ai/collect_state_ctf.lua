@@ -44,6 +44,11 @@ function collectctf.OnUpdate(dt, bot)
         end
     end
 
+    if #bot.nodes == 0 then
+        collectctf.getTargetOfMovementAndPath(bot)
+        return
+    end
+
     -- check if there is a visible short term goal 3 times/sec on the path for long term goal
     handlers.timeManagement.runEveryNumFrame(20, bot, function()
          if (bot.team_role == 'attack' and not bot.hasShortTermObjective) or 
@@ -62,10 +67,6 @@ function collectctf.OnUpdate(dt, bot)
             end
         end
     end)
-
-    if #bot.nodes == 0 then
-        return
-    end
 
     -- if item is not visible and can be seen check another item
     if bot.best_powerup and bot.best_powerup.item and bot.best_powerup.item.visible == false and helpers.canBeSeen(bot, bot.best_powerup.item) then

@@ -9,7 +9,6 @@ end
 
 function collect.OnUpdate(dt, bot)
 
-
     local holyShit = nil
     -- check if there is a visible enemy 4 times/sec
     handlers.timeManagement.runEveryNumFrame(20, bot, function ()
@@ -31,6 +30,7 @@ function collect.OnUpdate(dt, bot)
     end
 
     if #bot.nodes== 0 then
+        collect.getTargetOfMovementAndPath(bot)
         return
     end
 

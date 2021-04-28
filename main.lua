@@ -61,7 +61,11 @@ function love.load(arg)
         bullet_Shotgun = love.graphics.newImage("myTiles/bullet_Shotgun.png"),
         bullet_Plasma = love.graphics.newImage("myTiles/bullet_Plasma.png"),
         bullet_Rocket = love.graphics.newImage("myTiles/bullet_Rocket.png"),
-        bullet_Railgun = love.graphics.newImage("myTiles/bullet_Railgun.png")
+        bullet_Railgun = love.graphics.newImage("myTiles/bullet_Railgun.png"),
+        -- particles
+        particle_debris = love.graphics.newImage("myTiles/particle_debris.png"),
+        particle_blood = love.graphics.newImage("myTiles/particle_blood.png")
+
     }
      Fonts = {
         sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),

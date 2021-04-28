@@ -7,6 +7,8 @@ BulletsHandler.new = function()
 
     self.bullets = {}
 
+    self.impacts = {}
+
     local bulletFilter = function(item, other)
         local kind = other.layer and other.layer.name or other
         if kind == 'walls' then
@@ -14,6 +16,23 @@ BulletsHandler.new = function()
         elseif other.type == 'actor' then
             return 'cross'
         end
+    end
+
+    function self.createBulletImpactWith(mode, source)
+        local img = mode=='wall' and Sprites.particle_debris or Sprites.particle_blood
+        local size = mode=='wall' and 18 or 12
+        local impact = love.graphics.newParticleSystem(img, 32)
+        impact:setParticleLifetime(0.01, 0.5)
+        impact:setLinearAcceleration(100, 100, 200, 200)
+        impact:setSpeed(100,200)
+        impact:setSizes(0.5,1)
+        impact:setDirection(source.r-math.rad(180))
+        local ox = source.x + source.w/2
+        local oy = source.y + source.h/2
+        impact:setPosition(ox,oy)
+        impact:emit(size)
+        table.insert(self.impacts, impact)
+        return impact
     end
 
     function self.calculatePoints(actor, damage)
@@ -84,6 +103,7 @@ BulletsHandler.new = function()
     end
 
     function self.update(self, dt)
+
         for _i = #self.bullets, 1, -1 do
             local bullet = self.bullets[_i]
 
@@ -102,13 +122,17 @@ BulletsHandler.new = function()
                 -- impact with walls
                 if (item.layer and item.layer.name == 'walls') then
                     -- Sound:play('Collisions', 'hits')
+                    -- debris particles
+                    local impact = self.createBulletImpactWith('wall', bullet)
                     world:remove(bullet) -- powerup is no more in the phisycs world
                     table.remove(self.bullets, _i)
+
                     break -- break after the first impact
                 end
                 -- impact with bots or player
                 if (item.type and item.type == 'actor') then
                     Sound:play('hits', 'hits')
+                    local impact = self.createBulletImpactWith('enemy', bullet)
                     item.underAttack = true
                     item.underAttackPoint = col.touch
                     -- create blood
@@ -183,12 +207,25 @@ BulletsHandler.new = function()
             end
 
         end
+
+        -- update particle_debris
+        for index, impact in ipairs(self.impacts) do
+            impact:update(dt)
+            if impact:getCount() == 0 then
+                table.remove(self.impacts, index)
+            end
+        end
     end
 
     function self.draw(self)
         for _i = #self.bullets, 1, -1 do
             local bullet = self.bullets[_i]
             love.graphics.draw(bullet.sprite, math.floor(bullet.x + bullet.w / 2), math.floor(bullet.y + bullet.h / 2), bullet.r, 1, 1, bullet.w / 2, bullet.h / 2)
+        end
+        -- drawing particles
+        for _i = #self.impacts, 1, -1 do
+            local impact = self.impacts[_i]
+            love.graphics.draw(impact, 0,0)
         end
     end
 
