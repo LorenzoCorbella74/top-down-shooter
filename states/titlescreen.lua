@@ -1,6 +1,3 @@
---[[ local Gamestate = require 'libs.gamestate' ]]
--- local Sound = require("sound")
-
 local state = {}
 
 local elapsed = 0
@@ -24,7 +21,7 @@ end
 function state:update(dt) elapsed = elapsed + math.floor(dt * 100) end
 
 function state:keyreleased(key, code)
-    if key == 'space' then Gamestate.push(GameScreen, 1) end
+    if key == 'space' then Gamestate.push(InputScreen, 1) end
     if key == 'escape' then love.event.quit() end
 end
 

@@ -50,7 +50,7 @@ function state:loadMapAndHandlers(num)
     table.insert(handlers.actors, handlers.player.player)
     handlers.bots = BotsHandler.new()
     for i = 1, config.GAME.BOTS_NUMBERS, 1 do
-        handlers.bots.create(i, 1 --[[ math.random(1, 5) ]]) -- bot skill levels
+        handlers.bots.create(i, config.GAME.BOTS_SKILL) -- bot skill levels --[[ math.random(1, 5) ]]
         table.insert(handlers.actors, handlers.bots.bots[i])
     end
     -- seed waypoints with each bot information

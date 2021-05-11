@@ -16,6 +16,7 @@ TitleScreen = require 'states.titlescreen'
 GameScreen = require 'states.gamescreen'
 PauseScreen = require 'states.pausescreen'
 GameoverScreen = require 'states.gameoverscreen'
+InputScreen = require 'states.inputscreen'
 
 function love.load(arg)
     -- debug with ZEROBRANE Studio
