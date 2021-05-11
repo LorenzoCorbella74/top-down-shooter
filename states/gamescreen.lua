@@ -88,7 +88,7 @@ function state:enter()
     camera:setFollowLerp(0.2)
     camera:setFollowLead(10)
 
-    state:loadMapAndHandlers(2)
+    state:loadMapAndHandlers(config.GAME.MAP)
 
     -- after the matchDuration go to game over screen
     GameCountdown = countdown.new(config.GAME.MATCH_DURATION)
@@ -155,7 +155,7 @@ end
 function state:keyreleased(key, code)
     local p = map.layers["Sprites"].player
     if key == 'p' then Gamestate.push(PauseScreen, 1) end
-    if key == 'escape' then Gamestate.pop(1) end
+    if key == 'escape' then Gamestate.push(OptionsScreen, 1) end
     if key == 'l' then -- not working (at least not if not compilated)
         local filename = string.format("screenshot-%d.png", os.time())
         love.graphics.captureScreenshot(filename)

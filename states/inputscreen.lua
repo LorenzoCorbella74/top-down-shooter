@@ -21,6 +21,12 @@ local botSkillOptions = {
 local SelectedBotSkill = 3
 local numberOfBots = 1
 
+local mapOptions = {
+    {name='q3dm7', num= 1, --[[ type='deathmatch' ]]},
+    {name='q3dm1', num= 2}
+}
+local selectedMap = 1
+
 function state:enter() Slab.Initialize() end
 
 function state:draw()
@@ -82,9 +88,17 @@ function state:update(dt)
     }) then numberOfBots = Slab.GetInputNumber() end
 
     Slab.Text("Bots skill:")
-    if Slab.BeginComboBox('MyComboBox', {Selected = SelectedBotSkill}) then
+    if Slab.BeginComboBox('bot_skill', {Selected = SelectedBotSkill}) then
         for I, V in ipairs(botSkillOptions) do
             if Slab.TextSelectable(V) then SelectedBotSkill = I end
+        end
+        Slab.EndComboBox()
+    end
+    Slab.Separator()
+    Slab.Text("Map:")
+    if Slab.BeginComboBox('map', {Selected = selectedMap}) then
+        for I, V in ipairs(mapOptions) do
+            if Slab.TextSelectable(V.name) then selectedMap = I end
         end
         Slab.EndComboBox()
     end
@@ -96,10 +110,12 @@ function state:update(dt)
         print('Time limit: ', timeLimit)
         print('Selected Bot Skill: ', SelectedBotSkill)
         print('Number of bots: ', numberOfBots)
+        print('Selected map: ', selectedMap)
 
         config.setGame({
             BOTS_NUMBERS = numberOfBots,
             BOTS_SKILL = SelectedBotSkill,
+            MAP= selectedMap,
             MATCH_DURATION = timeLimit * 60,
             SCORE_TO_WIN = scoreLimit,
             MATCH_TYPE = GameTypes[SelectedGameType]

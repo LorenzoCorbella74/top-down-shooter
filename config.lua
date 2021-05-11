@@ -23,6 +23,7 @@ local deafults= {
     BOTS_SKILL = 0,
     MATCH_DURATION = 300,
     SCORE_TO_WIN = 10,
+    MAP = 1,
     MATCH_TYPE = 'deathmatch',    -- can be 'deathmatch', 'team_deathmatch', "ctf"
     
     RESPAWN_TIME = 10,
