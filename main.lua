@@ -72,7 +72,7 @@ function love.load(arg)
      Fonts = {
         sm = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 12),
         md = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 24),
-        lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 72)
+        lg = love.graphics.newFont( --[[ 'assets/fonts/shattered-v1.ttf', ]] 80)
     }
 
     Sound:init("backgroundTitle", "Sounds/Dark Intro.ogg", "static")
