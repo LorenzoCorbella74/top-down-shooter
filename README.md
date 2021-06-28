@@ -6,7 +6,7 @@
 ![](https://img.shields.io/github/repo-size/LorenzoCorbella74/top-down-shooter "Repository size")
 ![](https://img.shields.io/github/package-json/v/LorenzoCorbella74/top-down-shooter)
 
-After my first 2D experiment in [typescript](https://github.com/LorenzoCorbella74/test-canvas-game) I decided to switch to the Lua programming language and the amazing [love framework](https://love2d.org/) to realize a full feature top down shooter able to recreate the Arena shooters (Quake 3 Arena, Unreal Tournament...) mechanics.
+After my first 2D experiment in [typescript](https://github.com/LorenzoCorbella74/test-canvas-game) I decided to switch to the Lua programming language and the amazing [love framework](https://love2d.org/) to realize a full features top down shooter able to recreate the mechanics of Arena shooters (Quake 3 Arena, Unreal Tournament...) of the 90ies.
 
 ## Features
 - [x] the game engine use maps built with [tiled](https://www.mapeditor.org/) and imported with [Simple-Tiled-Implementation](https://github.com/karai17/Simple-Tiled-Implementation)
@@ -32,7 +32,6 @@ After my first 2D experiment in [typescript](https://github.com/LorenzoCorbella7
 - [x] different game modes (deathmatch, team deathmach, ctf)
 - [x] multiple maps
 - [x] music and effects (sort of...)
-- [ ] multiplayer
 - [x] multiple screen, stat screen (game over screen), game configuration screen, pause screen
 
 
