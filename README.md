@@ -1,6 +1,6 @@
 # Top down shooter
 
-![IMG](doc/tds.gif)
+![IMG](doc/movie.gif)
 
 ![](https://img.shields.io/badge/type-JS_Library-brightgreen.svg "Project type")
 ![](https://img.shields.io/github/repo-size/LorenzoCorbella74/top-down-shooter "Repository size")
